@@ -39,15 +39,10 @@ jobs:
           npm install
           npm run build
 
-      - name: Verificar diretório atual
-        run: pwd
-
-      - name: Listar arquivos no diretório
-        run: ls -la
-
       # Configurar ambiente Laravel (.env e chave de aplicação)
       - name: Configurar ambiente Laravel
         run: |
+          cd src
           cp .env.example .env
           php artisan key:generate
 
