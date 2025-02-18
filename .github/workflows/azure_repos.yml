@@ -1,0 +1,32 @@
+name: Sincronizar Commits para Azure Repos
+
+on:
+  push:
+    branches:
+      - main  # Quando há um commit na branch main
+
+jobs:
+  sync-to-azure:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório GitHub
+        uses: actions/checkout@v4
+
+      - name: Configurar Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Clonar o repositório do Azure Repos
+        run: |
+          git clone https://oauth2:${{ secrets.AZURE_REPOS_PAT }}@dev.azure.com/soareshenrique/laravel_com_inertia/_git/laravel_com_inertia azure-repo
+          cd azure-repo
+
+      - name: Sincronizar commits entre GitHub e Azure Repos
+        run: |
+          # Adiciona os arquivos do repositório GitHub ao repositório Azure Repos
+          cp -r ../* .  # Copia os arquivos do GitHub para o repositório Azure
+          git add .  # Adiciona os arquivos
+          git commit -m "Sincronizando commits do GitHub para o Azure Repos"
+          git push origin main  # Empurra para a branch main do Azure Repos
