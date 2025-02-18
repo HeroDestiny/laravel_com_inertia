@@ -25,8 +25,9 @@ jobs:
 
       - name: Sincronizar commits entre GitHub e Azure Repos
         run: |
-          # Adiciona os arquivos do repositório GitHub ao repositório Azure Repos
-          cp -r ../* .  # Copia os arquivos do GitHub para o repositório Azure
-          git add .  # Adiciona os arquivos
-          git commit -m "Sincronizando commits do GitHub para o Azure Repos"
-          git push origin main  # Empurra para a branch main do Azure Repos
+          cd azure-repo
+          git pull origin main  # Garante que o repositório Azure está atualizado
+          git remote add github-origin $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
+          git fetch github-origin main
+          git merge --no-edit github-origin/main || true  # Mescla as alterações
+          git push origin main  # Envia para o Azure Repos
