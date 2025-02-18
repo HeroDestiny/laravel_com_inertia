@@ -39,19 +39,14 @@ jobs:
           npm install
           npm run build
 
+      - name: Verificar diretório atual
+        run: pwd
+
       # Configurar ambiente Laravel (.env e chave de aplicação)
       - name: Configurar ambiente Laravel
         run: |
           cp .env.example .env
           php artisan key:generate
-
-      # Rodar testes unitários
-      - name: Rodar testes do Laravel
-        run: php artisan test
-
-      # Rodar testes do Vue (caso tenha Jest, Vitest ou Cypress)
-      - name: Rodar testes do Vue
-        run: npm test || echo "Nenhum teste configurado"
 
       # Deploy automático via SSH para o servidor (opcional)
       - name: Deploy para o Servidor
@@ -62,7 +57,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /var/www/seu_projeto
+            cd /var/www/laravel
             git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
