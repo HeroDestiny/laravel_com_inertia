@@ -14,42 +14,42 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label for="name">Nome</Label>
-              <Input id="name" v-model="form.name" placeholder="Digite seu nome"  />
+              <Input id="name" v-model="form.name" placeholder="Digite seu nome" required />
             </div>
 
             <div>
               <Label for="surname">Sobrenome</Label>
-              <Input id="surname" v-model="form.surname" placeholder="Digite seu sobrenome"  />
+              <Input id="surname" v-model="form.surname" placeholder="Digite seu sobrenome" required />
             </div>
 
             <div>
               <Label for="birthdate">Data de Nascimento</Label>
-              <Input id="birthdate" v-model="form.birthdate" type="date"  />
+              <Input id="birthdate" v-model="form.birthdate" type="date" required />
             </div>
 
             <div>
               <Label for="cpf">CPF</Label>
-              <Input id="cpf" v-model="form.cpf" placeholder="Digite seu CPF"  />
+              <Input id="cpf" v-model="form.cpf" placeholder="Digite seu CPF" required />
             </div>
 
             <div>
               <Label for="role">Cargo</Label>
-              <Input id="role" v-model="form.role" placeholder="Digite seu cargo"  />
+              <Input id="role" v-model="form.role" placeholder="Digite seu cargo" required />
             </div>
 
             <div>
               <Label for="education">Escolaridade</Label>
-              <Input id="education" v-model="form.education" placeholder="Digite sua escolaridade"  />
+              <Input id="education" v-model="form.education" placeholder="Digite sua escolaridade" required />
             </div>
 
             <div class="md:col-span-2">
               <Label for="motherName">Nome da Mãe</Label>
-              <Input id="motherName" v-model="form.motherName" placeholder="Digite o nome da sua mãe"  />
+              <Input id="motherName" v-model="form.motherName" placeholder="Digite o nome da sua mãe" required />
             </div>
 
             <div class="md:col-span-2">
               <Label for="email">Email</Label>
-              <Input id="email" v-model="form.email" type="email" placeholder="Digite seu email"  />
+              <Input id="email" v-model="form.email" type="email" placeholder="Digite seu email" required />
             </div>
 
           </div>
