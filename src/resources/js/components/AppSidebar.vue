@@ -14,6 +14,11 @@ const mainNavItems: NavItem[] = [
         href: '/dashboard',
         icon: LayoutGrid,
     },
+    {
+        title: 'Cadastrar',
+        href: '/cadastrar',
+        icon: LayoutGrid,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
