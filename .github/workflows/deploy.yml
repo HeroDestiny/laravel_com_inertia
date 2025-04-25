@@ -1,65 +1,65 @@
-# name: CI/CD Laravel + Inertia + Vue
+name: CI/CD Laravel + Inertia + Vue
 
-# on:
-#   push:
-#     branches:
-#       - main  # Dispara o pipeline quando houver push na main
+on:
+  push:
+    branches:
+      - main  # Dispara o pipeline quando houver push na main
 
-# jobs:
-#   ci-cd:
-#     runs-on: ubuntu-latest
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
 
-#     steps:
-#       # Checkout do código
-#       - name: Checkout do código
-#         uses: actions/checkout@v4
+    steps:
+      # Checkout do código
+      - name: Checkout do código
+        uses: actions/checkout@v4
 
-#       # Configurar o PHP e o Composer
-#       - name: Configurar PHP e instalar dependências
-#         uses: shivammathur/setup-php@v2
-#         with:
-#           php-version: '8.2'
-#           tools: composer:v2
-#           extensions: mbstring, dom, pdo, mysql
+      # Configurar o PHP e o Composer
+      - name: Configurar PHP e instalar dependências
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+          extensions: mbstring, dom, pdo, mysql
 
-#       - name: Instalar dependências do Laravel
-#         run: |
-#           cd src
-#           composer install --no-progress --prefer-dist --optimize-autoloader
+      - name: Instalar dependências do Laravel
+        run: |
+          cd src
+          composer install --no-progress --prefer-dist --optimize-autoloader
 
-#       # Configurar o Node.js e instalar dependências do Vue
-#       - name: Configurar Node.js e instalar dependências
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '18'
+      # Configurar o Node.js e instalar dependências do Vue
+      - name: Configurar Node.js e instalar dependências
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-#       - name: Instalar dependências do Vue
-#         run: |
-#           cd src
-#           npm install
-#           npm run build
+      - name: Instalar dependências do Vue
+        run: |
+          cd src
+          npm install
+          npm run build
 
-#       # Configurar ambiente Laravel (.env e chave de aplicação)
-#       - name: Configurar ambiente Laravel
-#         run: |
-#           cd src
-#           cp .env.example .env
-#           php artisan key:generate
+      # Configurar ambiente Laravel (.env e chave de aplicação)
+      - name: Configurar ambiente Laravel
+        run: |
+          cd src
+          cp .env.example .env
+          php artisan key:generate
 
-#       # Deploy automático via SSH para o servidor (opcional)
-#       - name: Deploy para o Servidor
-#         if: success()
-#         uses: appleboy/ssh-action@master
-#         with:
-#           host: ${{ secrets.SSH_HOST }}
-#           username: ${{ secrets.SSH_USER }}
-#           key: ${{ secrets.SSH_KEY }}
-#           script: |
-#             cd /var/www/laravel
-#             git pull origin main
-#             composer install --no-dev --optimize-autoloader
-#             php artisan migrate --force
-#             npm run build
-#             php artisan cache:clear
-#             php artisan config:clear
-#             php artisan queue:restart
+      # Deploy automático via SSH para o servidor (opcional)
+      # - name: Deploy para o Servidor
+      #   if: success()
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.SSH_HOST }}
+      #     username: ${{ secrets.SSH_USER }}
+      #     key: ${{ secrets.SSH_KEY }}
+      #     script: |
+      #       cd /var/www/laravel
+      #       git pull origin main
+      #       composer install --no-dev --optimize-autoloader
+      #       php artisan migrate --force
+      #       npm run build
+      #       php artisan cache:clear
+      #       php artisan config:clear
+      #       php artisan queue:restart
