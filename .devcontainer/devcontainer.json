@@ -18,7 +18,11 @@
 			"ppa": false
 		},
 		// CLI do Vue
-		"ghcr.io/devcontainers-extra/features/vue-cli:2": {}
+		"ghcr.io/devcontainers-extra/features/vue-cli:2": {},
+		// MySQL para banco de dados
+		"ghcr.io/devcontainers/features/mysql:1": {
+			"version": "8.0"
+		}
 	},
 	// Configurações específicas para ferramentas
 	"customizations": {
@@ -50,7 +54,27 @@
 				"[php]": {
 					"editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
 				},
-				"intelephense.environment.phpVersion": "8.2"
+				"intelephense.environment.phpVersion": "8.2",
+				"editor.bracketPairColorization.enabled": true,
+				"editor.guides.bracketPairs": true,
+				"editor.tabSize": 2,
+				"prettier.singleQuote": true,
+				"prettier.semi": false,
+				"tailwindCSS.includeLanguages": {
+					"vue": "html",
+					"vue-html": "html"
+				},
+				// Para facilitar o trabalho com Inertia e uso do Ziggy para rotas
+				"intelephense.files.associations": [
+					"*.php",
+					"*.phtml",
+					"*.blade.php"
+				],
+				"eslint.validate": [
+					"vue",
+					"typescript",
+					"javascript"
+				]
 			}
 		}
 	},
@@ -61,8 +85,10 @@
 		24678 // Vite HMR
 	],
 	// Comandos para executar após a criação do container
-	"postCreateCommand": "cd src && composer install && npm install && cp .env.example .env && php artisan key:generate",
-	// Adicionar configurações de banco de dados se necessário
+	"postCreateCommand": "cd src && composer install && npm install && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan migrate",
+	"postAttachCommand": {
+		"server": "cd src && composer run dev"
+	},
 	// Remover rotas/volumes de arquivos que não devem ser alterados pelo VSCode
 	"mounts": [
 		"source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
