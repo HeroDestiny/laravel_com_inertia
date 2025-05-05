@@ -18,11 +18,7 @@
 			"ppa": false
 		},
 		// CLI do Vue
-		"ghcr.io/devcontainers-extra/features/vue-cli:2": {},
-		// MySQL para banco de dados
-		"ghcr.io/devcontainers/features/mysql:1": {
-			"version": "8.0"
-		}
+		"ghcr.io/devcontainers-extra/features/vue-cli:2": {}
 	},
 	// Configurações específicas para ferramentas
 	"customizations": {
@@ -33,17 +29,17 @@
 				"onecentlin.laravel-blade",
 				"mohamedbenhida.laravel-intellisense",
 				"amiralizadeh9480.laravel-extra-intellisense",
-				"Vue.volar",
-				"Vue.vscode-typescript-vue-plugin",
 				"bradlc.vscode-tailwindcss",
 				"esbenp.prettier-vscode",
-				"dbaeumer.vscode-eslint"
+				"dbaeumer.vscode-eslint",
+				"Vue.volar",
+    		"GitHub.copilot"
 			],
 			"settings": {
 				"php.validate.executablePath": "/usr/local/bin/php",
 				"editor.formatOnSave": true,
 				"editor.codeActionsOnSave": {
-					"source.fixAll.eslint": true
+					"source.fixAll.eslint": "always"
 				},
 				"[vue]": {
 					"editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -64,7 +60,6 @@
 					"vue": "html",
 					"vue-html": "html"
 				},
-				// Para facilitar o trabalho com Inertia e uso do Ziggy para rotas
 				"intelephense.files.associations": [
 					"*.php",
 					"*.phtml",
@@ -86,9 +81,6 @@
 	],
 	// Comandos para executar após a criação do container
 	"postCreateCommand": "cd src && composer install && npm install && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan migrate",
-	"postAttachCommand": {
-		"server": "cd src && composer run dev"
-	},
 	// Remover rotas/volumes de arquivos que não devem ser alterados pelo VSCode
 	"mounts": [
 		"source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
