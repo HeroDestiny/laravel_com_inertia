@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Instalar dependências Node.js
+        working-directory: src
         run: npm install
 
       - name: Instalar dependências PHP
