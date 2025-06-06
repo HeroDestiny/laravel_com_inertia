@@ -14,24 +14,15 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v3
 
-      - name: Instalar Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Baixar OWASP Dependency-Check
+      - name: Rodar OWASP Dependency-Check via Docker
         run: |
-          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v9.1.1/dependency-check-9.1.1-release.zip
-          unzip dependency-check.zip -d dependency-check
-
-      - name: Rodar Dependency-Check
-        run: |
-          ./dependency-check/bin/dependency-check.sh \
-            --project "Laravel + Vue Project" \
-            --scan . \
-            --format "HTML" \
-            --out reports
+          docker run --rm \
+            -v ${{ github.workspace }}:/src \
+            owasp/dependency-check \
+            --project "Laravel + Vue" \
+            --scan /src \
+            --format HTML \
+            --out /src/reports
 
       - name: Publicar Relatório como Artifact
         uses: actions/upload-artifact@v4
