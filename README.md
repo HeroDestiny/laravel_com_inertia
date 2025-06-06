@@ -3,7 +3,7 @@
 * **Justificativa:** A configuração do disco `local` no arquivo `config/filesystems.php` inclui a diretiva `'serve' => true` e aponta para `storage_path('app/private')`. O nome do diretório "private" sugere que o seu conteúdo não deve ser acessível publicamente. Se a diretiva `'serve' => true` for utilizada em conjunto com rotas que expõem o conteúdo deste disco sem a devida autenticação e autorização, arquivos privados poderiam ser expostos. Esta não é uma configuração padrão para o disco `local` do Laravel e requer atenção.
 * **Evidência:**
     ```php
-    // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\config\filesystems.php
+    // filepath: ..\laravel_com_inertia\src\config\filesystems.php
     // ...existing code...
     'disks' => [
 
@@ -25,7 +25,7 @@
 
     **Sugestão de Código (se o acesso direto não for necessário):**
     ```php
-    // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\config\filesystems.php
+    // filepath: ..\laravel_com_inertia\src\config\filesystems.php
     // ...existing code...
     'disks' => [
 
@@ -49,7 +49,7 @@
 * **Evidência:**
     * Rota `/cadastrar` protegida por `auth`:
         ```php
-        // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\routes\web.php
+        // filepath: ..\laravel_com_inertia\src\routes\web.php
         // ...existing code...
         Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/dashboard', function () {
@@ -68,7 +68,7 @@
         ```
     * Interface do utilizador em Cadastrar.vue sugerindo registo de novo utilizador:
         ```vue
-        // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\resources\js\pages\Cadastrar.vue
+        // filepath: ..\laravel_com_inertia\src\resources\js\pages\Cadastrar.vue
         // ...existing code...
         <CardHeader>
           <CardTitle class="text-2xl">Criar Conta</CardTitle>
@@ -78,7 +78,7 @@
         ```
     * Coleta de dados no frontend e lógica de submissão atual:
         ```vue
-        // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\resources\js\pages\Cadastrar.vue
+        // filepath: ..\laravel_com_inertia\src\resources\js\pages\Cadastrar.vue
         // ...existing code...
         const form = ref<RegisterForm>({
           name: '',
@@ -108,7 +108,7 @@
         * Atualizar Cadastrar.vue para usar `useForm` do Inertia e submeter para uma rota POST.
         * Criar uma rota POST e um controller:
             ```php
-            // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\routes\web.php
+            // filepath: ..\laravel_com_inertia\src\routes\web.php
             // ...existing code...
             use App\Http\Controllers\UserDetailController; // Adicionar este import
 
@@ -174,7 +174,7 @@
 * **Evidência:**
     * Senha padrão na `UserFactory`:
         ```php
-        // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\database\factories\UserFactory.php
+        // filepath: ..\laravel_com_inertia\src\database\factories\UserFactory.php
         // ...existing code...
         public function definition(): array
         {
@@ -190,7 +190,7 @@
         ```
     * Uso de `'password'` em testes:
         ```php
-        // filepath: c:\Users\paulo\OneDrive\Documentos\github\laravel_com_inertia\src\tests\Feature\Auth\PasswordConfirmationTest.php
+        // filepath: ..\laravel_com_inertia\src\tests\Feature\Auth\PasswordConfirmationTest.php
         // ...existing code...
         public function test_password_can_be_confirmed()
         {
