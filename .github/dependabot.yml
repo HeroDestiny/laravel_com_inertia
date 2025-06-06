@@ -6,7 +6,18 @@
 
 version: 2
 updates:
- - package-ecosystem: "devcontainers"
-   directory: "/"
-   schedule:
-     interval: weekly
+  # Backend (Laravel) - usa Composer
+  - package-ecosystem: "composer"
+    directory: "/src"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Frontend (Vue/Inertia) - usa npm ou yarn
+  - package-ecosystem: "npm"
+    directory: "/src"
+    target-branch: "main"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
