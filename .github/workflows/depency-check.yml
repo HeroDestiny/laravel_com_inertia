@@ -19,6 +19,7 @@ jobs:
         run: npm install
 
       - name: Instalar dependências PHP
+        working-directory: src
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Rodar OWASP Dependency-Check via Docker
