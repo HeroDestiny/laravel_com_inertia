@@ -14,6 +14,12 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v3
 
+      - name: Instalar dependências Node.js
+        run: npm ci
+
+      - name: Instalar dependências PHP
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
       - name: Rodar OWASP Dependency-Check via Docker
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
@@ -22,7 +28,7 @@ jobs:
             -e NVD_API_KEY="${NVD_API_KEY}" \
             -v ${{ github.workspace }}:/src \
             owasp/dependency-check \
-            --project "Laravel + Vue" \
+            --project "Laravel + Vue Project" \
             --scan /src \
             --format HTML \
             --out /src/reports \
