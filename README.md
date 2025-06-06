@@ -21,7 +21,7 @@
 * **Solução:**
     1.  **Reavaliar a necessidade:** Determinar se é realmente necessário servir arquivos diretamente do diretório `storage/app/private` via HTTP.
     2.  **Remover ou alterar `'serve' => true`:** Se não for estritamente necessário, remover a linha `'serve' => true,` ou defini-la como `false`.
-    3.  **Controlo de Acesso Rigoroso:** Se for necessário servir arquivos deste disco, certificar-se de que qualquer rota que o faça utilize middlewares de autenticação e autorização robustos para proteger o acesso. Em vez de servir diretamente, criar um endpoint de controller que verifique as permissões antes de retornar o arquivo.
+    3.  **Controle de Acesso Rigoroso:** Se for necessário servir arquivos deste disco, certificar-se de que qualquer rota que o faça utilize middlewares de autenticação e autorização robustos para proteger o acesso. Em vez de servir diretamente, criar um endpoint de controller que verifique as permissões antes de retornar o arquivo.
 
     **Sugestão de Código (se o acesso direto não for necessário):**
     ```php
@@ -41,10 +41,10 @@
     // ...existing code...
     ```
 
-### 2. A01:2021 – Quebra de Controlo de Acesso
+### 2. A01:2021 – Quebra de Controle de Acesso
 
 * **Justificativa:**
-    1.  **Ambiguidade da Funcionalidade de Cadastro:** A rota `/cadastrar` (`routes/web.php`) está protegida pelos middlewares `auth` e `verified`, significando que apenas utilizadores autenticados e verificados podem acedê-la. No entanto, a página correspondente `resources/js/pages/Cadastrar.vue` tem o título "Criar Conta" e a descrição "Preencha seus dados abaixo para se registrar", o que sugere um formulário para registo de *novos utilizadores*. Esta discrepância pode levar a um controlo de acesso inadequado dependendo da intenção real.
+    1.  **Ambiguidade da Funcionalidade de Cadastro:** A rota `/cadastrar` (`routes/web.php`) está protegida pelos middlewares `auth` e `verified`, significando que apenas utilizadores autenticados e verificados podem acedê-la. No entanto, a página correspondente `resources/js/pages/Cadastrar.vue` tem o título "Criar Conta" e a descrição "Preencha seus dados abaixo para se registrar", o que sugere um formulário para registo de *novos utilizadores*. Esta discrepância pode levar a um controle de acesso inadequado dependendo da intenção real.
     2.  **Validação de Dados Sensíveis (Potencial):** O formulário em Cadastrar.vue coleta dados pessoais (Nome, Sobrenome, Data de Nascimento, CPF, Cargo, Escolaridade, Nome da Mãe, Email). Atualmente, a função `onSubmit` não envia dados para o backend. Se/quando esta funcionalidade for implementada, é crucial que o backend realize validação completa e rigorosa de todos os campos (e.g., formato do CPF, unicidade, etc.) e aplique as regras de negócio corretas. Apenas a validação `required` no frontend é insuficiente.
 * **Evidência:**
     * Rota `/cadastrar` protegida por `auth`:
