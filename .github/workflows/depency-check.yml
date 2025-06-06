@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repositório
         uses: actions/checkout@v3
 
-      - name: Instalar Java (necessário para o Dependency-Check)
+      - name: Instalar Java
         uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -22,7 +22,7 @@ jobs:
 
       - name: Baixar OWASP Dependency-Check
         run: |
-          curl -L -O https://github.com/jeremylong/DependencyCheck/releases/latest/download/dependency-check.zip
+          curl -L -o dependency-check.zip https://github.com/jeremylong/DependencyCheck/releases/download/v9.1.1/dependency-check-9.1.1-release.zip
           unzip dependency-check.zip -d dependency-check
 
       - name: Rodar Dependency-Check
