@@ -1,0 +1,31 @@
+name: Snyk Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  snyk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar dependências Node.js
+        working-directory: src
+        run: npm install
+
+      - name: Instalar dependências PHP
+        working-directory: src
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Rodar Snyk para todos os projetos
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --all-projects --detection-depth=3 --severity-threshold=medium --fail-on=all
