@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-#comentario para debug
+
 jobs:
   dependency-check:
     runs-on: ubuntu-latest
@@ -29,15 +29,16 @@ jobs:
           docker run --rm \
             -e NVD_API_KEY="${NVD_API_KEY}" \
             -v ${{ github.workspace }}:/src \
+            -v dependency-check-data:/usr/share/dependency-check/data \
             owasp/dependency-check \
             --project "Laravel + Vue Project" \
             --scan /src \
-            --format HTML \
-            --out /src/reports \
-            --nvdApiKey "$NVD_API_KEY"
+            --format HTML,JSON \
+            --out /src/reports/dependency-check \
+            --failOnCVSS 7.0
 
       - name: Publicar Relatório como Artifact
         uses: actions/upload-artifact@v4
         with:
           name: dependency-check-report
-          path: reports
+          path: reports/dependency-check
