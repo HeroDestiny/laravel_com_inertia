@@ -33,7 +33,7 @@ jobs:
             owasp/dependency-check \
             --project "Laravel + Vue Project" \
             --scan /src \
-            --format HTML,JSON \
+            --format JSON \
             --out /src/reports/dependency-check \
             --failOnCVSS 7.0
 
