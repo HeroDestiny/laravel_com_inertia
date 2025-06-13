@@ -1,17 +1,17 @@
-name: OWASP Dependency-Check
+name: Snyk Security Scan
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
-#comentario para debug
+    branches: [main]
+
 jobs:
-  dependency-check:
+  snyk:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repositório
+      - name: Checkout código
         uses: actions/checkout@v3
 
       - name: Instalar dependências Node.js
@@ -22,22 +22,10 @@ jobs:
         working-directory: src
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      - name: Rodar OWASP Dependency-Check via Docker
+      - name: Rodar Snyk para todos os projetos
+        uses: snyk/actions/node@master
         env:
-          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-        run: |
-          docker run --rm \
-            -e NVD_API_KEY="${NVD_API_KEY}" \
-            -v ${{ github.workspace }}:/src \
-            owasp/dependency-check \
-            --project "Laravel + Vue Project" \
-            --scan /src \
-            --format HTML \
-            --out /src/reports \
-            --nvdApiKey "$NVD_API_KEY"
-
-      - name: Publicar Relatório como Artifact
-        uses: actions/upload-artifact@v4
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
-          name: dependency-check-report
-          path: reports
+          command: test
+          args: --all-projects --detection-depth=3 --severity-threshold=medium --fail-on=all
