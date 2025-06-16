@@ -15,6 +15,12 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      # Verificar localização dos arquivos
+      - name: Verificar estrutura de pastas
+        run: |
+          pwd
+          ls -la
+
       # Instalar dependências Node.js
       - name: Instalar dependências Node.js
         run: npm install
