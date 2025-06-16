@@ -43,6 +43,15 @@ jobs:
           args: --all-projects --detection-depth=3 --severity-threshold=medium --fail-on=all
           project: ./src
 
+      # Verificar formatação do código PHP com Laravel Pint
+      - name: Verificar estilo de código com Laravel Pint
+        working-directory: ./src
+        run: ./vendor/bin/pint --test
+
+      - name: Verificar código Vue/JS com ESLint
+        working-directory: ./src
+        run: npx eslint resources/js --ext .js,.vue --max-warnings=0
+
       - name: Verificar código PHP com Psalm
         working-directory: ./src
         run: |
@@ -52,3 +61,6 @@ jobs:
       - name: Verificar código JS/Vue com ESLint
         working-directory: ./src
         run: npx eslint resources/js
+
+
+
