@@ -45,8 +45,9 @@ jobs:
 
       # Verificar formatação do código PHP com Laravel Pint
       - name: Verificar estilo de código com Laravel Pint
+        working-directory: ./src
         run: ./vendor/bin/pint --test
-        
+
       - name: Verificar código PHP com Psalm
         working-directory: ./src
         run: |
