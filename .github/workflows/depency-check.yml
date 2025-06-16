@@ -17,7 +17,7 @@ jobs:
 
       # Instalar dependências Node.js
       - name: Instalar dependências Node.js
-        run: npm ci
+        run: npm install
 
       # Instalar dependências PHP
       - name: Instalar dependências PHP
