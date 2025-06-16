@@ -1,4 +1,4 @@
-name: Snyk Security Scan
+name: Security and Deprecation Checks
 
 on:
   push:
@@ -7,19 +7,31 @@ on:
     branches: [main]
 
 jobs:
-  snyk:
+  verify:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
 
+      - name: Verificar estrutura de pastas
+        run: |
+          pwd
+          ls -la
+          ls -la src/
+
+      # Configurar PHP 8.3.16
+      - name: Configurar versão do PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3.16
+
       - name: Instalar dependências Node.js
-        working-directory: src
-        run: npm install
+        working-directory: ./src
+        run: npm ci
 
       - name: Instalar dependências PHP
-        working-directory: src
+        working-directory: ./src
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Rodar Snyk para todos os projetos
@@ -29,3 +41,14 @@ jobs:
         with:
           command: test
           args: --all-projects --detection-depth=3 --severity-threshold=medium --fail-on=all
+          project: ./src
+
+      - name: Verificar código PHP com Psalm
+        working-directory: ./src
+        run: |
+          if [ ! -f psalm.xml ]; then ./vendor/bin/psalm --init; fi
+          ./vendor/bin/psalm
+
+      - name: Verificar código JS/Vue com ESLint
+        working-directory: ./src
+        run: npx eslint resources/js
