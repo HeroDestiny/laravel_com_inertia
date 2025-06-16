@@ -11,25 +11,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Clonar o repositório
       - name: Checkout código
         uses: actions/checkout@v3
 
-      # Verificar localização dos arquivos
       - name: Verificar estrutura de pastas
         run: |
           pwd
           ls -la
+          ls -la src/
 
-      # Instalar dependências Node.js
       - name: Instalar dependências Node.js
-        run: npm install
+        working-directory: ./src
+        run: npm ci
 
-      # Instalar dependências PHP
       - name: Instalar dependências PHP
+        working-directory: ./src
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
-      # Rodar Snyk
       - name: Rodar Snyk para todos os projetos
         uses: snyk/actions/node@master
         env:
@@ -37,13 +35,14 @@ jobs:
         with:
           command: test
           args: --all-projects --detection-depth=3 --severity-threshold=medium --fail-on=all
+          project: ./src
 
-      # Verificar código PHP deprecado com Psalm
       - name: Verificar código PHP com Psalm
+        working-directory: ./src
         run: |
           if [ ! -f psalm.xml ]; then ./vendor/bin/psalm --init; fi
           ./vendor/bin/psalm
 
-      # Verificar código JS/Vue com ESLint
       - name: Verificar código JS/Vue com ESLint
+        working-directory: ./src
         run: npx eslint resources/js
