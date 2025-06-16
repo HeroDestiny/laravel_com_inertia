@@ -1,91 +1,106 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/php
 {
-	"name": "Laravel Inertia Development",
-	// Usando uma imagem PHP mais recente com suporte completo
-	"image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
-	// Features para adicionar ao dev container
-	"features": {
-		// PHP e Composer
-		"ghcr.io/devcontainers-extra/features/composer:1": {},
-		// Node.js para Vue e Vite
-		"ghcr.io/devcontainers/features/node:1": {
-			"version": "lts"
-		},
-		// Git com configurações adicionais
-		"ghcr.io/devcontainers/features/git:1": {
-			"version": "latest",
-			"ppa": false
-		},
-		// CLI do Vue
-		"ghcr.io/devcontainers-extra/features/vue-cli:2": {}
-	},
-	// Configurações específicas para ferramentas
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"xdebug.php-debug",
-				"bmewburn.vscode-intelephense-client",
-				"onecentlin.laravel-blade",
-				"mohamedbenhida.laravel-intellisense",
-				"amiralizadeh9480.laravel-extra-intellisense",
-				"bradlc.vscode-tailwindcss",
-				"esbenp.prettier-vscode",
-				"dbaeumer.vscode-eslint",
-				"Vue.volar",
-    		"GitHub.copilot"
-			],
-			"settings": {
-				"php.validate.executablePath": "/usr/local/bin/php",
-				"editor.formatOnSave": true,
-				"editor.codeActionsOnSave": {
-					"source.fixAll.eslint": "always"
-				},
-				"[vue]": {
-					"editor.defaultFormatter": "esbenp.prettier-vscode"
-				},
-				"[typescript]": {
-					"editor.defaultFormatter": "esbenp.prettier-vscode"
-				},
-				"[php]": {
-					"editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
-				},
-				"intelephense.environment.phpVersion": "8.2",
-				"editor.bracketPairColorization.enabled": true,
-				"editor.guides.bracketPairs": true,
-				"editor.tabSize": 2,
-				"prettier.singleQuote": true,
-				"prettier.semi": false,
-				"tailwindCSS.includeLanguages": {
-					"vue": "html",
-					"vue-html": "html"
-				},
-				"intelephense.files.associations": [
-					"*.php",
-					"*.phtml",
-					"*.blade.php"
-				],
-				"eslint.validate": [
-					"vue",
-					"typescript",
-					"javascript"
-				]
-			}
-		}
-	},
-	// Portas a serem encaminhadas
-	"forwardPorts": [
-		8000, // Laravel Artisan serve
-		5173, // Vite dev server
-		24678 // Vite HMR
-	],
-	// Comandos para executar após a criação do container
-	"postCreateCommand": "cd src && composer install && npm install && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan migrate",
-	// Remover rotas/volumes de arquivos que não devem ser alterados pelo VSCode
-	"mounts": [
-		"source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
-		"source=laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume"
-	],
-	// Conectar como usuário não-root
-	"remoteUser": "vscode"
+  "name": "Laravel Inertia Development",
+
+  // Usa imagem oficial otimizada para PHP + Composer
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
+
+  "features": {
+    // Composer já vem com a imagem base, mas mantido por clareza
+    "ghcr.io/devcontainers-extra/features/composer:1": {},
+
+    // Node LTS, ideal para projetos Vue + Vite
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+
+    // Git
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest"
+    },
+
+    // Vue CLI (opcional com Vite, mas útil para scaffolding)
+    "ghcr.io/devcontainers-extra/features/vue-cli:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // PHP
+        "xdebug.php-debug",
+        "bmewburn.vscode-intelephense-client",
+        "onecentlin.laravel-blade",
+        "mohamedbenhida.laravel-intellisense",
+        "amiralizadeh9480.laravel-extra-intellisense",
+
+        // Front-end
+        "Vue.volar",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+
+        // AI
+        "GitHub.copilot"
+      ],
+      "settings": {
+        // PHP
+        "php.validate.executablePath": "/usr/local/bin/php",
+        "intelephense.environment.phpVersion": "8.2",
+        "intelephense.files.associations": [
+          "*.php",
+          "*.phtml",
+          "*.blade.php"
+        ],
+
+        // Formatação
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "always"
+        },
+
+        // Prettier
+        "prettier.singleQuote": true,
+        "prettier.semi": false,
+
+        // Tailwind
+        "tailwindCSS.includeLanguages": {
+          "vue": "html",
+          "vue-html": "html"
+        },
+
+        // ESLint
+        "eslint.validate": ["vue", "typescript", "javascript"],
+
+        // Editor UX
+        "editor.tabSize": 2,
+        "editor.bracketPairColorization.enabled": true,
+        "editor.guides.bracketPairs": true,
+
+        // Formatadores específicos
+        "[vue]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[php]": {
+          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+        }
+      }
+    }
+  },
+
+  // Portas padrão do Laravel e Vite
+  "forwardPorts": [8000, 5173, 24678],
+
+  // Comando de pós-instalação para preparar Laravel
+  "postCreateCommand": "cd src && composer install && npm install && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan migrate --force",
+
+  // Mounts para cache de dependências (evita reinstalações completas)
+  "mounts": [
+    "source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
+    "source=laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume"
+  ],
+
+  // Garante ambiente não-root e compatível com VS Code
+  "remoteUser": "vscode"
 }
