@@ -3,51 +3,46 @@ name: CI/CD Laravel + Inertia + Vue
 on:
   push:
     branches:
-      - main  # Dispara o pipeline quando houver push na main
+      - main
 
 jobs:
   ci-cd:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: src
+
     steps:
-      # Checkout do código
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # Configurar o PHP e o Composer
-      - name: Configurar PHP e instalar dependências
+      - name: Configurar PHP e Composer
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.3.16'
           tools: composer:v2
           extensions: mbstring, dom, pdo, mysql
 
-      - name: Instalar dependências do Laravel
-        run: |
-          cd src
-          composer install --no-progress --prefer-dist --optimize-autoloader
+      - name: Instalar dependências PHP
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      # Configurar o Node.js e instalar dependências do Vue
-      - name: Configurar Node.js e instalar dependências
+      - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Instalar dependências do Vue
+      - name: Instalar dependências JS/Vue e build
         run: |
-          cd src
-          npm install
+          npm ci
           npm run build
 
-      # Configurar ambiente Laravel (.env e chave de aplicação)
       - name: Configurar ambiente Laravel
         run: |
-          cd src
           cp .env.example .env
           php artisan key:generate
 
-      # Deploy automático via SSH para o servidor (opcional)
-      # - name: Deploy para o Servidor
+      # - name: Deploy para o servidor
       #   if: success()
       #   uses: appleboy/ssh-action@master
       #   with:

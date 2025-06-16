@@ -20,6 +20,12 @@ jobs:
           ls -la
           ls -la src/
 
+      # Configurar PHP 8.3.16
+      - name: Configurar versão do PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.3.16
+
       - name: Instalar dependências Node.js
         working-directory: ./src
         run: npm ci
