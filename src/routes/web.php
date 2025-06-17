@@ -15,5 +15,5 @@ Route::get('cadastrar', function () {
     return Inertia::render('Cadastrar');
 })->middleware(['auth', 'verified'])->name('cadastrar');
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+require __DIR__ . '/settings.php';
+require __DIR__ . '/auth.php';

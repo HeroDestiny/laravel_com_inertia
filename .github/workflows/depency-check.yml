@@ -57,3 +57,9 @@ jobs:
         run: |
           if [ ! -f psalm.xml ]; then ./vendor/bin/psalm --init; fi
           ./vendor/bin/psalm
+
+      - name: Verificar código PHP com PHPStan
+        working-directory: ./src
+        run: |
+          if [ ! -f phpstan.neon ]; then ./vendor/bin/phpstan init; fi
+          ./vendor/bin/phpstan analyse --memory-limit=2G --configuration=phpstan.neon --level=max src
