@@ -1,3 +1,56 @@
+<script lang="ts" setup>
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
+
+interface RegisterForm {
+    name: string;
+    surname: string;
+    birthdate: string;
+    cpf: string;
+    role: string;
+    education: string;
+    motherName: string;
+    email: string;
+}
+
+const form = ref<RegisterForm>({
+    name: '',
+    surname: '',
+    birthdate: '',
+    cpf: '',
+    role: '',
+    education: '',
+    motherName: '',
+    email: '',
+});
+
+const onSubmit = () => {
+    console.log('Dados do formulário:', form.value);
+
+    toast('Cadastro realizado com sucesso!', {
+        description: `Bem-vindo(a), ${form.value.name}!`,
+    });
+
+    // Limpar formulário
+    form.value = {
+        name: '',
+        surname: '',
+        birthdate: '',
+        cpf: '',
+        role: '',
+        education: '',
+        motherName: '',
+        email: '',
+    };
+};
+</script>
+
 <template>
     <AppLayout>
         <Head title="Cadastrar" />
@@ -58,56 +111,3 @@
         </Card>
     </AppLayout>
 </template>
-
-<script lang="ts" setup>
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { toast } from 'vue-sonner';
-
-interface RegisterForm {
-    name: string;
-    surname: string;
-    birthdate: string;
-    cpf: string;
-    role: string;
-    education: string;
-    motherName: string;
-    email: string;
-}
-
-const form = ref<RegisterForm>({
-    name: '',
-    surname: '',
-    birthdate: '',
-    cpf: '',
-    role: '',
-    education: '',
-    motherName: '',
-    email: '',
-});
-
-const onSubmit = () => {
-    console.log('Dados do formulário:', form.value);
-
-    toast('Cadastro realizado com sucesso!', {
-        description: `Bem-vindo(a), ${form.value.name}!`,
-    });
-
-    // Limpar formulário
-    form.value = {
-        name: '',
-        surname: '',
-        birthdate: '',
-        cpf: '',
-        role: '',
-        education: '',
-        motherName: '',
-        email: '',
-    };
-};
-</script>
