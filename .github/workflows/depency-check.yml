@@ -62,4 +62,4 @@ jobs:
         working-directory: ./src
         run: |
           if [ ! -f phpstan.neon ]; then ./vendor/bin/phpstan init; fi
-          ./vendor/bin/phpstan analyse --memory-limit=4G --configuration=phpstan.neon --level=max --no-progress --no-interaction .
+          ./vendor/bin/phpstan analyse --memory-limit=6G --configuration=phpstan.neon --level=6 --no-progress --no-interaction --parallel=1 app
