@@ -85,9 +85,6 @@ interface RegisterForm {
   email: string
 }
 
-escape('teste');
-
-
 const form = ref<RegisterForm>({
   name: '',
   surname: '',
