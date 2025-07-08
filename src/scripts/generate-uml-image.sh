@@ -13,21 +13,11 @@ fi
 
 echo "Gerando imagem PNG do diagrama UML..."
 
-# Lê o conteúdo do arquivo PlantUML
-PUML_CONTENT=$(cat "$PUML_FILE")
-
-# Codifica o conteúdo em base64 para a URL do PlantUML
-ENCODED=$(echo -n "$PUML_CONTENT" | base64 | tr -d '\n')
-
-# URL do serviço PlantUML
-PLANTUML_URL="http://www.plantuml.com/plantuml/png/$ENCODED"
-
-# Baixa a imagem
-OUTPUT_FILE="$OUTPUT_DIR/domain-models.png"
-curl -s "$PLANTUML_URL" -o "$OUTPUT_FILE"
+# Usa o script Python que implementa a codificação correta
+python3 scripts/generate_uml_image.py "$PUML_FILE"
 
 if [ $? -eq 0 ]; then
-    echo "Imagem gerada com sucesso: $OUTPUT_FILE"
+    echo "Imagem gerada com sucesso!"
 else
     echo "Erro ao gerar a imagem."
     exit 1

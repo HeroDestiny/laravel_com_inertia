@@ -55,8 +55,17 @@ class GenerateUmlDiagram extends Command
 
         $this->info("UML diagram generated successfully!");
         $this->info("PlantUML file: {$pumlFile}");
-        $this->info("To generate PNG, use: java -jar plantuml.jar {$pumlFile}");
-        $this->info("Or visit: http://www.plantuml.com/plantuml/uml/ and paste the content");
+
+        $this->line('');
+        $this->info('📋 Next steps:');
+        $this->info('  • Generate PNG: npm run docs:uml');
+        $this->info('  • View online: http://www.plantuml.com/plantuml/uml/');
+        $this->info('  • Edit diagram: ' . $pumlFile);
+
+        $this->line('');
+        $this->info("🎯 Found " . count($models) . " model(s): " . implode(', ', array_map(function ($class) {
+            return (new ReflectionClass($class))->getShortName();
+        }, $models)));
 
         return Command::SUCCESS;
     }
@@ -77,7 +86,7 @@ class GenerateUmlDiagram extends Command
 
         foreach ($files as $file) {
             $className = 'App\\Models\\' . $file->getFilenameWithoutExtension();
-            
+
             if (class_exists($className)) {
                 $models[] = $className;
             }
@@ -152,7 +161,7 @@ class GenerateUmlDiagram extends Command
     private function getClassProperties(ReflectionClass $reflection): array
     {
         $properties = [];
-        
+
         // Get fillable properties from Laravel model
         if ($reflection->hasProperty('fillable')) {
             try {
@@ -186,9 +195,11 @@ class GenerateUmlDiagram extends Command
 
         foreach ($publicMethods as $method) {
             // Skip magic methods and Laravel framework methods
-            if ($method->isConstructor() || 
+            if (
+                $method->isConstructor() ||
                 strpos($method->getName(), '__') === 0 ||
-                $method->getDeclaringClass()->getName() !== $reflection->getName()) {
+                $method->getDeclaringClass()->getName() !== $reflection->getName()
+            ) {
                 continue;
             }
 
@@ -205,9 +216,9 @@ class GenerateUmlDiagram extends Command
     private function generateRelationships(array $models): string
     {
         $content = "\n' Relationships\n";
-        
+
         // Simple example - you can enhance this based on your actual relationships
-        $modelNames = array_map(function($class) {
+        $modelNames = array_map(function ($class) {
             return (new ReflectionClass($class))->getShortName();
         }, $models);
 

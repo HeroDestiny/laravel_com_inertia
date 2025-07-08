@@ -294,3 +294,20 @@ services:
 - **Mantenha** o DevContainer para desenvolvimento
 - **Adicione** Docker quando precisar de deploy profissional
 - **Use** Laravel Sail se quiser experimentar Docker localmente
+
+## 📚 Documentação
+
+A documentação completa do projeto está organizada na pasta [`docs/`](./docs/):
+
+- **[📖 Documentação Completa](./docs/README.md)** - Índice geral da documentação
+- **[🚀 Setup](./docs/setup/)** - Configuração inicial
+- **[💻 Development](./docs/development/)** - Guias de desenvolvimento
+- **[🚢 Deployment](./docs/deployment/)** - Deploy e produção
+- **[🗄️ Migrations](./docs/migrations/)** - Migrações de banco de dados
+
+### 🔗 Links Rápidos
+
+- [🐳 Development Container](./docs/development/DEVCONTAINER.md)
+- [🎨 Diagramas UML](./docs/development/UML_DIAGRAMS.md)
+- [🐳 Docker Setup](./docs/deployment/DOCKER.md)
+- [🐘 PostgreSQL Migration](./docs/migrations/POSTGRESQL_MIGRATION.md)
