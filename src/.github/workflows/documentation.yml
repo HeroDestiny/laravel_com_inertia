@@ -1,0 +1,85 @@
+name: Documentation
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.4
+          tools: composer:v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copy Environment File
+        run: cp .env.example .env
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Create UML Directory
+        run: mkdir -p storage/uml
+
+      - name: Generate UML Class Diagram
+        run: |
+          php artisan generate:uml
+          python3 scripts/generate_uml_image.py
+
+      - name: Upload UML Documentation
+        uses: actions/upload-artifact@v4
+        with:
+          name: uml-documentation
+          path: |
+            storage/uml/domain-models.puml
+            storage/uml/domain-models.png
+          retention-days: 30
+
+      - name: Comment PR with UML Diagram
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Verifica se a imagem foi gerada
+            const imagePath = 'storage/uml/domain-models.png';
+            if (fs.existsSync(imagePath)) {
+              const comment = `## 📊 Diagrama UML das Classes de Domínio
+              
+              O diagrama das classes de domínio foi atualizado. Você pode baixar os arquivos nos artifacts desta execução do workflow.
+              
+              ### Arquivos gerados:
+              - \`domain-models.puml\` - Código fonte PlantUML
+              - \`domain-models.png\` - Diagrama em formato PNG
+              
+              🔗 [Baixar artefatos](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }

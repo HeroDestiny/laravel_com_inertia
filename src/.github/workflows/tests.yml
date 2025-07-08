@@ -49,5 +49,18 @@ jobs:
       - name: Build Assets
         run: npm run build
 
+      - name: Generate UML Diagram
+        run: |
+          php artisan generate:uml
+          python3 scripts/generate_uml_image.py
+
+      - name: Upload UML Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: uml-diagrams
+          path: |
+            storage/uml/domain-models.puml
+            storage/uml/domain-models.png
+
       - name: Tests
         run: ./vendor/bin/phpunit

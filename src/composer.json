@@ -16,7 +16,10 @@
         "tightenco/ziggy": "^2.4"
     },
     "require-dev": {
+        "bartlett/php-reflect": "^1.9",
+        "cebe/php-openapi": "^1.8",
         "fakerphp/faker": "^1.23",
+        "jawira/plantuml": "^1.2025",
         "larastan/larastan": "^3.0",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.22",
@@ -63,6 +66,10 @@
             "npm run build:ssr",
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"php artisan inertia:start-ssr\" --names=server,queue,logs,ssr"
+        ],
+        "docs:uml": [
+            "@php artisan generate:uml",
+            "python3 scripts/generate_uml_image.py"
         ]
     },
     "extra": {
