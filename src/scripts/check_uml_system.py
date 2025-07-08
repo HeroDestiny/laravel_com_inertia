@@ -8,15 +8,12 @@ def check_uml_system():
     Script de diagnóstico para o sistema UML
     """
     print("🔍 Diagnóstico do Sistema UML\n")
-    
-    # Verifica arquivos necessários
+     # Verifica arquivos necessários
     files_to_check = [
         "storage/uml/domain-models.puml",
-        "storage/uml/domain-models.png",
-        "scripts/generate_uml_image_robust.py",
         "app/Console/Commands/GenerateUmlDiagram.php"
     ]
-    
+
     print("📁 Verificando arquivos:")
     for file in files_to_check:
         if os.path.exists(file):
@@ -24,38 +21,35 @@ def check_uml_system():
             print(f"   ✅ {file} ({size} bytes)")
         else:
             print(f"   ❌ {file} - FALTANDO!")
-    
-    # Verifica se a imagem PNG é válida
-    png_file = "storage/uml/domain-models.png"
-    if os.path.exists(png_file):
-        with open(png_file, 'rb') as f:
-            header = f.read(8)
-            if header.startswith(b'\x89PNG\r\n\x1a\n'):
-                print(f"   ✅ PNG válido")
+
+    # Verifica se o arquivo PUML é válido
+    puml_file = "storage/uml/domain-models.puml"
+    if os.path.exists(puml_file):
+        with open(puml_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+            if content.strip().startswith('@startuml') and content.strip().endswith('@enduml'):
+                print(f"   ✅ PlantUML válido")
             else:
-                print(f"   ❌ PNG inválido ou corrompido")
+                print(f"   ❌ PlantUML inválido (deve começar com @startuml e terminar com @enduml)")
     
-    # Testa conectividade com PlantUML
-    print("\n🌐 Testando conectividade:")
+    # Testa conectividade com PlantUML (opcional)
+    print("\n🌐 Testando conectividade (opcional para visualização online):")
     try:
         import urllib.request
         response = urllib.request.urlopen("http://www.plantuml.com/plantuml/", timeout=5)
         if response.status == 200:
             print("   ✅ PlantUML online acessível")
+            print("   💡 Você pode visualizar o diagrama em: http://www.plantuml.com/plantuml/uml/")
         else:
             print(f"   ⚠️  PlantUML retornou status {response.status}")
     except Exception as e:
         print(f"   ❌ Erro de conectividade: {e}")
+        print("   💡 Sem problema! Você ainda pode usar extensões locais do VS Code")
     
-    # Verifica dependências Python
-    print("\n🐍 Verificando dependências Python:")
-    required_modules = ['zlib', 'base64', 'urllib.request']
-    for module in required_modules:
-        try:
-            __import__(module)
-            print(f"   ✅ {module}")
-        except ImportError:
-            print(f"   ❌ {module} - FALTANDO!")
+    # Verifica dependências Python (não mais necessárias para geração de PNG)
+    print("\n🐍 Dependências Python (para scripts opcionais):")
+    print("   ℹ️  Não são mais necessárias para geração básica de UML")
+    print("   ℹ️  Arquivo .puml pode ser visualizado diretamente")
     
     # Lê e analisa o arquivo PUML
     puml_file = "storage/uml/domain-models.puml"
@@ -77,6 +71,25 @@ def check_uml_system():
                 print(f"      • {cls_name}")
     
     print("\n✅ Diagnóstico concluído!")
+    
+    # Verifica configuração npm
+    print("\n📦 Verificando configuração npm:")
+    if os.path.exists("package.json"):
+        with open("package.json", 'r') as f:
+            import json
+            try:
+                package_data = json.load(f)
+                scripts = package_data.get('scripts', {})
+                if 'docs:uml' in scripts:
+                    print(f"   ✅ npm run docs:uml: {scripts['docs:uml']}")
+                    print("   💡 Gera apenas arquivo .puml (sem PNG)")
+                else:
+                    print("   ❌ Script docs:uml não encontrado no package.json")
+            except:
+                print("   ❌ Erro ao ler package.json")
+    else:
+        print("   ❌ package.json não encontrado")
+    
     return True
 
 if __name__ == "__main__":

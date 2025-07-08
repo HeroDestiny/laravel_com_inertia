@@ -8,9 +8,10 @@
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
         "lint": "eslint . --fix",
-        "docs:uml": "php artisan generate:uml && python3 scripts/generate_uml_image_robust.py",
+        "docs:uml": "php artisan generate:uml",
         "docs:uml:watch": "npm run docs:uml && echo 'UML diagrams generated. Watching for changes...'",
-        "docs:uml:view": "echo 'UML Diagram: file://$(pwd)/storage/uml/domain-models.png'",
+        "docs:uml:view": "echo \"UML PlantUML file: $(pwd)/storage/uml/domain-models.puml\"",
+        "docs:uml:online": "echo 'View online: http://www.plantuml.com/plantuml/uml/'",
         "docs:uml:check": "python3 scripts/check_uml_system.py"
     },
     "devDependencies": {

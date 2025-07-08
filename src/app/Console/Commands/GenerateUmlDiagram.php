@@ -57,10 +57,11 @@ class GenerateUmlDiagram extends Command
         $this->info("PlantUML file: {$pumlFile}");
 
         $this->line('');
-        $this->info('📋 Next steps:');
-        $this->info('  • Generate PNG: npm run docs:uml');
-        $this->info('  • View online: http://www.plantuml.com/plantuml/uml/');
-        $this->info('  • Edit diagram: ' . $pumlFile);
+        $this->info('📋 How to view the diagram:');
+        $this->info('  • Online PlantUML: http://www.plantuml.com/plantuml/uml/');
+        $this->info('  • VS Code PlantUML extension: Ctrl+Alt+P');
+        $this->info('  • Copy content and paste in online editor');
+        $this->info('  • Edit source: ' . $pumlFile);
 
         $this->line('');
         $this->info("🎯 Found " . count($models) . " model(s): " . implode(', ', array_map(function ($class) {

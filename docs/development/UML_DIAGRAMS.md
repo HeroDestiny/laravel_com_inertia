@@ -192,6 +192,7 @@ npm run docs:uml:check
 ```
 
 **O que o diagnóstico verifica:**
+
 - ✅ Existência dos arquivos necessários
 - ✅ Validade da imagem PNG gerada
 - ✅ Conectividade com o PlantUML online
@@ -201,6 +202,7 @@ npm run docs:uml:check
 ### ✅ Problema: "Bad URL" do PlantUML
 
 **Status**: ✅ **RESOLVIDO**
+
 - Sistema agora usa múltiplos métodos de codificação
 - Fallback automático entre DEFLATE, HEX e Base64
 - Validação automática de PNG gerado
@@ -208,6 +210,7 @@ npm run docs:uml:check
 ### ✅ Problema: Imagem corrompida
 
 **Status**: ✅ **RESOLVIDO**
+
 - Script verifica se arquivo é PNG válido
 - Testa conectividade antes de gerar
 - Múltiplos métodos de encoding como backup
@@ -215,22 +218,26 @@ npm run docs:uml:check
 ### 🔧 Problemas Conhecidos e Soluções
 
 **1. Arquivo .puml não encontrado**
+
 ```bash
 cd src/
 php artisan generate:uml
 ```
 
 **2. Modelos não aparecem**
+
 - Verificar se estão em `app/Models/`
 - Testar com `php artisan tinker`
 
 **3. Python não encontrado**
+
 ```bash
 python3 --version
 # Se necessário: sudo apt install python3
 ```
 
 **4. Conectividade com PlantUML**
+
 ```bash
 # Testar acesso manual
 curl -I http://www.plantuml.com/plantuml/
