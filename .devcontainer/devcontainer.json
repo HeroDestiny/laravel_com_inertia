@@ -18,8 +18,18 @@
       "version": "latest"
     },
 
-    // Vue CLI (opcional com Vite, mas útil para scaffolding)
-    "ghcr.io/devcontainers-extra/features/vue-cli:2": {}
+    // Python para scripts de documentação UML
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+
+    // PostgreSQL para banco de dados
+    "ghcr.io/devcontainers/features/postgres:1": {
+      "version": "16",
+      "initDbName": "laravel_inertia",
+      "initDbUsername": "laravel_user",
+      "initDbPassword": "laravel_password"
+    }
   },
 
   "customizations": {
@@ -38,8 +48,17 @@
         "dbaeumer.vscode-eslint",
         "bradlc.vscode-tailwindcss",
 
-        // AI
-        "GitHub.copilot"
+        // TypeScript
+        "ms-vscode.vscode-typescript-next",
+
+        // Análise de código
+        "phpstan.phpstan",
+        "getpsalm.psalm-vscode-plugin",
+
+        // AI e produtividade
+        "GitHub.copilot",
+        "ms-vscode.vscode-json",
+        "redhat.vscode-yaml"
       ],
       "settings": {
         // PHP
@@ -51,29 +70,43 @@
           "*.blade.php"
         ],
 
+        // PHPStan
+        "phpstan.enabled": true,
+        "phpstan.configFile": "./phpstan.neon",
+
         // Formatação
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
-          "source.fixAll.eslint": "always"
+          "source.fixAll.eslint": "always",
+          "source.organizeImports": "explicit"
         },
 
         // Prettier
         "prettier.singleQuote": true,
         "prettier.semi": false,
+        "prettier.configPath": "./.prettierrc",
 
         // Tailwind
         "tailwindCSS.includeLanguages": {
           "vue": "html",
           "vue-html": "html"
         },
+        "tailwindCSS.experimental.configFile": "./tailwind.config.js",
 
         // ESLint
         "eslint.validate": ["vue", "typescript", "javascript"],
+        "eslint.workingDirectories": ["src"],
+
+        // TypeScript
+        "typescript.preferences.importModuleSpecifier": "relative",
+        "typescript.suggest.autoImports": true,
 
         // Editor UX
         "editor.tabSize": 2,
         "editor.bracketPairColorization.enabled": true,
         "editor.guides.bracketPairs": true,
+        "editor.minimap.enabled": false,
+        "explorer.compactFolders": false,
 
         // Formatadores específicos
         "[vue]": {
@@ -82,24 +115,61 @@
         "[typescript]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
         },
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
         "[php]": {
           "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
-        }
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+
+        // Terminal
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.cwd": "${workspaceFolder}/src"
       }
     }
   },
 
-  // Portas padrão do Laravel e Vite
-  "forwardPorts": [8000, 5173, 24678],
+  // Portas padrão do Laravel, Vite, Xdebug e PostgreSQL
+  "forwardPorts": [8000, 5173, 9000, 5432, 24678],
+  "portsAttributes": {
+    "8000": {
+      "label": "Laravel App",
+      "onAutoForward": "notify"
+    },
+    "5173": {
+      "label": "Vite Dev Server",
+      "onAutoForward": "openBrowser"
+    },
+    "9000": {
+      "label": "Xdebug",
+      "onAutoForward": "silent"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    }
+  },
 
-  // Comando de pós-instalação para preparar Laravel
-  "postCreateCommand": "cd src && composer install && npm install && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan migrate --force",
+  // Comando de pós-instalação otimizado para PostgreSQL
+  "postCreateCommand": "cd src && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan migrate --force && php artisan config:cache && python3 -m pip install plantuml",
 
-  // Mounts para cache de dependências (evita reinstalações completas)
+  // Mounts otimizados para cache de dependências
   "mounts": [
     "source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
-    "source=laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume"
+    "source=laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume",
+    "source=laravel-storage-cache,target=${containerWorkspaceFolder}/src/storage/framework/cache,type=volume"
   ],
+
+  // Variáveis de ambiente
+  "containerEnv": {
+    "XDEBUG_MODE": "debug",
+    "XDEBUG_START_WITH_REQUEST": "yes",
+    "XDEBUG_CLIENT_HOST": "host.docker.internal",
+    "XDEBUG_CLIENT_PORT": "9000"
+  },
 
   // Garante ambiente não-root e compatível com VS Code
   "remoteUser": "vscode"

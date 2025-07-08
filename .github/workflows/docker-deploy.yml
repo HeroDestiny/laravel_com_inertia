@@ -1,0 +1,118 @@
+# GitHub Actions workflow para CI/CD com Docker
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:        php-version: '8.2'
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_pgsql
+        coverage: xdebug
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: laravel_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: src/package-lock.json
+
+      - name: Install PHP dependencies
+        working-directory: ./src
+        run: composer install --prefer-dist --no-progress    - name: Install Node dependencies
+      working-directory: ./src
+      run: npm ci
+    
+    - name: Setup test database
+      working-directory: ./src
+      run: |
+        cp .env.example .env
+        sed -i 's/DB_CONNECTION=pgsql/DB_CONNECTION=pgsql/' .env
+        sed -i 's/DB_HOST=127.0.0.1/DB_HOST=127.0.0.1/' .env
+        sed -i 's/DB_PORT=5432/DB_PORT=5432/' .env
+        sed -i 's/DB_DATABASE=laravel_inertia/DB_DATABASE=laravel_test/' .env
+        sed -i 's/DB_USERNAME=laravel_user/DB_USERNAME=postgres/' .env
+        sed -i 's/DB_PASSWORD=laravel_password/DB_PASSWORD=postgres/' .env
+
+    - name: Generate key
+      working-directory: ./src
+      run: php artisan key:generate
+
+      - name: Run migrations
+        working-directory: ./src
+        run: php artisan migrate --force
+
+      - name: Build assets
+        working-directory: ./src
+        run: npm run build
+
+      - name: Run tests
+        working-directory: ./src
+        run: php artisan test
+
+      - name: Run static analysis
+        working-directory: ./src
+        run: |
+          vendor/bin/phpstan analyse --memory-limit=2G
+          vendor/bin/psalm
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -f docker/production/Dockerfile -t ${{ secrets.DOCKER_REGISTRY }}/laravel-inertia:latest .
+          docker build -f docker/production/Dockerfile -t ${{ secrets.DOCKER_REGISTRY }}/laravel-inertia:${{ github.sha }} .
+
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_REGISTRY }}/laravel-inertia:latest
+          docker push ${{ secrets.DOCKER_REGISTRY }}/laravel-inertia:${{ github.sha }}
+
+      - name: Deploy to production
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd /path/to/your/app
+            docker-compose pull
+            docker-compose up -d
+            docker system prune -f
