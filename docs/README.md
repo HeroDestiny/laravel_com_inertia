@@ -15,11 +15,19 @@ Documentação para desenvolvedores:
 - [🐳 Development Container](./development/DEVCONTAINER.md) - Configuração do ambiente de desenvolvimento
 - [🎨 Diagramas UML](./development/UML_DIAGRAMS.md) - Geração automática de diagramas UML
 
+### 🔒 Segurança
+
+- [🛡️ Análise de Segurança](./SECURITY_ANALYSIS.md) - Análise OWASP Top 10 e recomendações
+
 ### 🚢 [Deployment](./deployment/)
 
 Documentação sobre deploy e produção:
 
 - [🐳 Docker Setup](./deployment/DOCKER.md) - Configuração Docker para produção
+
+### 🔄 CI/CD
+
+- [🚀 GitHub Actions](../.github/workflows/README.md) - Workflows otimizados de CI/CD
 
 ### 🗄️ [Migrations](./migrations/)
 

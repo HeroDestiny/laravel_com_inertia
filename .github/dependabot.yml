@@ -1,23 +1,63 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for more information:
+# 🤖 Configuração otimizada do Dependabot
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
-# https://containers.dev/guide/dependabot
 
 version: 2
 updates:
-  # Backend (Laravel) - usa Composer
-  - package-ecosystem: "composer"
-    directory: "/src"
-    target-branch: "main"
+  # Dependências PHP (Composer)
+  - package-ecosystem: 'composer'
+    directory: '/src'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     open-pull-requests-limit: 5
+    reviewers:
+      - 'your-username' # Substitua pelo seu username
+    commit-message:
+      prefix: '🔧'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'php'
+    allow:
+      - dependency-type: 'direct:production'
+        update-type: 'version-update:semver-patch'
+      - dependency-type: 'direct:development'
+        update-type: 'version-update:semver-minor'
 
-  # Frontend (Vue/Inertia) - usa npm ou yarn
-  - package-ecosystem: "npm"
-    directory: "/src"
-    target-branch: "main"
+  # Dependências JavaScript (NPM)
+  - package-ecosystem: 'npm'
+    directory: '/src'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
     open-pull-requests-limit: 5
+    reviewers:
+      - 'your-username' # Substitua pelo seu username
+    commit-message:
+      prefix: '📦'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'javascript'
+    ignore:
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'vite'
+        update-types: ['version-update:semver-major']
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '09:00'
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: '🔄'
+      include: 'scope'
+    labels:
+      - 'dependencies'
+      - 'github-actions'

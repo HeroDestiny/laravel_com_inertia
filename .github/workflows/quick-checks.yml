@@ -1,0 +1,106 @@
+# 🔧 Workflow rápido para desenvolvimento
+name: Quick Checks
+
+on:
+  push:
+    branches: [develop, feature/*]
+  pull_request:
+    branches: [develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.4'
+  NODE_VERSION: '22'
+  WORKING_DIR: src
+
+jobs:
+  quick-check:
+    name: ⚡ Quick Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Detect changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            php:
+              - 'src/**/*.php'
+            js:
+              - 'src/**/*.{js,ts,vue}'
+            config:
+              - 'src/composer.{json,lock}'
+              - 'src/package*.json'
+
+      - name: 🐘 Setup PHP
+        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.config == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+          coverage: none
+
+      - name: 🎯 Setup Node.js
+        if: steps.changes.outputs.js == 'true' || steps.changes.outputs.config == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: 📦 Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.WORKING_DIR }}/vendor
+            ${{ env.WORKING_DIR }}/node_modules
+          key: deps-${{ runner.os }}-${{ hashFiles('src/composer.lock', 'src/package-lock.json') }}
+          restore-keys: deps-${{ runner.os }}-
+
+      - name: 📦 Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          if [ "${{ steps.changes.outputs.php }}" == "true" ] || [ "${{ steps.changes.outputs.config }}" == "true" ]; then
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+          fi
+          if [ "${{ steps.changes.outputs.js }}" == "true" ] || [ "${{ steps.changes.outputs.config }}" == "true" ]; then
+            npm ci
+          fi
+
+      - name: 🎨 Check code style
+        if: steps.changes.outputs.php == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: vendor/bin/pint --test
+
+      - name: 🔍 Static analysis
+        if: steps.changes.outputs.php == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+      - name: 🎨 Frontend checks
+        if: steps.changes.outputs.js == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          npm run lint
+          npm run type-check
+
+      - name: 🧪 Quick tests
+        if: steps.changes.outputs.php == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan test --parallel --stop-on-failure
+
+      - name: 📊 Build check
+        if: steps.changes.outputs.js == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm run build
