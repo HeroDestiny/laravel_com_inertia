@@ -1,13 +1,13 @@
-# 💻 Development - Documentação para Desenvolvedores
+# Development - Documentação para Desenvolvedores
 
 Esta pasta contém documentos relacionados ao processo de desenvolvimento.
 
-## 📋 Documentos Disponíveis
+## Documentos Disponíveis
 
-- [🐳 **DEVCONTAINER.md**](./DEVCONTAINER.md) - Configuração e uso do Development Container
-- [🎨 **UML_DIAGRAMS.md**](./UML_DIAGRAMS.md) - Geração automática de diagramas UML das classes
+- [**DEVCONTAINER.md**](./DEVCONTAINER.md) - Configuração e uso do Development Container
+- [**UML_DIAGRAMS.md**](./UML_DIAGRAMS.md) - Geração automática de diagramas UML das classes
 
-## 🎯 Próximos Documentos
+## Próximos Documentos
 
 Documentos que poderiam ser adicionados aqui:
 

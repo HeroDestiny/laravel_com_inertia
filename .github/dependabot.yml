@@ -1,4 +1,4 @@
-# 🤖 Configuração otimizada do Dependabot
+# Configuração otimizada do Dependabot
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
@@ -12,9 +12,9 @@ updates:
       time: '09:00'
     open-pull-requests-limit: 5
     reviewers:
-      - 'your-username' # Substitua pelo seu username
+      - 'HeroDestiny'
     commit-message:
-      prefix: '🔧'
+      prefix: 'deps'
       include: 'scope'
     labels:
       - 'dependencies'
@@ -36,7 +36,7 @@ updates:
     reviewers:
       - 'your-username' # Substitua pelo seu username
     commit-message:
-      prefix: '📦'
+      prefix: 'deps'
       include: 'scope'
     labels:
       - 'dependencies'
@@ -56,7 +56,7 @@ updates:
       time: '09:00'
     open-pull-requests-limit: 3
     commit-message:
-      prefix: '🔄'
+      prefix: 'ci'
       include: 'scope'
     labels:
       - 'dependencies'

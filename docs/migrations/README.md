@@ -1,12 +1,12 @@
-# 🗄️ Migrations - Migrações e Mudanças de Banco
+# Migrations - Migrações e Mudanças de Banco
 
 Esta pasta contém documentos relacionados a migrações de banco de dados e mudanças estruturais.
 
-## 📋 Documentos Disponíveis
+## Documentos Disponíveis
 
-- [🐘 **POSTGRESQL_MIGRATION.md**](./POSTGRESQL_MIGRATION.md) - Migração completa de SQLite para PostgreSQL
+- [**POSTGRESQL_MIGRATION.md**](./POSTGRESQL_MIGRATION.md) - Migração completa de SQLite para PostgreSQL
 
-## 🎯 Próximos Documentos
+## Próximos Documentos
 
 Documentos que poderiam ser adicionados aqui:
 

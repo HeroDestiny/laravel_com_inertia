@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: laravel_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: laravel_inertia
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: laravel_password
+      POSTGRES_ROOT_PASSWORD: root_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - laravel_network
+
+  # Opcional: pgAdmin para administrar o banco
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: laravel_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@laravel.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "8080:80"
+    depends_on:
+      - postgres
+    networks:
+      - laravel_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  laravel_network:
+    driver: bridge

@@ -1,45 +1,45 @@
-# 🐘 Migração SQLite → PostgreSQL
+# Migração SQLite → PostgreSQL
 
-## ✅ **Migração Concluída**
+## **Migração Concluída**
 
 Seu projeto foi migrado com sucesso de SQLite para PostgreSQL. Todas as configurações foram atualizadas.
 
-### 🔧 **Alterações Realizadas:**
+### **Alterações Realizadas:**
 
 #### **1. Configurações Laravel**
 
-- ✅ `config/database.php` - Padrão alterado para PostgreSQL
-- ✅ `.env` e `.env.example` - Configurações do PostgreSQL
-- ✅ Adicionado `doctrine/dbal` para melhor suporte
+- `config/database.php` - Padrão alterado para PostgreSQL
+- `.env` e `.env.example` - Configurações do PostgreSQL
+- Adicionado `doctrine/dbal` para melhor suporte
 
 #### **2. DevContainer**
 
-- ✅ PostgreSQL 16 adicionado ao devcontainer
-- ✅ Banco `laravel_inertia` criado automaticamente
-- ✅ Usuário `laravel_user` configurado
-- ✅ Porta 5432 exposta
+- PostgreSQL 16 adicionado ao devcontainer
+- Banco `laravel_inertia` criado automaticamente
+- Usuário `laravel_user` configurado
+- Porta 5432 exposta
 
 #### **3. Docker (Desenvolvimento)**
 
-- ✅ Laravel Sail configurado para PostgreSQL
-- ✅ Serviço PostgreSQL adicionado
-- ✅ Health checks configurados
-- ✅ Volumes persistentes
+- Laravel Sail configurado para PostgreSQL
+- Serviço PostgreSQL adicionado
+- Health checks configurados
+- Volumes persistentes
 
 #### **4. Docker (Produção)**
 
-- ✅ Dockerfile atualizado para `pdo_pgsql`
-- ✅ PostgreSQL 16 Alpine no docker-compose
-- ✅ Script de inicialização com aguardo do DB
-- ✅ Variáveis de ambiente configuradas
+- Dockerfile atualizado para `pdo_pgsql`
+- PostgreSQL 16 Alpine no docker-compose
+- Script de inicialização com aguardo do DB
+- Variáveis de ambiente configuradas
 
 #### **5. CI/CD**
 
-- ✅ GitHub Actions com PostgreSQL de teste
-- ✅ Extensões PHP atualizadas
-- ✅ Configuração automática de test database
+- GitHub Actions com PostgreSQL de teste
+- Extensões PHP atualizadas
+- Configuração automática de test database
 
-### 🚀 **Como Usar:**
+### **Como Usar:**
 
 #### **Desenvolvimento (DevContainer)**
 
@@ -66,7 +66,7 @@ cd docker/production
 docker-compose up -d
 ```
 
-### 🔍 **Verificar Conexão:**
+### **Verificar Conexão:**
 
 ```bash
 # Testar conexão
@@ -75,7 +75,7 @@ php artisan tinker
 > DB::select('SELECT version()');
 ```
 
-### 📊 **Configurações do Banco:**
+### **Configurações do Banco:**
 
 **Desenvolvimento:**
 
@@ -93,14 +93,14 @@ php artisan tinker
 - Username: `${DB_USERNAME}`
 - Password: `${DB_PASSWORD}`
 
-### ⚠️ **Importantes:**
+### **Importantes:**
 
 1. **Dados Existentes**: Se você tinha dados no SQLite, precisará migrar manualmente
 2. **Tipos de Dados**: PostgreSQL é mais rígido que SQLite com tipos
 3. **Performance**: PostgreSQL é mais performático para aplicações complexas
 4. **Backup**: Sempre faça backup antes de executar migrações
 
-### 🔄 **Próximos Passos:**
+### **Próximos Passos:**
 
 1. Execute as migrações: `php artisan migrate`
 2. Se tiver seeders: `php artisan db:seed`
@@ -108,7 +108,7 @@ php artisan tinker
 4. Configure backup automático do PostgreSQL
 5. Monitore performance e queries
 
-### 🛠️ **Troubleshooting:**
+### **Troubleshooting:**
 
 **Erro de Conexão:**
 
@@ -129,14 +129,14 @@ php artisan cache:clear
 php artisan migrate:fresh
 ```
 
-### 🎯 **Benefícios Obtidos:**
+### **Benefícios Obtidos:**
 
-- ✅ **Performance superior** para queries complexas
-- ✅ **ACID compliance** completo
-- ✅ **Tipos de dados avançados** (JSON, Array, etc.)
-- ✅ **Índices sofisticados** (GIN, GiST, etc.)
-- ✅ **Extensões poderosas** (UUID, Full-text search)
-- ✅ **Escalabilidade** para aplicações grandes
-- ✅ **Backup e replicação** profissionais
+- **Performance superior** para queries complexas
+- **ACID compliance** completo
+- **Tipos de dados avançados** (JSON, Array, etc.)
+- **Índices sofisticados** (GIN, GiST, etc.)
+- **Extensões poderosas** (UUID, Full-text search)
+- **Escalabilidade** para aplicações grandes
+- **Backup e replicação** profissionais
 
-**Sua aplicação agora está pronta para escalar! 🚀**
+**Sua aplicação agora está pronta para escalar!**

@@ -1,41 +1,41 @@
-# 📚 Documentação do Projeto
+# Documentação do Projeto
 
 Este diretório contém toda a documentação técnica e de desenvolvimento do projeto Laravel com Inertia.js e Vue.
 
-## 📁 Estrutura da Documentação
+## Estrutura da Documentação
 
-### 🚀 [Setup](./setup/)
+### [Setup](./setup/)
 
 Documentos relacionados à configuração inicial do projeto.
 
-### 💻 [Development](./development/)
+### [Development](./development/)
 
 Documentação para desenvolvedores:
 
-- [🐳 Development Container](./development/DEVCONTAINER.md) - Configuração do ambiente de desenvolvimento
-- [🎨 Diagramas UML](./development/UML_DIAGRAMS.md) - Geração automática de diagramas UML
+- [Development Container](./development/DEVCONTAINER.md) - Configuração do ambiente de desenvolvimento
+- [Diagramas UML](./development/UML_DIAGRAMS.md) - Geração automática de diagramas UML
 
-### 🔒 Segurança
+### Segurança
 
-- [🛡️ Análise de Segurança](./SECURITY_ANALYSIS.md) - Análise OWASP Top 10 e recomendações
+- [Análise de Segurança](./SECURITY_ANALYSIS.md) - Análise OWASP Top 10 e recomendações
 
-### 🚢 [Deployment](./deployment/)
+### [Deployment](./deployment/)
 
 Documentação sobre deploy e produção:
 
-- [🐳 Docker Setup](./deployment/DOCKER.md) - Configuração Docker para produção
+- [Docker Setup](./deployment/DOCKER.md) - Configuração Docker para produção
 
-### 🔄 CI/CD
+### CI/CD
 
-- [🚀 GitHub Actions](../.github/workflows/README.md) - Workflows otimizados de CI/CD
+- [GitHub Actions](../.github/workflows/README.md) - Workflows otimizados de CI/CD
 
-### 🗄️ [Migrations](./migrations/)
+### [Migrations](./migrations/)
 
 Documentação sobre migrações e mudanças de banco de dados:
 
-- [🐘 PostgreSQL Migration](./migrations/POSTGRESQL_MIGRATION.md) - Migração de SQLite para PostgreSQL
+- [PostgreSQL Migration](./migrations/POSTGRESQL_MIGRATION.md) - Migração de SQLite para PostgreSQL
 
-## 🔗 Links Úteis
+## Links Úteis
 
 - [README Principal](../README.md) - Documentação principal do projeto
 - [Laravel Documentation](https://laravel.com/docs)

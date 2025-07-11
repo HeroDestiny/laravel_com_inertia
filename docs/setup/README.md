@@ -1,12 +1,12 @@
-# 🚀 Setup - Configuração do Projeto
+# Setup - Configuração do Projeto
 
 Esta pasta contém documentos relacionados à configuração inicial e setup do projeto.
 
-## 📋 Documentos Disponíveis
+## Documentos Disponíveis
 
 _Esta seção será atualizada conforme novos documentos de setup forem adicionados._
 
-## 🎯 Próximos Documentos
+## Próximos Documentos
 
 Documentos que poderiam ser adicionados aqui:
 

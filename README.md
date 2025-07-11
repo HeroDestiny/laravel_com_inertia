@@ -1,8 +1,8 @@
-# 🚀 Laravel com Inertia.js
+# Laravel com Inertia.js
 
 Aplicação moderna desenvolvida com Laravel e Inertia.js, utilizando Vue.js 3, TypeScript e Tailwind CSS.
 
-## ⚡ Início Rápido
+## Início Rápido
 
 ### Pré-requisitos
 
@@ -36,31 +36,31 @@ php artisan serve
 npm run dev
 ```
 
-## 🛠️ Tecnologias
+## Tecnologias
 
 - **Backend**: Laravel 11
 - **Frontend**: Inertia.js + Vue.js 3 + TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Desenvolvimento**: DevContainer + Xdebug
 
-## 📚 Documentação
+## Documentação
 
 A documentação completa está disponível em [`docs/`](./docs/):
 
-- **[📖 Documentação Completa](./docs/README.md)** - Índice geral da documentação
-- **[🚀 Setup](./docs/setup/)** - Configuração inicial
-- **[💻 Development](./docs/development/)** - Guias de desenvolvimento
-- **[🚢 Deployment](./docs/deployment/)** - Deploy e produção
-- **[🔒 Análise de Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
+- **[Documentação Completa](./docs/README.md)** - Índice geral da documentação
+- **[Setup](./docs/setup/)** - Configuração inicial
+- **[Development](./docs/development/)** - Guias de desenvolvimento
+- **[Deployment](./docs/deployment/)** - Deploy e produção
+- **[Análise de Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
 
-### 🔗 Links Rápidos
+### Links Rápidos
 
-- [🐳 Development Container](./docs/development/DEVCONTAINER.md)
-- [🎨 Diagramas UML](./docs/development/UML_DIAGRAMS.md)
-- [🐳 Docker Setup](./docs/deployment/DOCKER.md)
-- [🐘 PostgreSQL Migration](./docs/migrations/POSTGRESQL_MIGRATION.md)
+- [Development Container](./docs/development/DEVCONTAINER.md)
+- [Diagramas UML](./docs/development/UML_DIAGRAMS.md)
+- [Docker Setup](./docs/deployment/DOCKER.md)
+- [PostgreSQL Migration](./docs/migrations/POSTGRESQL_MIGRATION.md)
 
-## 🧪 Comandos Úteis
+## Comandos Úteis
 
 ```bash
 # Executar testes
@@ -76,7 +76,7 @@ npm run lint
 npm run build
 ```
 
-## 🤝 Contribuindo
+## Contribuindo
 
 1. Fork o projeto
 2. Crie sua branch de feature (`git checkout -b feature/AmazingFeature`)

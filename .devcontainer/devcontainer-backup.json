@@ -100,23 +100,6 @@
         "editor.minimap.enabled": false,
         "explorer.compactFolders": false,
 
-        // Formatadores específicos
-        "[vue]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[php]": {
-          "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
-        },
-        "[json]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-
         // Terminal
         "terminal.integrated.defaultProfile.linux": "bash",
         "terminal.integrated.cwd": "${workspaceFolder}/src"
@@ -141,8 +124,8 @@
     }
   },
 
-  // Comando de pós-instalação
-  "postCreateCommand": "cd src && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan config:cache && python3 -m pip install plantuml && echo 'DevContainer configurado! Use os scripts em ./scripts/ para gerenciar PostgreSQL'",
+  // Comando de pós-instalação sem PostgreSQL
+  "postCreateCommand": "cd src && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan config:cache && python3 -m pip install plantuml",
 
   // Mounts otimizados para cache de dependências
   "mounts": [
