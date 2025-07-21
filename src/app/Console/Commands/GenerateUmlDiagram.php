@@ -34,7 +34,7 @@ class GenerateUmlDiagram extends Command
         $fullOutputPath = base_path($outputPath);
 
         // Ensure output directory exists
-        if (!File::exists($fullOutputPath)) {
+        if (! File::exists($fullOutputPath)) {
             File::makeDirectory($fullOutputPath, 0755, true);
         }
 
@@ -43,6 +43,7 @@ class GenerateUmlDiagram extends Command
 
         if (empty($models)) {
             $this->warn('No model classes found in app/Models directory.');
+
             return Command::FAILURE;
         }
 
@@ -50,10 +51,10 @@ class GenerateUmlDiagram extends Command
         $umlContent = $this->generatePlantUmlContent($models);
 
         // Save PlantUML file
-        $pumlFile = $fullOutputPath . 'domain-models.puml';
+        $pumlFile = $fullOutputPath.'domain-models.puml';
         File::put($pumlFile, $umlContent);
 
-        $this->info("UML diagram generated successfully!");
+        $this->info('UML diagram generated successfully!');
         $this->info("PlantUML file: {$pumlFile}");
 
         $this->line('');
@@ -61,10 +62,10 @@ class GenerateUmlDiagram extends Command
         $this->info('  • Online PlantUML: http://www.plantuml.com/plantuml/uml/');
         $this->info('  • VS Code PlantUML extension: Ctrl+Alt+P');
         $this->info('  • Copy content and paste in online editor');
-        $this->info('  • Edit source: ' . $pumlFile);
+        $this->info('  • Edit source: '.$pumlFile);
 
         $this->line('');
-        $this->info("🎯 Found " . count($models) . " model(s): " . implode(', ', array_map(function ($class) {
+        $this->info('🎯 Found '.count($models).' model(s): '.implode(', ', array_map(function ($class) {
             return (new ReflectionClass($class))->getShortName();
         }, $models)));
 
@@ -79,14 +80,14 @@ class GenerateUmlDiagram extends Command
         $modelPath = app_path('Models');
         $models = [];
 
-        if (!File::exists($modelPath)) {
+        if (! File::exists($modelPath)) {
             return $models;
         }
 
         $files = File::files($modelPath);
 
         foreach ($files as $file) {
-            $className = 'App\\Models\\' . $file->getFilenameWithoutExtension();
+            $className = 'App\\Models\\'.$file->getFilenameWithoutExtension();
 
             if (class_exists($className)) {
                 $models[] = $className;
@@ -141,7 +142,7 @@ class GenerateUmlDiagram extends Command
             $content .= "  {$property}\n";
         }
 
-        if (!empty($properties)) {
+        if (! empty($properties)) {
             $content .= "  --\n";
         }
 
@@ -179,9 +180,9 @@ class GenerateUmlDiagram extends Command
         }
 
         // Add some common Laravel model properties
-        $properties[] = "+ id: int";
-        $properties[] = "+ created_at: timestamp";
-        $properties[] = "+ updated_at: timestamp";
+        $properties[] = '+ id: int';
+        $properties[] = '+ created_at: timestamp';
+        $properties[] = '+ updated_at: timestamp';
 
         return $properties;
     }
