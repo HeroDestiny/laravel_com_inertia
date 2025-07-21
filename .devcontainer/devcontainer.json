@@ -141,15 +141,18 @@
     }
   },
 
-  // Comando de pós-instalação
-  "postCreateCommand": "cd src && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan config:cache && python3 -m pip install plantuml && echo 'DevContainer configurado! Use os scripts em ./scripts/ para gerenciar PostgreSQL'",
-
-  // Mounts otimizados para cache de dependências
+  // Mounts otimizados para evitar conflitos de permissão
   "mounts": [
     "source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
     "source=laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume",
     "source=laravel-storage-cache,target=${containerWorkspaceFolder}/src/storage/framework/cache,type=volume"
   ],
+
+  // Script de inicialização para resolver permissões
+  "onCreateCommand": "sudo chown -R vscode:vscode /workspaces/laravel_com_inertia",
+
+  // Comando de pós-instalação simplificado
+  "postCreateCommand": "cd src && composer clear-cache && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan config:cache && python3 -m pip install plantuml && echo 'DevContainer configurado!'",
 
   // Variáveis de ambiente
   "containerEnv": {
