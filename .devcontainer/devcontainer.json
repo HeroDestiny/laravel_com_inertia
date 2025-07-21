@@ -1,21 +1,18 @@
 {
   "name": "Laravel Inertia Development",
 
-  // Usa imagem oficial otimizada para PHP + Composer
+  // Configuração principal: imagem única otimizada
   "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
+  
+  // Alternativa com PostgreSQL: descomente as linhas abaixo e comente a linha "image" acima
+  // "dockerComposeFile": "./docker-compose.postgres.yml",
+  // "service": "laravel-app",
+  // "workspaceFolder": "/workspaces/laravel_com_inertia",
 
   "features": {
-    // Composer já vem com a imagem base, mas mantido por clareza
-    "ghcr.io/devcontainers-extra/features/composer:1": {},
-
-    // Node LTS, ideal para projetos Vue + Vite
+    // Node LTS, ideal para projetos Vue + Vite  
     "ghcr.io/devcontainers/features/node:1": {
       "version": "lts"
-    },
-
-    // Git
-    "ghcr.io/devcontainers/features/git:1": {
-      "version": "latest"
     },
 
     // Python para scripts de documentação UML
