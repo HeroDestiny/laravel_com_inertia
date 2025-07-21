@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { usePage } from '@/composables/usePage';
+import { Link } from '@inertiajs/vue3';
 
 const page = usePage();
 const name = page.props.name;
