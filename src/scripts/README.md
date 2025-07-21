@@ -2,7 +2,7 @@
 
 Esta pasta contém apenas os scripts essenciais para geração de diagramas UML.
 
-## 📋 Fluxo Simplificado
+## Fluxo Simplificado
 
 1. **Gerar arquivo .puml:** `npm run docs:uml`
 2. **Visualizar online:** http://www.plantuml.com/plantuml/uml/
@@ -27,20 +27,20 @@ npm run docs:uml:online
 
 ## Como Visualizar
 
-### 🌐 Online (Recomendado)
+### Online (Recomendado)
 1. Acesse: http://www.plantuml.com/plantuml/uml/
 2. Copie conteúdo de `storage/uml/domain-models.puml`
 3. Cole na caixa de texto
 4. Veja o diagrama gerado automaticamente
 
-### 🔧 VS Code (Com Extensão)
+### VS Code (Com Extensão)
 1. Instale extensão "PlantUML"
 2. Abra arquivo `.puml`
 3. Use `Ctrl+Alt+P` para preview
 
 ## Arquivos Mantidos
 
-### `check_uml_system.py` ⭐ **ÚNICO SCRIPT**
+### `check_uml_system.py` - ÚNICO SCRIPT
 - Diagnóstico do sistema UML
 - Verifica arquivos e configuração
 - **Uso:** `python3 scripts/check_uml_system.py`
@@ -48,7 +48,7 @@ npm run docs:uml:online
 ### `README.md`
 - Este arquivo de documentação
 
-## Arquivos Removidos ❌
+## Arquivos Removidos
 
 Scripts de geração PNG foram removidos por serem desnecessários:
 - ~~`generate_uml_image_robust.py`~~
@@ -70,7 +70,7 @@ cat storage/uml/domain-models.puml
 
 ## Arquivos Principais
 
-### `generate_uml_image_robust.py` ⭐ **PRINCIPAL**
+### `generate_uml_image_robust.py` - PRINCIPAL
 
 - Script robusto para geração de imagens PNG
 - Testa múltiplos métodos de codificação e servidores

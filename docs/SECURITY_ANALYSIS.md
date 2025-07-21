@@ -1,8 +1,8 @@
-# 🔒 Análise de Segurança - OWASP Top 10
+# Análise de Segurança - OWASP Top 10
 
 Este documento contém uma análise detalhada de segurança baseada no OWASP Top 10 2021, identificando vulnerabilidades potenciais e suas respectivas soluções.
 
-## 🛡️ Vulnerabilidades Identificadas
+## Vulnerabilidades Identificadas
 
 ### 1. A05:2021 – Configuração Incorreta de Segurança
 
@@ -236,33 +236,33 @@ Este documento contém uma análise detalhada de segurança baseada no OWASP Top
 
   Para os testes e factories, manter `'password'` é geralmente aceitável pela conveniência, desde que as medidas de isolamento de ambiente sejam estritamente seguidas. Não há uma "correção" de código direta para isso que não complique os testes, mas é um risco de processo e configuração a ser gerenciado.
 
-## 🐳 Análise: Docker vs DevContainer
+## Análise: Docker vs DevContainer
 
-### 📊 **Situação Atual**
+### Situação Atual
 
 Este projeto utiliza **DevContainer** otimizado para desenvolvimento, oferecendo:
 
-- ✅ Ambiente padronizado e reproduzível
-- ✅ VS Code integrado com extensões
-- ✅ Debug PHP (Xdebug) configurado
-- ✅ Performance nativa no desenvolvimento
+- Ambiente padronizado e reproduzível
+- VS Code integrado com extensões
+- Debug PHP (Xdebug) configurado
+- Performance nativa no desenvolvimento
 
-### 🚀 **Quando Adicionar Docker**
+### Quando Adicionar Docker
 
-#### **✅ RECOMENDADO para:**
+#### RECOMENDADO para:
 
 1. **Deploy em Produção** - Garantir ambiente idêntico
 2. **CI/CD Pipeline** - Automação de testes e deploy
 3. **Equipes Grandes** - Padronização entre desenvolvedores
 4. **Microservices** - Separação de responsabilidades
 
-#### **❌ NÃO NECESSÁRIO para:**
+#### NÃO NECESSÁRIO para:
 
 1. **Desenvolvimento Local** - DevContainer já resolve
 2. **Projetos Pequenos** - Complexidade desnecessária
 3. **Deploy Tradicional** - Se usar hosting compartilhado
 
-### 🎯 **Estratégia Recomendada**
+### Estratégia Recomendada
 
 **Fase 1 - Atual (DevContainer)**
 
@@ -295,7 +295,7 @@ services:
   run: docker push myapp
 ```
 
-### 💡 **Conclusão**
+### Conclusão
 
 - **Mantenha** o DevContainer para desenvolvimento
 - **Adicione** Docker quando precisar de deploy profissional

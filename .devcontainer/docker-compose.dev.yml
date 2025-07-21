@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  laravel-app:
+    image: mcr.microsoft.com/devcontainers/php:1-8.2-bullseye
+    
+    volumes:
+      - ..:/workspaces/laravel_com_inertia:cached
+      - laravel-node-modules:/workspaces/laravel_com_inertia/src/node_modules
+      - laravel-vendor:/workspaces/laravel_com_inertia/src/vendor
+      - laravel-storage-cache:/workspaces/laravel_com_inertia/src/storage/framework/cache
+
+    environment:
+      - XDEBUG_MODE=debug
+      - XDEBUG_START_WITH_REQUEST=yes
+      - XDEBUG_CLIENT_HOST=host.docker.internal
+      - XDEBUG_CLIENT_PORT=9000
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=laravel_inertia
+      - DB_USERNAME=laravel_user
+      - DB_PASSWORD=laravel_password
+
+    depends_on:
+      - postgres
+
+    command: sleep infinity
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_DB: laravel_inertia
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: laravel_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+      
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      
+    ports:
+      - "5432:5432"
+
+volumes:
+  laravel-node-modules:
+  laravel-vendor:
+  laravel-storage-cache:
+  postgres-data:

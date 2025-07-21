@@ -1,12 +1,12 @@
-# 🚢 Deployment - Documentação de Deploy
+# Deployment - Documentação de Deploy
 
 Esta pasta contém documentos relacionados ao deploy e ambientes de produção.
 
-## 📋 Documentos Disponíveis
+## Documentos Disponíveis
 
-- [🐳 **DOCKER.md**](./DOCKER.md) - Configuração Docker para deploy em produção
+- [**DOCKER.md**](./DOCKER.md) - Configuração Docker para deploy em produção
 
-## 🎯 Próximos Documentos
+## Próximos Documentos
 
 Documentos que poderiam ser adicionados aqui:
 

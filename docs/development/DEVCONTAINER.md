@@ -2,7 +2,7 @@
 
 Este devcontainer está otimizado para desenvolvimento com Laravel, Inertia.js e Vue 3 + TypeScript.
 
-## 🚀 Recursos Incluídos
+## Recursos Incluídos
 
 ### Backend
 
@@ -25,14 +25,14 @@ Este devcontainer está otimizado para desenvolvimento com Laravel, Inertia.js e
 - **Git** para controle de versão
 - **VS Code** com extensões pré-configuradas
 
-## 📦 Extensões VS Code Incluídas
+## Extensões VS Code Incluídas
 
 - **PHP**: Intelephense, Laravel Blade, Laravel IntelliSense
 - **Frontend**: Vue.js (Volar), ESLint, Prettier, TailwindCSS
 - **Análise**: PHPStan, Psalm
 - **Produtividade**: GitHub Copilot
 
-## 🎯 Tarefas Pré-configuradas
+## Tarefas Pré-configuradas
 
 Execute via `Ctrl+Shift+P` → "Tasks: Run Task":
 
@@ -44,7 +44,7 @@ Execute via `Ctrl+Shift+P` → "Tasks: Run Task":
 - **Generate UML Docs** - Gera documentação UML
 - **Lint & Format** - Formata e verifica código
 
-## 🔧 Configuração Automática
+## Configuração Automática
 
 O devcontainer executa automaticamente:
 
@@ -54,7 +54,7 @@ O devcontainer executa automaticamente:
 4. Cache de configurações para performance
 5. Instalação do PlantUML para documentação
 
-## 🐛 Debug PHP
+## Debug PHP
 
 O Xdebug está pré-configurado:
 
@@ -64,20 +64,20 @@ O Xdebug está pré-configurado:
 
 Use `F5` para iniciar o debug ou a configuração "Listen for Xdebug".
 
-## 🌐 Portas Expostas
+## Portas Expostas
 
 - **8000**: Laravel Application
 - **5173**: Vite Dev Server
 - **9000**: Xdebug (debug)
 
-## 🚀 Início Rápido
+## Início Rápido
 
 1. Abra o projeto no VS Code com Dev Containers
 2. Aguarde a configuração automática
 3. Execute a tarefa "Dev Environment: Start All"
 4. Acesse http://localhost:8000
 
-## 💾 Volumes Persistentes
+## Volumes Persistentes
 
 Para evitar reinstalações:
 
@@ -85,7 +85,7 @@ Para evitar reinstalações:
 - `vendor` persistido em volume Docker
 - `storage/framework/cache` persistido em volume Docker
 
-## 🔄 Script de Setup Manual
+## Script de Setup Manual
 
 Se necessário, execute:
 
@@ -93,7 +93,7 @@ Se necessário, execute:
 /workspaces/laravel_com_inertia/scripts/setup-dev.sh
 ```
 
-## 📁 Estrutura de Arquivos
+## Estrutura de Arquivos
 
 ```
 ├── .devcontainer/

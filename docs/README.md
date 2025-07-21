@@ -42,18 +42,18 @@ Documentação sobre migrações e mudanças de banco de dados:
 - [Inertia.js Documentation](https://inertiajs.com/)
 - [Vue.js Documentation](https://vuejs.org/)
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Ao adicionar nova documentação:
 
 1. Coloque os arquivos na pasta apropriada
 2. Atualize este README.md se necessário
 3. Use nomes de arquivo descritivos em MAIÚSCULAS
-4. Inclua emojis para facilitar a navegação
+4. Use títulos claros para facilitar a navegação
 
-## 📝 Convenções
+## Convenções
 
 - **Nomes de arquivo**: `UPPER_CASE.md`
-- **Estrutura**: Use títulos com emojis
+- **Estrutura**: Use títulos claros
 - **Links**: Sempre relativos à estrutura do projeto
 - **Idioma**: Português brasileiro

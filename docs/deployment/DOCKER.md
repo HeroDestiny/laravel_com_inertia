@@ -2,14 +2,14 @@
 
 Este diretório contém configurações Docker para quando você quiser fazer deploy em produção ou configurar CI/CD.
 
-## 🎯 Quando Usar
+## Quando Usar
 
-- ✅ **Deploy em produção**
-- ✅ **CI/CD Pipeline**
-- ✅ **Ambientes de staging**
-- ❌ **Desenvolvimento local** (use o devcontainer)
+- **Deploy em produção**
+- **CI/CD Pipeline**
+- **Ambientes de staging**
+- **Desenvolvimento local** (use o devcontainer)
 
-## 📁 Estrutura
+## Estrutura
 
 ```
 docker/
@@ -22,7 +22,7 @@ docker/
 └── README.md           # Este arquivo
 ```
 
-## 🚀 Deploy Rápido
+## Deploy Rápido
 
 ### Opção 1: Laravel Sail (Desenvolvimento)
 
@@ -53,7 +53,7 @@ cd docker/production
 docker-compose up -d
 ```
 
-## 🔧 Configuração
+## Configuração
 
 ### Para Desenvolvimento
 
@@ -68,7 +68,7 @@ Se quiser experimentar Docker localmente:
 2. Use o Dockerfile de produção
 3. Configure reverse proxy (Nginx/Traefik)
 
-## ⚠️ Importante
+## Importante
 
 - **Desenvolvimento**: Continue usando o devcontainer
 - **Produção**: Use os arquivos Docker desta pasta
