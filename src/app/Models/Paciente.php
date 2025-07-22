@@ -5,7 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Paciente extends Model
+/**
+ * @property string $name
+ * @property string $surname
+ * @property string $birthdate
+ * @property string $cpf
+ * @property string|null $role
+ * @property string|null $education
+ * @property string $mother_name
+ * @property string $email
+ */
+final class Paciente extends Model
 {
     use HasFactory;
 
@@ -37,9 +47,9 @@ class Paciente extends Model
     /**
      * Validation rules for the model.
      *
-     * @return array
+     * @return array<string, string>
      */
-    public static function rules()
+    public static function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
