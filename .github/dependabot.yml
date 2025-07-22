@@ -20,10 +20,9 @@ updates:
       - 'dependencies'
       - 'php'
     allow:
-      - dependency-type: 'direct:production'
-        update-type: 'version-update:semver-patch'
-      - dependency-type: 'direct:development'
-        update-type: 'version-update:semver-minor'
+      - dependency-type: 'direct'
+      - dependency-type: 'production'
+      - dependency-type: 'development'
 
   # Dependências JavaScript (NPM)
   - package-ecosystem: 'npm'

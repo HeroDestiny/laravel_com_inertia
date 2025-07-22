@@ -20,6 +20,10 @@ RUN npm run build
 # Stage 2: PHP + Nginx
 FROM php:8.2-fpm-alpine AS php-base
 
+# Create a non-root user for the application
+RUN addgroup -g 1000 appgroup \
+    && adduser -u 1000 -G appgroup -s /bin/sh -D appuser
+
 # Instalar dependências do sistema
 RUN apk add --no-cache \
     nginx \
@@ -29,13 +33,20 @@ RUN apk add --no-cache \
     unzip \
     git \
     curl \
-    libpq-dev
+    libpq-dev \
+    shadow \
+    su-exec
 
 # Instalar extensões PHP
 RUN docker-php-ext-install pdo pdo_pgsql
 
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create necessary directories with proper permissions
+RUN mkdir -p /var/log/nginx /var/log/supervisor /run/nginx /var/lib/nginx/tmp \
+    && chown -R appuser:appgroup /var/log/nginx /var/log/supervisor /run/nginx /var/lib/nginx \
+    && chmod 755 /var/log/nginx /var/log/supervisor /run/nginx /var/lib/nginx
 
 # Configurar Nginx
 COPY docker/production/nginx.conf /etc/nginx/nginx.conf
@@ -58,7 +69,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 COPY --from=node-builder /app/public/build ./public/build
 
 # Configurar permissões
-RUN chown -R www-data:www-data /var/www/html \
+RUN chown -R appuser:appgroup /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
@@ -72,7 +83,7 @@ COPY docker/production/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Expor porta
-EXPOSE 80
+EXPOSE 8080
 
 # Comando de inicialização
 CMD ["/entrypoint.sh"]
