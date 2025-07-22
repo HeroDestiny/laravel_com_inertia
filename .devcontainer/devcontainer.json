@@ -148,8 +148,11 @@
   // Script de inicialização para resolver permissões
   "onCreateCommand": "sudo chown -R vscode:vscode /workspaces/laravel_com_inertia",
 
-  // Comando de pós-instalação simplificado
-  "postCreateCommand": "cd src && composer clear-cache && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && php artisan config:cache && python3 -m pip install plantuml && echo 'DevContainer configurado!'",
+  // Comando de pós-instalação otimizado para PostgreSQL
+  "postCreateCommand": "cd src && composer clear-cache && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && python3 -m pip install plantuml && echo '✅ DevContainer com PostgreSQL configurado!'",
+
+  // Comando executado após o container inicializar
+  "postStartCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",
 
   // Variáveis de ambiente
   "containerEnv": {

@@ -20,7 +20,7 @@
         "bartlett/php-reflect": "^1.9",
         "brianium/paratest": "^7.8",
         "cebe/php-openapi": "^1.8",
-        "fakerphp/faker": "^1.23",
+        "fakerphp/faker": "^1.24",
         "jawira/plantuml": "^1.2025",
         "larastan/larastan": "^3.0",
         "laravel/pail": "^1.2.2",
