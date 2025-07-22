@@ -4,13 +4,13 @@ Uma aplicação moderna desenvolvida com Laravel 11, Inertia.js, Vue.js 3, TypeS
 
 ## Características
 
-- **Backend:** Laravel 11 com PHP 8.2+
-- **Frontend:** Vue.js 3 + TypeScript + Inertia.js
-- **Styling:** Tailwind CSS + shadcn/ui components
-- **Database:** PostgreSQL (produção) / SQLite (desenvolvimento)
-- **DevContainer:** Ambiente de desenvolvimento containerizado
-- **CI/CD:** GitHub Actions com testes automatizados
-- **UML:** Geração automática de diagramas de domínio
+-   **Backend:** Laravel 11 com PHP 8.2+
+-   **Frontend:** Vue.js 3 + TypeScript + Inertia.js
+-   **Styling:** Tailwind CSS + shadcn/ui components
+-   **Database:** PostgreSQL (produção) / SQLite (desenvolvimento)
+-   **DevContainer:** Ambiente de desenvolvimento containerizado
+-   **CI/CD:** GitHub Actions com testes automatizados
+-   **UML:** Geração automática de diagramas de domínio
 
 ## Início Rápido
 
@@ -20,33 +20,36 @@ Uma aplicação moderna desenvolvida com Laravel 11, Inertia.js, Vue.js 3, TypeS
 2. Clique em "Reopen in Container" quando solicitado
 3. Aguarde a configuração automática
 4. Execute as tasks do VS Code:
-   - `Laravel: Serve` (Ctrl+Shift+P > Tasks: Run Task)
-   - `Vite: Dev Server`
+    - `Laravel: Serve` (Ctrl+Shift+P > Tasks: Run Task)
+    - `Vite: Dev Server`
 
 ### Opção 2: Instalação Manual
 
 #### Pré-requisitos
 
-- PHP 8.2+
-- Node.js 18+
-- Composer
-- PostgreSQL (opcional)
+-   PHP 8.2+
+-   Node.js 18+
+-   Composer
+-   PostgreSQL (opcional)
 
 #### Instalação
 
 1. Clone o repositório:
+
 ```bash
 git clone https://github.com/HeroDestiny/laravel_com_inertia.git
 cd laravel_com_inertia/src
 ```
 
 2. Instale as dependências:
+
 ```bash
 composer install
 npm install
 ```
 
 3. Configure o ambiente:
+
 ```bash
 cp .env.example .env
 php artisan key:generate
@@ -54,6 +57,7 @@ php artisan migrate --seed
 ```
 
 4. Inicie os servidores:
+
 ```bash
 php artisan serve --host=0.0.0.0 --port=8000
 npm run dev
@@ -61,17 +65,17 @@ npm run dev
 
 ## Acesso
 
-- **Aplicação:** http://localhost:8000
-- **Vite Dev Server:** http://localhost:5173
+-   **Aplicação:** http://localhost:8000
+-   **Vite Dev Server:** http://localhost:5173
 
 ## Tecnologias
 
-- **Backend:** Laravel 11 + PHP 8.2
-- **Frontend:** Inertia.js + Vue.js 3 + TypeScript
-- **Styling:** Tailwind CSS + shadcn/ui components
-- **Database:** PostgreSQL / SQLite
-- **Tools:** Vite, ESLint, Prettier, PHPStan, Psalm
-- **Development:** DevContainer + Xdebug
+-   **Backend:** Laravel 11 + PHP 8.2
+-   **Frontend:** Inertia.js + Vue.js 3 + TypeScript
+-   **Styling:** Tailwind CSS + shadcn/ui components
+-   **Database:** PostgreSQL / SQLite
+-   **Tools:** Vite, ESLint, Prettier, PHPStan, Psalm
+-   **Development:** DevContainer + Xdebug
 
 ## Documentação
 
@@ -79,18 +83,18 @@ A documentação completa está organizada em [`docs/`](./docs/):
 
 ### Guias Principais
 
-- **[Documentação Completa](./docs/README.md)** - Índice geral
-- **[Setup e Instalação](./docs/setup/)** - Configuração inicial
-- **[Desenvolvimento](./docs/development/)** - Guias para desenvolvedores
-- **[Deploy e Produção](./docs/deployment/)** - Configurações de produção
-- **[Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
+-   **[Documentação Completa](./docs/README.md)** - Índice geral
+-   **[Setup e Instalação](./docs/setup/)** - Configuração inicial
+-   **[Desenvolvimento](./docs/development/)** - Guias para desenvolvedores
+-   **[Deploy e Produção](./docs/deployment/)** - Configurações de produção
+-   **[Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
 
 ### Links Úteis
 
-- [DevContainer Guide](./docs/development/DEVCONTAINER.md) - Ambiente containerizado
-- [UML Diagrams](./docs/development/UML_DIAGRAMS.md) - Diagramas automáticos
-- [Docker Production](./docs/deployment/DOCKER.md) - Deploy com Docker
-- [Scripts Utilities](./scripts/README.md) - Scripts auxiliares
+-   [DevContainer Guide](./docs/development/DEVCONTAINER.md) - Ambiente containerizado
+-   [UML Diagrams](./docs/development/UML_DIAGRAMS.md) - Diagramas automáticos
+-   [Docker Production](./docs/deployment/DOCKER.md) - Deploy com Docker
+-   [Scripts Utilities](./scripts/README.md) - Scripts auxiliares
 
 ## Estrutura do Projeto
 
@@ -116,7 +120,8 @@ A documentação completa está organizada em [`docs/`](./docs/):
 ## Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
-- [PostgreSQL Migration](./docs/migrations/POSTGRESQL_MIGRATION.md)
+
+-   [PostgreSQL Migration](./docs/migrations/POSTGRESQL_MIGRATION.md)
 
 ## Comandos Úteis
 

@@ -1,16 +1,42 @@
-# Setup - Configuração do Projeto
+# Setup e Configuração
 
-Esta pasta contém documentos relacionados à configuração inicial e setup do projeto.
+Guias para configuração inicial do projeto Laravel com Inertia.js.
 
-## Documentos Disponíveis
+## Opções de Setup
 
-_Esta seção será atualizada conforme novos documentos de setup forem adicionados._
+### 1. DevContainer (Recomendado)
 
-## Próximos Documentos
+A forma mais rápida e consistente:
 
-Documentos que poderiam ser adicionados aqui:
+1. Abra o projeto no VS Code
+2. Instale a extensão "Dev Containers"
+3. Clique em "Reopen in Container"
+4. Aguarde a configuração automática
 
-- `INSTALLATION.md` - Guia de instalação completo
-- `REQUIREMENTS.md` - Requisitos do sistema
-- `CONFIGURATION.md` - Configuração de ambiente
-- `FIRST_RUN.md` - Primeiro acesso ao sistema
+**Documentação:** [DevContainer Guide](../development/DEVCONTAINER.md)
+
+### 2. Instalação Local
+
+Para desenvolvimento em ambiente local:
+
+```bash
+# Clone e instale dependências
+git clone https://github.com/HeroDestiny/laravel_com_inertia.git
+cd laravel_com_inertia/src
+composer install && npm install
+
+# Configure ambiente
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+
+# Inicie servidores
+php artisan serve --host=0.0.0.0 --port=8000
+npm run dev
+```
+
+## Documentos Relacionados
+
+-   **[DevContainer Guide](../development/DEVCONTAINER.md)** - Ambiente containerizado
+-   **[Development Guide](../development/README.md)** - Fluxo de desenvolvimento
+-   **[Deployment Guide](../deployment/README.md)** - Deploy para produção
