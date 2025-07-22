@@ -2,12 +2,12 @@
 
 Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 
-## Início Rápido
+## 🚀 Início Rápido
 
 ### Para Desenvolvedores
 
 1. **[Setup Inicial](./setup/README.md)** - Configure seu ambiente
-2. **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente recomendado
+2. **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente recomendado 🐳
 3. **[Development Guide](./development/README.md)** - Fluxo de desenvolvimento
 
 ### Para Deploy
@@ -15,14 +15,14 @@ Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 1. **[Deployment Guide](./deployment/README.md)** - Visão geral de deploy
 2. **[Docker Production](./deployment/DOCKER.md)** - Deploy com containers
 
-## Documentação por Categoria
+## 📚 Documentação por Categoria
 
-### 🚀 Setup e Configuração
+### �️ Setup e Configuração
 
 -   **[Setup Guide](./setup/README.md)** - Configuração inicial completa
     -   DevContainer vs Instalação Local
     -   Pré-requisitos e dependências
-    -   Configuração de banco de dados
+    -   Configuração de banco de dados PostgreSQL
 
 ### 💻 Desenvolvimento
 
@@ -39,10 +39,19 @@ Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
     -   VS Code integration
     -   PostgreSQL integrado
 
--   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Documentação visual
-    -   Geração automática
-    -   Visualização online
-    -   Estrutura de domínio
+-   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Documentação visual 📊
+    -   Geração automática de diagramas
+    -   Visualização online com PlantUML
+    -   Estrutura de domínio atualizada
+    -   Sistema robusto com múltiplos encoders
+
+### 🔒 Segurança
+
+-   **[Security Analysis](./SECURITY_ANALYSIS.md)** - Análise completa de segurança
+    -   OWASP Top 10 2021 compliance
+    -   Vulnerabilidades identificadas e corrigidas
+    -   Melhorias implementadas
+    -   Scripts seguros de PostgreSQL
 
 ### 🚢 Deploy e Produção
 
@@ -86,7 +95,7 @@ Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 -   **[Quick Checks](../scripts/quick-check-local.sh)** - Verificações de qualidade
 -   **[Setup After Rebuild](../scripts/setup-after-rebuild.sh)** - Configuração pós-rebuild
 -   **[Docker Manager](../scripts/docker-manager.sh)** - Gerenciamento Docker
--   **[PostgreSQL Test](../scripts/test-postgres-connection.php)** - Teste de conectividade
+-   **[PostgreSQL Test](../scripts/test-postgres-connection.php)** - Teste seguro de conectividade 🔒
 
 ### Tasks do VS Code
 
@@ -105,8 +114,9 @@ Disponíveis via `Ctrl+Shift+P` → "Tasks: Run Task":
 
 -   **Laravel 11** - Framework PHP moderno
 -   **PHP 8.2+** - Linguagem principal
--   **PostgreSQL** - Banco de dados relacional
+-   **PostgreSQL** - Banco de dados relacional (DevContainer integrado)
 -   **Composer** - Gerenciador de dependências PHP
+-   **PlantUML** - Geração de diagramas UML
 
 ### Frontend
 
@@ -124,12 +134,45 @@ Disponíveis via `Ctrl+Shift+P` → "Tasks: Run Task":
 -   **PHPStan** - Análise estática PHP
 -   **Psalm** - Análise estática PHP adicional
 
-### DevOps
+### DevOps e Ferramentas
 
--   **DevContainer** - Ambiente de desenvolvimento
--   **Docker** - Containerização
--   **GitHub Actions** - CI/CD automatizado
+-   **DevContainer** - Ambiente de desenvolvimento (PostgreSQL integrado)
+-   **Docker** - Containerização para produção
+-   **GitHub Actions** - CI/CD automatizado com UML
 -   **Xdebug** - Debugging PHP
+-   **PlantUML Online** - Visualização de diagramas
+-   **OWASP ZAP** - Análise de segurança
+
+### Qualidade e Segurança
+
+-   **PHPStan** - Análise estática PHP (nível 8)
+-   **Psalm** - Análise estática adicional
+-   **ESLint** - Linter JavaScript/TypeScript
+-   **Prettier** - Formatador de código
+-   **OWASP Top 10** - Compliance de segurança
+-   **Prepared Statements** - Prevenção SQL Injection
+
+## 🆕 Novidades e Melhorias Recentes
+
+### Sistema UML Robusto ✨
+
+-   Geração automática de diagramas a partir dos models Laravel
+-   Sistema de encoding múltiplo com fallback automático
+-   Visualização online integrada com PlantUML
+-   Testes automatizados para validação
+
+### Melhorias de Segurança 🔒
+
+-   Script PostgreSQL refatorado com práticas seguras
+-   Eliminação de credenciais hardcoded
+-   Implementação de prepared statements
+-   Logs seguros sem exposição de dados sensíveis
+
+### DevContainer Aprimorado 🐳
+
+-   PostgreSQL integrado no ambiente de desenvolvimento
+-   Scripts de setup automático pós-rebuild
+-   Configuração zero-hassle para novos desenvolvedores
 
 ## Estrutura de Arquivos
 
@@ -161,28 +204,39 @@ docs/
 -   **[Vue.js](https://vuejs.org)** - Documentação do Vue.js 3
 -   **[Tailwind CSS](https://tailwindcss.com)** - Documentação do Tailwind
 
-### Ferramentas
+### Ferramentas e Recursos
 
--   **[PlantUML Online](http://www.plantuml.com/plantuml/uml/)** - Visualizar diagramas UML
+-   **[PlantUML Online](http://www.plantuml.com/plantuml/uml/)** - Visualizar diagramas UML ⭐
 -   **[PostgreSQL Docs](https://www.postgresql.org/docs/)** - Documentação PostgreSQL
 -   **[Docker Docs](https://docs.docker.com)** - Documentação Docker
 -   **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** - Guia TypeScript
+-   **[OWASP Top 10](https://owasp.org/Top10/)** - Guia de segurança web
 
-## Como Atualizar Esta Documentação
+### Segurança
+
+-   **[OWASP ZAP](https://zaproxy.org/)** - Scanner de vulnerabilidades
+-   **[Security Headers](https://securityheaders.com/)** - Análise de headers
+-   **[SSL Labs](https://www.ssllabs.com/ssltest/)** - Teste SSL/TLS
+
+## 📋 Como Atualizar Esta Documentação
 
 1. **Editar arquivos Markdown** na pasta `docs/`
-2. **Seguir estrutura consistente** com seções claras
+2. **Seguir estrutura consistente** com seções claras e emojis
 3. **Incluir exemplos práticos** sempre que possível
 4. **Manter links internos atualizados**
 5. **Atualizar este índice** quando adicionar novos documentos
+6. **Verificar segurança** ao documentar scripts e configurações
 
-## Feedback e Contribuições
+## 🤝 Feedback e Contribuições
 
 -   **Issues:** Reporte problemas na documentação via GitHub Issues
 -   **Pull Requests:** Contribuições são bem-vindas
 -   **Sugestões:** Use GitHub Discussions para ideias
+-   **Segurança:** Reporte vulnerabilidades via email privado
 
 ---
 
-**Última atualização:** Janeiro 2025  
-**Versão da documentação:** 2.0
+**📅 Última atualização:** Julho 2025  
+**📖 Versão da documentação:** 3.0  
+**🔒 Nível de segurança:** OWASP Top 10 2021 Compliant  
+**⚡ Features:** UML Automático + DevContainer PostgreSQL + Scripts Seguros

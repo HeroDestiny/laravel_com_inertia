@@ -35,9 +35,13 @@ fi
 
 echo
 
-# 2. Testar conectividade com script de diagnóstico
+# 2. Testar conectividade com script de diagnóstico (versão segura)
 echo "Testando conectividade..."
 if [ -f "../scripts/test-postgres-connection.php" ]; then
+    # Script atualizado com melhorias de segurança:
+    # - Uso de variáveis de ambiente para credenciais
+    # - Prepared statements para prevenir SQL injection
+    # - Sanitização de output e logs seguros
     php ../scripts/test-postgres-connection.php
 else
     echo "Script de teste não encontrado, continuando..."

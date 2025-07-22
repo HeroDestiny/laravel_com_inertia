@@ -96,7 +96,7 @@ Use as **tasks do VS Code** (`Ctrl+Shift+P` → "Tasks: Run Task"):
 ### Scripts Úteis
 
 ```bash
-# Verificar PostgreSQL
+# Verificar PostgreSQL (com validações de segurança)
 php scripts/test-postgres-connection.php
 
 # Reset ambiente
@@ -105,6 +105,13 @@ php scripts/test-postgres-connection.php
 # Limpar caches
 php artisan optimize:clear
 ```
+
+> 🔒 **Nota de Segurança:** O script `test-postgres-connection.php` foi atualizado com:
+>
+> -   Uso de variáveis de ambiente para credenciais
+> -   Prepared statements para prevenir SQL injection
+> -   Sanitização de output para prevenir XSS
+> -   Error logging sem exposição de dados sensíveis
 
 ## Próximos Passos
 

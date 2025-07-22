@@ -37,8 +37,12 @@ Scripts utilitários para gerenciamento do ambiente de desenvolvimento.
 
 **Uso:** `php test-postgres-connection.php`
 
--   Diagnóstico completo de conectividade PostgreSQL
--   **Quando usar:** Problemas de conexão com banco
+-   Diagnóstico completo de conectividade PostgreSQL com validações de segurança
+-   Usa variáveis de ambiente para credenciais (não hardcoded)
+-   Implementa prepared statements para prevenir SQL injection
+-   Logs erros sem expor informações sensíveis
+-   Sanitiza output para prevenir XSS
+-   **Quando usar:** Problemas de conexão com banco ou verificação pós-rebuild
 
 ### Scripts UML (em `src/scripts/`)
 

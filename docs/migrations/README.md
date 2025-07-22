@@ -80,12 +80,14 @@ php artisan migrate --seed
 ### Produção (PostgreSQL)
 
 ```bash
-# Verificar conectividade
+# Verificar conectividade (script seguro com validações)
 php scripts/test-postgres-connection.php
 
 # Executar migrações
 php artisan migrate --force
 ```
+
+> ⚠️ **Ambiente de Produção:** O script de teste usa variáveis de ambiente e não expõe credenciais no código
 
 ## Backup e Restore
 
