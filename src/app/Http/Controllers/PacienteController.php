@@ -17,7 +17,7 @@ class PacienteController extends Controller
         $pacientes = Paciente::latest()->get();
 
         return Inertia::render('Pacientes', [
-            'pacientes' => $pacientes
+            'pacientes' => $pacientes,
         ]);
     }
 
