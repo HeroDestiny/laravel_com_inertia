@@ -83,11 +83,11 @@ final class PacienteController extends Controller
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'birthdate' => 'required|date',
-            'cpf' => 'required|string|size:11|unique:pacientes,cpf,' . $paciente->id,
+            'cpf' => 'required|string|size:11|unique:pacientes,cpf,'.$paciente->id,
             'role' => 'nullable|string|max:255',
             'education' => 'nullable|string|max:255',
             'motherName' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:pacientes,email,' . $paciente->id,
+            'email' => 'required|email|max:255|unique:pacientes,email,'.$paciente->id,
         ]);
 
         // Ajustar o nome do campo para corresponder à migration

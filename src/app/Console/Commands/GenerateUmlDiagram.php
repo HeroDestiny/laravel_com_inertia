@@ -51,7 +51,7 @@ final class GenerateUmlDiagram extends Command
         $umlContent = $this->generatePlantUmlContent($models);
 
         // Save PlantUML file
-        $pumlFile = $fullOutputPath . 'domain-models.puml';
+        $pumlFile = $fullOutputPath.'domain-models.puml';
         File::put($pumlFile, $umlContent);
 
         $this->info('UML diagram generated successfully!');
@@ -62,10 +62,10 @@ final class GenerateUmlDiagram extends Command
         $this->info('  • Online PlantUML: http://www.plantuml.com/plantuml/uml/');
         $this->info('  • VS Code PlantUML extension: Ctrl+Alt+P');
         $this->info('  • Copy content and paste in online editor');
-        $this->info('  • Edit source: ' . $pumlFile);
+        $this->info('  • Edit source: '.$pumlFile);
 
         $this->line('');
-        $this->info('🎯 Found ' . count($models) . ' model(s): ' . implode(', ', array_map(function ($class) {
+        $this->info('🎯 Found '.count($models).' model(s): '.implode(', ', array_map(function ($class) {
             return (new ReflectionClass($class))->getShortName();
         }, $models)));
 
@@ -87,7 +87,7 @@ final class GenerateUmlDiagram extends Command
         $files = File::files($modelPath);
 
         foreach ($files as $file) {
-            $className = 'App\\Models\\' . $file->getFilenameWithoutExtension();
+            $className = 'App\\Models\\'.$file->getFilenameWithoutExtension();
 
             if (class_exists($className)) {
                 $models[] = $className;
