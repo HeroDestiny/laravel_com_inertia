@@ -121,7 +121,7 @@ const closeModal = () => {
 
 <template>
     <Dialog v-model:open="isOpen">
-        <DialogContent class="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent class="max-h-[90vh] max-w-2xl overflow-y-auto">
             <DialogHeader>
                 <DialogTitle class="text-2xl">Novo Cadastro</DialogTitle>
                 <DialogDescription> Preencha os dados abaixo para criar um novo cadastro. </DialogDescription>
@@ -138,7 +138,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.name }"
                         />
-                        <p v-if="form.errors.name" class="text-sm text-red-500 mt-1">{{ form.errors.name }}</p>
+                        <p v-if="form.errors.name" class="mt-1 text-sm text-red-500">{{ form.errors.name }}</p>
                     </div>
 
                     <div>
@@ -150,7 +150,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.surname }"
                         />
-                        <p v-if="form.errors.surname" class="text-sm text-red-500 mt-1">{{ form.errors.surname }}</p>
+                        <p v-if="form.errors.surname" class="mt-1 text-sm text-red-500">{{ form.errors.surname }}</p>
                     </div>
 
                     <div>
@@ -162,7 +162,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.birthdate }"
                         />
-                        <p v-if="form.errors.birthdate" class="text-sm text-red-500 mt-1">{{ form.errors.birthdate }}</p>
+                        <p v-if="form.errors.birthdate" class="mt-1 text-sm text-red-500">{{ form.errors.birthdate }}</p>
                     </div>
 
                     <div>
@@ -176,7 +176,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.cpf }"
                         />
-                        <p v-if="form.errors.cpf" class="text-sm text-red-500 mt-1">{{ form.errors.cpf }}</p>
+                        <p v-if="form.errors.cpf" class="mt-1 text-sm text-red-500">{{ form.errors.cpf }}</p>
                     </div>
 
                     <div>
@@ -188,7 +188,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.role }"
                         />
-                        <p v-if="form.errors.role" class="text-sm text-red-500 mt-1">{{ form.errors.role }}</p>
+                        <p v-if="form.errors.role" class="mt-1 text-sm text-red-500">{{ form.errors.role }}</p>
                     </div>
 
                     <div>
@@ -198,7 +198,7 @@ const closeModal = () => {
                             v-model="form.education"
                             required
                             :class="[
-                                'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+                                'border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
                                 { 'border-red-500': form.errors.education },
                             ]"
                         >
@@ -213,7 +213,7 @@ const closeModal = () => {
                             <option value="Mestrado">Mestrado</option>
                             <option value="Doutorado">Doutorado</option>
                         </select>
-                        <p v-if="form.errors.education" class="text-sm text-red-500 mt-1">{{ form.errors.education }}</p>
+                        <p v-if="form.errors.education" class="mt-1 text-sm text-red-500">{{ form.errors.education }}</p>
                     </div>
 
                     <div class="md:col-span-2">
@@ -225,7 +225,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.motherName }"
                         />
-                        <p v-if="form.errors.motherName" class="text-sm text-red-500 mt-1">{{ form.errors.motherName }}</p>
+                        <p v-if="form.errors.motherName" class="mt-1 text-sm text-red-500">{{ form.errors.motherName }}</p>
                     </div>
 
                     <div class="md:col-span-2">
@@ -238,7 +238,7 @@ const closeModal = () => {
                             required
                             :class="{ 'border-red-500': form.errors.email }"
                         />
-                        <p v-if="form.errors.email" class="text-sm text-red-500 mt-1">{{ form.errors.email }}</p>
+                        <p v-if="form.errors.email" class="mt-1 text-sm text-red-500">{{ form.errors.email }}</p>
                     </div>
                 </div>
 

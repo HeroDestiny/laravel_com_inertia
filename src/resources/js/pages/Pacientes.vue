@@ -103,10 +103,10 @@ const formatCPF = (cpf: string) => {
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div v-if="pacientes.length === 0" class="text-center py-8">
+                    <div v-if="pacientes.length === 0" class="py-8 text-center">
                         <p class="text-gray-500 dark:text-gray-400">Nenhum paciente cadastrado ainda.</p>
                         <Button @click="openModal" variant="outline" class="mt-4">
-                            <Plus class="h-4 w-4 mr-2" />
+                            <Plus class="mr-2 h-4 w-4" />
                             Cadastrar primeiro paciente
                         </Button>
                     </div>
@@ -115,12 +115,12 @@ const formatCPF = (cpf: string) => {
                         <div
                             v-for="paciente in pacientes"
                             :key="paciente.id"
-                            class="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                            class="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800"
                         >
                             <div class="flex-1 space-y-1">
                                 <div class="flex items-center gap-4">
                                     <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ paciente.name }} {{ paciente.surname }}</h3>
-                                    <span class="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 rounded-full">
+                                    <span class="rounded-full bg-gray-100 px-2 py-1 text-xs dark:bg-gray-700">
                                         {{ formatCPF(paciente.cpf) }}
                                     </span>
                                 </div>
@@ -131,14 +131,14 @@ const formatCPF = (cpf: string) => {
                                     <span v-if="paciente.role">•</span>
                                     <span
                                         v-if="paciente.role"
-                                        class="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full"
+                                        class="rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                                     >
                                         {{ paciente.role }}
                                     </span>
                                     <span v-if="paciente.education">•</span>
                                     <span
                                         v-if="paciente.education"
-                                        class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full"
+                                        class="rounded-full bg-green-100 px-2 py-1 text-xs text-green-800 dark:bg-green-900 dark:text-green-200"
                                     >
                                         {{ paciente.education }}
                                     </span>
