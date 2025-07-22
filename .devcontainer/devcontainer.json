@@ -2,12 +2,12 @@
   "name": "Laravel Inertia Development",
 
   // Configuração principal: imagem única otimizada
-  "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
+  // "image": "mcr.microsoft.com/devcontainers/php:1-8.2-bullseye",
   
   // Alternativa com PostgreSQL: descomente as linhas abaixo e comente a linha "image" acima
-  // "dockerComposeFile": "./docker-compose.postgres.yml",
-  // "service": "laravel-app",
-  // "workspaceFolder": "/workspaces/laravel_com_inertia",
+  "dockerComposeFile": "./docker-compose.postgres.yml",
+  "service": "laravel-app",
+  "workspaceFolder": "/workspaces/laravel_com_inertia",
 
   "features": {
     // Node LTS, ideal para projetos Vue + Vite  
