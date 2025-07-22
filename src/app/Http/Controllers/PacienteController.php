@@ -4,15 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Paciente;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class PacienteController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): Response
     {
-        //
+        $pacientes = Paciente::latest()->get();
+
+        return Inertia::render('Pacientes', [
+            'pacientes' => $pacientes
+        ]);
     }
 
     /**
@@ -28,7 +34,24 @@ class PacienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'birthdate' => 'required|date',
+            'cpf' => 'required|string|size:11|unique:pacientes,cpf', // CPF deve ter exatamente 11 dígitos
+            'role' => 'nullable|string|max:255',
+            'education' => 'nullable|string|max:255',
+            'motherName' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:pacientes,email',
+        ]);
+
+        // Ajustar o nome do campo para corresponder à migration
+        $validated['mother_name'] = $validated['motherName'];
+        unset($validated['motherName']);
+
+        Paciente::create($validated);
+
+        return to_route('pacientes.index');
     }
 
     /**
@@ -60,6 +83,8 @@ class PacienteController extends Controller
      */
     public function destroy(Paciente $paciente)
     {
-        //
+        $paciente->delete();
+
+        return to_route('pacientes.index');
     }
 }

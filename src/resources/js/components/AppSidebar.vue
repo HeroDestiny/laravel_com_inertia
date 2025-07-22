@@ -15,8 +15,8 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
-        title: 'Cadastrar',
-        href: '/cadastrar',
+        title: 'Pacientes',
+        href: '/pacientes',
         icon: LayoutGrid,
     },
 ];
