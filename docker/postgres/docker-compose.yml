@@ -1,0 +1,67 @@
+# PostgreSQL Standalone para Desenvolvimento Local
+# Use quando quiser apenas o banco PostgreSQL sem Laravel Sail
+#
+# Como usar:
+#   docker-compose -f docker/postgres/docker-compose.yml up -d
+#
+# Acesso:
+#   PostgreSQL: localhost:5432
+#   pgAdmin: http://localhost:8080 (admin@laravel.com / admin123)
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: laravel_postgres
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_DB: laravel_inertia
+      POSTGRES_USER: laravel_user
+      POSTGRES_PASSWORD: laravel_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    
+    ports:
+      - "5432:5432"
+    
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+    
+    networks:
+      - laravel_network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U laravel_user -d laravel_inertia"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Interface web para administrar PostgreSQL
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: laravel_pgadmin
+    restart: unless-stopped
+    
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@laravel.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    
+    ports:
+      - "8080:80"
+    
+    depends_on:
+      postgres:
+        condition: service_healthy
+    
+    networks:
+      - laravel_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  laravel_network:
+    driver: bridge

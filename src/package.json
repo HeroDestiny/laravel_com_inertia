@@ -1,4 +1,13 @@
 {
+    "name": "laravel-com-inertia",
+    "description": "Aplicação moderna com Laravel 11, Inertia.js, Vue.js 3, TypeScript e Tailwind CSS",
+    "version": "3.0.0",
+    "license": "MIT",
+    "author": "HeroDestiny",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/HeroDestiny/laravel_com_inertia.git"
+    },
     "private": true,
     "type": "module",
     "scripts": {
@@ -7,12 +16,23 @@
         "dev": "vite",
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
-        "lint": "eslint . --fix"
+        "lint": "eslint . --fix",
+        "type-check": "vue-tsc --noEmit",
+        "test": "php artisan test",
+        "test:unit": "php artisan test --testsuite=Unit",
+        "test:feature": "php artisan test --testsuite=Feature",
+        "test:coverage": "php artisan test --coverage",
+        "docs:uml": "php artisan generate:uml",
+        "docs:uml:watch": "npm run docs:uml && echo 'UML diagrams generated. Watching for changes...'",
+        "docs:uml:view": "echo \"UML PlantUML file: $(pwd)/storage/uml/domain-models.puml\"",
+        "docs:uml:online": "echo 'View online: https://www.plantuml.com/plantuml/uml/'",
+        "docs:uml:check": "python3 scripts/check_uml_system.py"
     },
     "devDependencies": {
         "@eslint/js": "^9.19.0",
         "@types/node": "^22.13.5",
         "@vue/eslint-config-typescript": "^14.3.0",
+        "autoprefixer": "^10.4.21",
         "eslint": "^9.17.0",
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-es": "^4.1.0",

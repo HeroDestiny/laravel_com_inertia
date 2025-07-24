@@ -3,12 +3,12 @@ import type { LucideIcon } from 'lucide-vue-next';
 import type { Config } from 'ziggy-js';
 
 export interface Auth {
-    user: User;
+    user: User | null;
 }
 
 export interface BreadcrumbItem {
     title: string;
-    href: string;
+    href?: string;
 }
 
 export interface NavItem {
@@ -21,7 +21,7 @@ export interface NavItem {
 export interface SharedData extends PageProps {
     name: string;
     quote: { message: string; author: string };
-    auth: Auth;
+    auth?: Auth | null;
     ziggy: Config & { location: string };
     sidebarOpen: boolean;
 }

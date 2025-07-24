@@ -1,0 +1,19 @@
+{
+  "recommendations": [
+    "xdebug.php-debug",
+    "bmewburn.vscode-intelephense-client",
+    "onecentlin.laravel-blade",
+    "mohamedbenhida.laravel-intellisense",
+    "amiralizadeh9480.laravel-extra-intellisense",
+    "Vue.volar",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-typescript-next",
+    "phpstan.phpstan",
+    "getpsalm.psalm-vscode-plugin",
+    "GitHub.copilot",
+    "ms-vscode.vscode-json",
+    "redhat.vscode-yaml"
+  ]
+}

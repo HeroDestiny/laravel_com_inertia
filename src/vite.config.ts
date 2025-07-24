@@ -1,8 +1,8 @@
+import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
-import path from 'path';
-import tailwindcss from "@tailwindcss/vite";
 import { resolve } from 'node:path';
+import path from 'path';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -26,6 +26,29 @@ export default defineConfig({
         alias: {
             '@': path.resolve(__dirname, './resources/js'),
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
+        },
+    },
+    server: {
+        host: '0.0.0.0',
+        port: 5173,
+        strictPort: true,
+        hmr: {
+            host: 'localhost',
+            port: 5173,
+        },
+        cors: {
+            origin: [
+                'https://localhost:8001',
+                'https://127.0.0.1:8001',
+                'https://0.0.0.0:8001',
+                'https://localhost:8000',
+                'https://127.0.0.1:8000',
+                'https://0.0.0.0:8000',
+            ],
+            credentials: true,
+        },
+        watch: {
+            usePolling: true,
         },
     },
 });

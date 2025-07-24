@@ -1,0 +1,36 @@
+# Security: Exclude sensitive files and directories
+**/.env*
+**/.git*
+**/node_modules
+**/vendor
+**/storage/logs/*
+**/storage/framework/cache/*
+**/storage/framework/sessions/*
+**/storage/framework/testing/*
+**/storage/framework/views/*
+**/bootstrap/cache/*
+**/tests
+**/phpunit.xml
+**/phpstan.neon
+**/psalm.xml
+**/README.md
+**/CHANGELOG.md
+**/.vscode
+**/.idea
+**/docker
+**/scripts
+**/docs
+
+# Temporary files
+**/*.log
+**/*.tmp
+**/.DS_Store
+**/Thumbs.db
+
+# Development files
+**/.prettierrc
+**/eslint.config.js
+**/tsconfig.json
+**/vite.config.ts
+**/tailwind.config.js
+**/postcss.config.js

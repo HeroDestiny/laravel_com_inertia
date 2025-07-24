@@ -1,0 +1,349 @@
+# 🚀 Workflow principal para CI/CD
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.4'
+  NODE_VERSION: '22'
+  WORKING_DIR: src
+
+jobs:
+  # Job 1: Análise estática e linting (rápido)
+  lint:
+    name: 🔍 Code Quality
+    runs-on: ubuntu-latest
+    outputs:
+      changed-files: ${{ steps.changes.outputs.changed-files }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Detect changes
+        id: changes
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            php:
+              - 'src/**/*.php'
+            js:
+              - 'src/**/*.{js,ts,vue}'
+            composer:
+              - 'src/composer.{json,lock}'
+            npm:
+              - 'src/package*.json'
+
+      - name: 🐘 Setup PHP
+        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.composer == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+          coverage: none
+
+      - name: 📦 Cache Composer
+        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.composer == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIR }}/vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('src/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: 🎯 Setup Node.js
+        if: steps.changes.outputs.js == 'true' || steps.changes.outputs.npm == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: 📦 Install PHP dependencies
+        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.composer == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+      - name: 📦 Install Node dependencies
+        if: steps.changes.outputs.js == 'true' || steps.changes.outputs.npm == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm ci
+
+      - name: 🎨 PHP Code Style (Pint)
+        if: steps.changes.outputs.php == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: vendor/bin/pint --test
+
+      - name: 🔍 Static Analysis (PHPStan)
+        if: steps.changes.outputs.php == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
+
+      - name: 🛡️ Security Analysis (Psalm)
+        if: steps.changes.outputs.php == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: vendor/bin/psalm --no-progress
+
+      - name: 🎨 Frontend Linting
+        if: steps.changes.outputs.js == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          npm run lint
+          npm run type-check
+
+      - name: 🎨 Frontend Formatting
+        if: steps.changes.outputs.js == 'true'
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm run format:check
+
+  # Job 2: Testes unitários e de feature
+  test:
+    name: 🧪 Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+          coverage: xdebug
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+
+      - name: 🎯 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: 📦 Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIR }}/vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('src/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: 📦 Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm ci
+
+      - name: ⚙️ Setup Laravel
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cp .env.testing .env
+          php artisan key:generate
+
+      - name: 🧪 Run tests
+        working-directory: ${{ env.WORKING_DIR }}
+        run: php artisan test --coverage --min=70
+
+      - name: � Build assets
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm run build
+
+      - name: �📊 Upload coverage reports
+        uses: codecov/codecov-action@v4
+        with:
+          file: ${{ env.WORKING_DIR }}/coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  # Job 3: Segurança e dependências
+  security:
+    name: 🛡️ Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🎯 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: 📦 Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          npm ci
+
+      - name: 🛡️ Security Audit (Composer)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: composer audit
+
+      - name: 🛡️ Security Audit (NPM)
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm audit --audit-level=moderate
+
+      - name: 🔍 Snyk Security Scan
+        if: github.actor != 'dependabot[bot]'
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: test
+          args: --all-projects --severity-threshold=medium
+          project: ${{ env.WORKING_DIR }}
+
+  # Job 4: Documentação (apenas em mudanças relevantes)
+  documentation:
+    name: 📚 Documentation
+    runs-on: ubuntu-latest
+    needs: lint
+    if: contains(needs.lint.outputs.changed-files, 'src/app/') || contains(github.event.head_commit.message, '[docs]')
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+          pip install plantuml-markdown
+
+      - name: ⚙️ Setup Laravel
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: 📊 Generate UML Diagrams
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          mkdir -p storage/uml
+          php artisan generate:uml
+          python3 scripts/check_uml_system.py
+
+      - name: 📤 Upload Documentation Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: uml-diagrams-${{ github.sha }}
+          path: |
+            ${{ env.WORKING_DIR }}/storage/uml/*.puml
+            ${{ env.WORKING_DIR }}/storage/uml/*.png
+          retention-days: 30
+
+  # Job 5: Build e Deploy (apenas em main)
+  deploy:
+    name: 🚀 Deploy
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: 🎯 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: 📦 Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+          npm ci
+
+      - name: 🔨 Build production assets
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm run build
+
+      - name: 🐳 Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          push: false
+          tags: |
+            laravel-inertia:latest
+            laravel-inertia:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Descomente para deploy real
+      # - name: 🚀 Deploy to Production
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.DEPLOY_HOST }}
+      #     username: ${{ secrets.DEPLOY_USER }}
+      #     key: ${{ secrets.DEPLOY_KEY }}
+      #     script: |
+      #       cd /path/to/app
+      #       docker-compose pull
+      #       docker-compose up -d
+      #       docker system prune -f
+
+  # Job 6: Notificações
+  notify:
+    name: 📢 Notifications
+    runs-on: ubuntu-latest
+    needs: [lint, test, security, deploy]
+    if: always() && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: 📢 Success Notification
+        if: needs.deploy.result == 'success'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          text: '✅ Deploy realizado com sucesso!'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 📢 Failure Notification
+        if: contains(needs.*.result, 'failure')
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          text: '❌ Pipeline falhou! Verifique os logs.'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
