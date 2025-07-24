@@ -39,11 +39,11 @@ def check_uml_system():
     try:
         import urllib.request
         response = urllib.request.urlopen(
-            "http://www.plantuml.com/plantuml/", timeout=5)
+            "https://www.plantuml.com/plantuml/", timeout=5)
         if response.status == 200:
             print("   OK PlantUML online acessível")
             print(
-                "   INFO Você pode visualizar o diagrama em: http://www.plantuml.com/plantuml/uml/")
+                "   INFO Você pode visualizar o diagrama em: https://www.plantuml.com/plantuml/uml/")
         else:
             print(f"   AVISO PlantUML retornou status {response.status}")
     except Exception as e:

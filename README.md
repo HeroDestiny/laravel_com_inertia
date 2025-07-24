@@ -1,32 +1,38 @@
 # Laravel com Inertia.js
 
-Uma aplicação moderna desenvolvida com Laravel 11, Inertia.js, Vue.js 3, TypeScript e Tailwind CSS.
+Uma aplicação moderna dese## 📚 Documentação
 
-## ✨ Características
+### 📖 Guias Principais
 
--   **Backend:** Laravel 11 com PHP 8.2+
--   **Frontend:** Vue.js 3 + TypeScript + Inertia.js
--   **Styling:** Tailwind CSS + shadcn/ui components
--   **Database:** PostgreSQL integrado (DevContainer) / SQLite (fallback)
--   **DevContainer:** Ambiente zero-config com PostgreSQL
--   **CI/CD:** GitHub Actions com testes automatizados
--   **UML:** Geração automática de diagramas com PlantUML 📊
--   **Segurança:** OWASP Top 10 2021 compliant 🔒
--   **Scripts:** Utilitários seguros para desenvolvimento
--   **Qualidade:** PHPStan, Psalm, ESLint integrados
+-   **[📚 Documentação Completa](./docs/)** - Toda a documentação
+-   **[⚙️ Setup](./docs/setup/)** - Configuração inicial
+-   **[💻 Desenvolvimento](./docs/development/)** - Guias para desenvolvedores
+-   **[🚢 Deploy](./docs/deployment/)** - Configurações de produção
+-   **[🧪 Testes](./docs/testing/)** - Estratégia de testes
+-   **[🔒 Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10om Laravel 11, Inertia.js, Vue.js 3, TypeScript e Tailwind CSS.
 
-## Início Rápido
+## ✨ Recursos Principais
 
-### Opção 1: DevContainer (Recomendado)
+-   **🚀 Stack Moderna**: Laravel 11 + Inertia.js + Vue.js 3 + TypeScript
+-   **🎨 Interface**: Tailwind CSS + shadcn/ui components
+-   **🐘 Database**: PostgreSQL (DevContainer) / SQLite (fallback)
+-   **🐳 DevContainer**: Ambiente zero-config com PostgreSQL integrado
+-   **📊 UML**: Geração automática de diagramas com PlantUML
+-   **🔒 Segurança**: OWASP Top 10 2021 compliant
+-   **🧪 Testes**: 55 testes com 190 assertions (100% passando)
+-   **⚡ CI/CD**: GitHub Actions automatizado
+
+## 🚀 Início Rápido
+
+### DevContainer (Recomendado)
 
 1. Abra o projeto no VS Code
 2. Clique em "Reopen in Container" quando solicitado
-3. Aguarde a configuração automática
-4. Execute as tasks do VS Code:
+3. Execute as tasks no VS Code:
     - `Laravel: Serve` (Ctrl+Shift+P > Tasks: Run Task)
     - `Vite: Dev Server`
 
-### Opção 2: Instalação Manual
+### Instalação Manual
 
 #### Pré-requisitos
 
@@ -35,148 +41,63 @@ Uma aplicação moderna desenvolvida com Laravel 11, Inertia.js, Vue.js 3, TypeS
 -   Composer
 -   PostgreSQL (opcional)
 
-#### Instalação
-
-1. Clone o repositório:
+#### Passos
 
 ```bash
+# 1. Clone e instale dependências
 git clone https://github.com/HeroDestiny/laravel_com_inertia.git
 cd laravel_com_inertia/src
-```
+composer install && npm install
 
-2. Instale as dependências:
-
-```bash
-composer install
-npm install
-```
-
-3. Configure o ambiente:
-
-```bash
+# 2. Configure o ambiente
 cp .env.example .env
 php artisan key:generate
 php artisan migrate --seed
-```
 
-4. Inicie os servidores:
-
-```bash
+# 3. Inicie os servidores
 php artisan serve --host=0.0.0.0 --port=8000
 npm run dev
 ```
 
-## Acesso
+**Acesso**: http://localhost:8000
 
--   **Aplicação:** http://localhost:8000
--   **Vite Dev Server:** http://localhost:5173
+## � Documentação
 
-## 🆕 Novidades v3.0
+### � Guias Principais
 
-### 📊 Sistema UML Automático
-
-```bash
-# Gerar diagramas UML dos seus models
-php artisan generate:uml
-
-# Visualizar online
-npm run docs:uml:online
-```
-
-### 🔒 Segurança Aprimorada
-
--   Scripts PostgreSQL seguros (sem credenciais hardcoded)
--   Prepared statements para prevenir SQL injection
--   Análise OWASP Top 10 2021 implementada
--   Logs seguros sem exposição de dados sensíveis
-
-### 🐳 DevContainer com PostgreSQL
-
--   PostgreSQL integrado no ambiente de desenvolvimento
--   Setup automático pós-rebuild
--   Zero configuração para novos desenvolvedores
-
-## 🛠️ Tecnologias
-
--   **Backend:** Laravel 11 + PHP 8.2
--   **Frontend:** Inertia.js + Vue.js 3 + TypeScript
--   **Styling:** Tailwind CSS + shadcn/ui components
--   **Database:** PostgreSQL (DevContainer) / SQLite (fallback)
--   **Tools:** Vite, ESLint, Prettier, PHPStan, Psalm
--   **Development:** DevContainer + Xdebug + PlantUML
--   **Security:** OWASP compliance + Secure scripts
-
-## 📚 Documentação
-
-A documentação completa está organizada em [`docs/`](./docs/):
-
-### 🚀 Guias Principais
-
--   **[📖 Índice Completo](./docs/INDEX.md)** - Navegação completa
--   **[⚙️ Setup e Instalação](./docs/setup/)** - Configuração inicial
+-   **[� Documentação Completa](./docs/)** - Toda a documentação
+-   **[⚙️ Setup](./docs/setup/)** - Configuração inicial
 -   **[💻 Desenvolvimento](./docs/development/)** - Guias para desenvolvedores
--   **[🚢 Deploy e Produção](./docs/deployment/)** - Configurações de produção
--   **[🔒 Análise de Segurança](./docs/SECURITY_ANALYSIS.md)** - OWASP Top 10
--   **[📋 Changelog](./docs/CHANGELOG.md)** - Histórico de mudanças
+-   **[🚢 Deploy](./docs/deployment/)** - Configurações de produção
+-   **[🧪 Testes](./docs/testing/)** - Estratégia de testes
+-   **[🔒 Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
 
-### 🔗 Links Úteis
+### 🔗 Links Rápidos
 
--   [🐳 DevContainer Guide](./docs/development/DEVCONTAINER.md) - Ambiente containerizado
--   [📊 UML Diagrams](./docs/development/UML_DIAGRAMS.md) - Diagramas automáticos
--   [🐋 Docker Production](./docs/deployment/DOCKER.md) - Deploy com Docker
--   [🔧 Scripts Utilities](./scripts/README.md) - Scripts auxiliares
+-   [DevContainer Guide](./docs/development/DEVCONTAINER.md) - Ambiente containerizado
+-   [UML Diagrams](./docs/development/UML_DIAGRAMS.md) - Diagramas automáticos
+-   [Docker Production](./docs/deployment/DOCKER.md) - Deploy com Docker
+-   [Scripts Utilities](./scripts/README.md) - Scripts auxiliares
 
-## Estrutura do Projeto
-
-```
-├── src/                    # Código fonte Laravel
-│   ├── app/               # Aplicação Laravel
-│   ├── resources/         # Assets Vue.js + CSS
-│   └── routes/            # Rotas da aplicação
-├── docs/                  # Documentação completa
-├── scripts/               # Scripts utilitários
-├── docker/                # Configurações Docker
-└── .devcontainer/         # DevContainer config
-```
-
-## Contribuição
-
-1. Fork o projeto
-2. Crie uma branch para sua feature
-3. Execute os testes: `./scripts/quick-check-local.sh`
-4. Commit suas mudanças
-5. Abra um Pull Request
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para detalhes.
-
--   [PostgreSQL Migration](./docs/migrations/POSTGRESQL_MIGRATION.md)
-
-## ⚡ Comandos Úteis
+## ⚡ Comandos Essenciais
 
 ```bash
 # Desenvolvimento
-php artisan serve --host=0.0.0.0        # Servidor Laravel
-npm run dev                              # Vite dev server
+php artisan serve --host=0.0.0.0    # Servidor Laravel
+npm run dev                          # Servidor Vite
 
 # Qualidade de Código
-php artisan test                         # Executar testes
-npm run lint                            # Linting e formatação
-./scripts/quick-check-local.sh          # Verificações locais
+php artisan test                     # Executar testes
+npm run lint                         # Linting e formatação
+./scripts/quick-check-local.sh       # Verificações completas
 
-# Diagramas UML
-php artisan generate:uml                 # Gerar arquivo .puml
-npm run docs:uml                        # Gerar diagrama completo
-npm run docs:uml:online                 # Abrir PlantUML online
-
-# Segurança e Diagnóstico
-php scripts/test-postgres-connection.php # Teste PostgreSQL seguro
-python3 scripts/check_uml_system.py     # Diagnóstico UML
+# UML e Documentação
+php artisan generate:uml             # Gerar diagramas UML
+npm run docs:uml                     # Gerar PNG + visualizar
 
 # Produção
-npm run build                           # Build para produção
-php artisan migrate --force             # Migrar em produção
+npm run build                        # Build para produção
+php artisan migrate --force          # Migrar em produção
 ```
 
 ## 📊 Status do Projeto
@@ -184,30 +105,27 @@ php artisan migrate --force             # Migrar em produção
 ![GitHub last commit](https://img.shields.io/github/last-commit/HeroDestiny/laravel_com_inertia)
 ![GitHub issues](https://img.shields.io/github/issues/HeroDestiny/laravel_com_inertia)
 ![GitHub pull requests](https://img.shields.io/github/issues-pr/HeroDestiny/laravel_com_inertia)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-### Funcionalidades
+### ✅ Funcionalidades Implementadas
 
--   ✅ Laravel 11 + Inertia.js + Vue.js 3
--   ✅ DevContainer com PostgreSQL integrado
--   ✅ Sistema UML automático
--   ✅ Segurança OWASP Top 10 compliance
--   ✅ Scripts seguros para PostgreSQL
--   ✅ CI/CD com GitHub Actions
--   ✅ Análise estática (PHPStan, Psalm)
--   ✅ Testes automatizados
--   🔄 Docker para produção (em desenvolvimento)
+-   Laravel 11 + Inertia.js + Vue.js 3 + TypeScript
+-   DevContainer com PostgreSQL integrado
+-   Sistema UML automático
+-   Segurança OWASP Top 10 compliance
+-   Scripts seguros para PostgreSQL
+-   CI/CD com GitHub Actions
+-   Análise estática (PHPStan, Psalm)
+-   Testes automatizados (55 testes, 190 assertions)
 
 ## 🤝 Contribuindo
 
 1. Fork o projeto
-2. Crie sua branch de feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-### 🔒 Reportar Vulnerabilidades
-
-Para questões de segurança, entre em contato diretamente via email privado.
+2. Crie sua branch (`git checkout -b feature/amazing-feature`)
+3. Execute os testes (`./scripts/quick-check-local.sh`)
+4. Commit suas mudanças (`git commit -m 'Add amazing feature'`)
+5. Push para a branch (`git push origin feature/amazing-feature`)
+6. Abra um Pull Request
 
 ## 📄 Licença
 
@@ -217,4 +135,4 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 **⭐ Se este projeto foi útil, considere dar uma estrela!**
 
-**📧 Suporte:** Para dúvidas, abra uma [issue](https://github.com/HeroDestiny/laravel_com_inertia/issues) ou use [Discussions](https://github.com/HeroDestiny/laravel_com_inertia/discussions)
+**📧 Suporte:** [Issues](https://github.com/HeroDestiny/laravel_com_inertia/issues) | [Discussions](https://github.com/HeroDestiny/laravel_com_inertia/discussions)

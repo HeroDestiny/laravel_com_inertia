@@ -20,7 +20,7 @@ createServer((page) =>
             // Configure Ziggy for SSR...
             const ziggyConfig = {
                 ...((page.props.ziggy as any) || {}),
-                location: new URL((page.props.ziggy as any)?.location || 'http://localhost'),
+                location: new URL((page.props.ziggy as any)?.location || 'https://localhost'),
             };
 
             // Create route function...

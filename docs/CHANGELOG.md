@@ -22,7 +22,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 -   Visualização online integrada com PlantUML
 -   Testes automatizados para validação de diagramas UML
 
-### 🐳 Melhorado - DevContainer
+### 🐳 DevContainer
 
 -   PostgreSQL integrado no ambiente DevContainer
 -   Scripts de setup automático pós-rebuild
@@ -39,7 +39,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 -   Error handling sem exposição de informações sensíveis
 -   Timeout de conexão para prevenir ataques DoS
 
-### 📊 Melhorado - Documentação
+### 📊 Documentação
 
 -   Documentação UML atualizada com sistema robusto
 -   Guias de segurança com exemplos práticos

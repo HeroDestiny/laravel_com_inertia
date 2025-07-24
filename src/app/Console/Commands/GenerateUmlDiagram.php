@@ -59,7 +59,7 @@ final class GenerateUmlDiagram extends Command
 
         $this->line('');
         $this->info('📋 How to view the diagram:');
-        $this->info('  • Online PlantUML: http://www.plantuml.com/plantuml/uml/');
+        $this->info('  • Online PlantUML: https://www.plantuml.com/plantuml/uml/');
         $this->info('  • VS Code PlantUML extension: Ctrl+Alt+P');
         $this->info('  • Copy content and paste in online editor');
         $this->info('  • Edit source: '.$pumlFile);

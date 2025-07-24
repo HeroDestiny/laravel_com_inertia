@@ -1,242 +1,147 @@
-# Índice Completo da Documentação
+# 📖 Índice da Docu### 🛠️ Desenvolvimento
+
+-   **[Development Guide](./development/README.md)** - Fluxo completo
+-   **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente containerizado
+-   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticosção
 
 Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 
-## 🚀 Início Rápido
+## 🚀 Guias Essenciais
 
-### Para Desenvolvedores
+### Para Iniciantes
 
-1. **[Setup Inicial](./setup/README.md)** - Configure seu ambiente
-2. **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente recomendado 🐳
-3. **[Development Guide](./development/README.md)** - Fluxo de desenvolvimento
+1. **[⚙️ Setup](./setup/README.md)** - Configure seu ambiente
+2. **[🐳 DevContainer](./development/DEVCONTAINER.md)** - Ambiente recomendado
+3. **[💻 Development](./development/README.md)** - Fluxo de desenvolvimento
 
 ### Para Deploy
 
-1. **[Deployment Guide](./deployment/README.md)** - Visão geral de deploy
-2. **[Docker Production](./deployment/DOCKER.md)** - Deploy com containers
+1. **[🚢 Deployment](./deployment/README.md)** - Guia de deploy
+2. **[🐋 Docker](./deployment/DOCKER.md)** - Deploy com containers
 
-## 📚 Documentação por Categoria
+## 📚 Documentação Completa
 
-### �️ Setup e Configuração
+### �️ Desenvolvimento
 
--   **[Setup Guide](./setup/README.md)** - Configuração inicial completa
-    -   DevContainer vs Instalação Local
-    -   Pré-requisitos e dependências
-    -   Configuração de banco de dados PostgreSQL
+-   **[Development Guide](./development/README.md)** - Fluxo completo
+-   **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente containerizado
+-   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticos
 
-### 💻 Desenvolvimento
+### 🧪 Testes
 
--   **[Development Guide](./development/README.md)** - Guia completo de desenvolvimento
+-   **[Testing Guide](./testing/README.md)** - 55 testes, 190 assertions
+-   **[Best Practices](./testing/BEST_PRACTICES.md)** - Padrões de teste
+-   **[Troubleshooting](./testing/TROUBLESHOOTING.md)** - Solução de problemas
 
-    -   Stack tecnológico
-    -   Fluxo de desenvolvimento
-    -   Estrutura de arquivos
-    -   Debugging e troubleshooting
+### 🗄️ Database
 
--   **[DevContainer Guide](./development/DEVCONTAINER.md)** - Ambiente containerizado
-
-    -   Configuração automática
-    -   VS Code integration
-    -   PostgreSQL integrado
-
--   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Documentação visual 📊
-    -   Geração automática de diagramas
-    -   Visualização online com PlantUML
-    -   Estrutura de domínio atualizada
-    -   Sistema robusto com múltiplos encoders
-
-### 🔒 Segurança
-
--   **[Security Analysis](./SECURITY_ANALYSIS.md)** - Análise completa de segurança
-    -   OWASP Top 10 2021 compliance
-    -   Vulnerabilidades identificadas e corrigidas
-    -   Melhorias implementadas
-    -   Scripts seguros de PostgreSQL
-
-### 🚢 Deploy e Produção
-
--   **[Deployment Guide](./deployment/README.md)** - Deploy completo
-
-    -   Docker vs Deploy tradicional
-    -   Configurações de produção
-    -   Monitoramento e logs
-    -   Backup e manutenção
-
--   **[Docker Setup](./deployment/DOCKER.md)** - Containerização
-    -   Configuração Docker
-    -   Docker Compose
-    -   Otimizações de produção
-
-### 🗄️ Database e Migrações
-
--   **[Migrations Guide](./migrations/README.md)** - Gerenciamento de banco
-
-    -   Comandos úteis
-    -   Estrutura do banco
-    -   Backup e restore
-    -   Troubleshooting
-
+-   **[Migration Guide](./migrations/README.md)** - Gerenciamento de banco
 -   **[PostgreSQL Migration](./migrations/POSTGRESQL_MIGRATION.md)** - Migração específica
-    -   SQLite para PostgreSQL
-    -   Configuração detalhada
 
 ### 🔒 Segurança
 
 -   **[Security Analysis](./SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
-    -   Vulnerabilidades comuns
-    -   Implementações de segurança
-    -   Recomendações
 
-## Utilitários e Scripts
+## 🔧 Utilitários
 
-### Scripts de Desenvolvimento
+### Scripts Essenciais
 
--   **[Scripts Overview](../scripts/README.md)** - Todos os scripts utilitários
--   **[Quick Checks](../scripts/quick-check-local.sh)** - Verificações de qualidade
--   **[Setup After Rebuild](../scripts/setup-after-rebuild.sh)** - Configuração pós-rebuild
--   **[Docker Manager](../scripts/docker-manager.sh)** - Gerenciamento Docker
--   **[PostgreSQL Test](../scripts/test-postgres-connection.php)** - Teste seguro de conectividade 🔒
+-   **[Scripts Overview](../scripts/README.md)** - Todos os scripts
+-   **[Quick Check](../scripts/quick-check-local.sh)** - Verificações rápidas
+-   **[Setup After Rebuild](../scripts/setup-after-rebuild.sh)** - Pós-rebuild
 
 ### Tasks do VS Code
 
-Disponíveis via `Ctrl+Shift+P` → "Tasks: Run Task":
+Execute via `Ctrl+Shift+P` → "Tasks: Run Task":
 
 -   **Laravel: Serve** - Servidor backend
 -   **Vite: Dev Server** - Desenvolvimento frontend
--   **Laravel: Fresh Migrate** - Reset database
 -   **Run Tests** - Testes automatizados
--   **Generate UML Docs** - Gerar diagramas
--   **Lint & Format** - Qualidade de código
+-   **Generate UML** - Diagramas UML
 
-## Tecnologias Documentadas
+## 🛠️ Stack Tecnológico
 
 ### Backend
 
--   **Laravel 11** - Framework PHP moderno
--   **PHP 8.2+** - Linguagem principal
--   **PostgreSQL** - Banco de dados relacional (DevContainer integrado)
--   **Composer** - Gerenciador de dependências PHP
--   **PlantUML** - Geração de diagramas UML
+-   **Laravel 11** + **PHP 8.2+** + **PostgreSQL**
+-   **PHPStan/Psalm** - Análise estática
+-   **PlantUML** - Geração de diagramas
 
 ### Frontend
 
--   **Inertia.js** - SPA sem API
--   **Vue.js 3** - Framework JavaScript reativo
--   **TypeScript** - JavaScript tipado
--   **Tailwind CSS** - Framework CSS utility-first
--   **shadcn/ui** - Componentes UI
+-   **Inertia.js** + **Vue.js 3** + **TypeScript**
+-   **Tailwind CSS** + **shadcn/ui**
+-   **Vite** + **ESLint/Prettier**
 
-### Ferramentas
+### DevOps
 
--   **Vite** - Build tool moderno
--   **ESLint** - Linter JavaScript/TypeScript
--   **Prettier** - Formatador de código
--   **PHPStan** - Análise estática PHP
--   **Psalm** - Análise estática PHP adicional
+-   **DevContainer** - PostgreSQL integrado
+-   **Docker** - Produção
+-   **GitHub Actions** - CI/CD
 
-### DevOps e Ferramentas
+## 🆕 Novidades v3.0
 
--   **DevContainer** - Ambiente de desenvolvimento (PostgreSQL integrado)
--   **Docker** - Containerização para produção
--   **GitHub Actions** - CI/CD automatizado com UML
--   **Xdebug** - Debugging PHP
--   **PlantUML Online** - Visualização de diagramas
--   **OWASP ZAP** - Análise de segurança
+### ✨ Sistema UML Automático
 
-### Qualidade e Segurança
+-   Geração automática de diagramas
+-   Múltiplos métodos de encoding
+-   Visualização online integrada
 
--   **PHPStan** - Análise estática PHP (nível 8)
--   **Psalm** - Análise estática adicional
--   **ESLint** - Linter JavaScript/TypeScript
--   **Prettier** - Formatador de código
--   **OWASP Top 10** - Compliance de segurança
--   **Prepared Statements** - Prevenção SQL Injection
+### 🔒 Segurança Aprimorada
 
-## 🆕 Novidades e Melhorias Recentes
+-   Scripts PostgreSQL seguros
+-   OWASP Top 10 2021 compliance
+-   Logs seguros sem exposição de dados
 
-### Sistema UML Robusto ✨
+### 🐳 DevContainer
 
--   Geração automática de diagramas a partir dos models Laravel
--   Sistema de encoding múltiplo com fallback automático
--   Visualização online integrada com PlantUML
--   Testes automatizados para validação
+-   PostgreSQL integrado
+-   Setup automático pós-rebuild
+-   Zero configuração
 
-### Melhorias de Segurança 🔒
+## ⚡ Comandos Rápidos
 
--   Script PostgreSQL refatorado com práticas seguras
--   Eliminação de credenciais hardcoded
--   Implementação de prepared statements
--   Logs seguros sem exposição de dados sensíveis
+```bash
+# Desenvolvimento
+php artisan serve --host=0.0.0.0
+npm run dev
 
-### DevContainer Aprimorado 🐳
+# Qualidade
+php artisan test
+npm run lint
+./scripts/quick-check-local.sh
 
--   PostgreSQL integrado no ambiente de desenvolvimento
--   Scripts de setup automático pós-rebuild
--   Configuração zero-hassle para novos desenvolvedores
+# UML
+php artisan generate:uml
+npm run docs:uml
 
-## Estrutura de Arquivos
-
-```
-docs/
-├── README.md                    # Este arquivo (índice)
-├── INDEX.md                     # Índice completo (este arquivo)
-├── SECURITY_ANALYSIS.md         # Análise de segurança
-├── setup/
-│   └── README.md               # Setup e configuração
-├── development/
-│   ├── README.md               # Guia de desenvolvimento
-│   ├── DEVCONTAINER.md         # DevContainer guide
-│   └── UML_DIAGRAMS.md         # Diagramas UML
-├── deployment/
-│   ├── README.md               # Deployment guide
-│   └── DOCKER.md               # Docker setup
-└── migrations/
-    ├── README.md               # Database migrations
-    └── POSTGRESQL_MIGRATION.md # PostgreSQL migration
+# Produção
+npm run build
+php artisan migrate --force
 ```
 
-## Links Externos Úteis
+## 🔍 Links Externos
 
 ### Documentação Oficial
 
--   **[Laravel](https://laravel.com/docs)** - Documentação oficial do Laravel
--   **[Inertia.js](https://inertiajs.com)** - Documentação do Inertia.js
--   **[Vue.js](https://vuejs.org)** - Documentação do Vue.js 3
--   **[Tailwind CSS](https://tailwindcss.com)** - Documentação do Tailwind
+-   [Laravel](https://laravel.com/docs)
+-   [Inertia.js](https://inertiajs.com)
+-   [Vue.js](https://vuejs.org)
+-   [Tailwind CSS](https://tailwindcss.com)
 
-### Ferramentas e Recursos
+### Ferramentas
 
--   **[PlantUML Online](http://www.plantuml.com/plantuml/uml/)** - Visualizar diagramas UML ⭐
--   **[PostgreSQL Docs](https://www.postgresql.org/docs/)** - Documentação PostgreSQL
--   **[Docker Docs](https://docs.docker.com)** - Documentação Docker
--   **[TypeScript Handbook](https://www.typescriptlang.org/docs/)** - Guia TypeScript
--   **[OWASP Top 10](https://owasp.org/Top10/)** - Guia de segurança web
+-   [PlantUML Online](http://www.plantuml.com/plantuml/uml/)
+-   [OWASP Top 10](https://owasp.org/Top10/)
+-   [PostgreSQL Docs](https://www.postgresql.org/docs/)
 
-### Segurança
+## 🤝 Contribuindo
 
--   **[OWASP ZAP](https://zaproxy.org/)** - Scanner de vulnerabilidades
--   **[Security Headers](https://securityheaders.com/)** - Análise de headers
--   **[SSL Labs](https://www.ssllabs.com/ssltest/)** - Teste SSL/TLS
-
-## 📋 Como Atualizar Esta Documentação
-
-1. **Editar arquivos Markdown** na pasta `docs/`
-2. **Seguir estrutura consistente** com seções claras e emojis
-3. **Incluir exemplos práticos** sempre que possível
-4. **Manter links internos atualizados**
-5. **Atualizar este índice** quando adicionar novos documentos
-6. **Verificar segurança** ao documentar scripts e configurações
-
-## 🤝 Feedback e Contribuições
-
--   **Issues:** Reporte problemas na documentação via GitHub Issues
--   **Pull Requests:** Contribuições são bem-vindas
--   **Sugestões:** Use GitHub Discussions para ideias
--   **Segurança:** Reporte vulnerabilidades via email privado
+1. **Issues:** Reporte problemas via GitHub Issues
+2. **Pull Requests:** Contribuições são bem-vindas
+3. **Discussões:** Use GitHub Discussions para ideias
+4. **Segurança:** Reporte vulnerabilidades via email
 
 ---
 
-**📅 Última atualização:** Julho 2025  
-**📖 Versão da documentação:** 3.0  
-**🔒 Nível de segurança:** OWASP Top 10 2021 Compliant  
-**⚡ Features:** UML Automático + DevContainer PostgreSQL + Scripts Seguros
+**📅 Atualizado:** Julho 2025 | **📖 Versão:** 3.0 | **🔒 Segurança:** OWASP Compliant

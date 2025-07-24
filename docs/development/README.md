@@ -1,47 +1,35 @@
-# Development Guide
+# 💻 Development Guide
 
 Guia completo para desenvolvimento no projeto Laravel + Inertia.js.
 
-## Stack Tecnológico
+## 🛠️ Stack Tecnológico
 
 ### Backend
-
--   **Laravel 11** - Framework PHP
--   **PHP 8.2+** - Linguagem principal
--   **PostgreSQL** - Banco de dados
+- **Laravel 11** - Framework PHP
+- **PHP 8.2+** - Linguagem principal
+- **PostgreSQL** - Banco de dados principal
 
 ### Frontend
-
--   **Inertia.js** - SPA sem API
--   **Vue.js 3** - Framework reativo
--   **TypeScript** - JavaScript tipado
--   **Tailwind CSS** - Framework CSS utility-first
+- **Inertia.js** - SPA sem API
+- **Vue.js 3** - Framework reativo
+- **TypeScript** - JavaScript tipado
+- **Tailwind CSS** - Framework CSS utility-first
 
 ### Ferramentas
+- **Vite** - Build tool moderno
+- **PHPStan/Psalm** - Análise estática PHP
+- **ESLint/Prettier** - Qualidade frontend
 
--   **Vite** - Build tool moderno
--   **PHPStan/Psalm** - Análise estática PHP
--   **ESLint/Prettier** - Qualidade frontend
-
-## Documentos Disponíveis
-
--   **[DevContainer Guide](./DEVCONTAINER.md)** - Ambiente de desenvolvimento containerizado
--   **[UML Diagrams](./UML_DIAGRAMS.md)** - Geração automática de diagramas
-
-## Fluxo de Desenvolvimento
+## 🚀 Fluxo de Desenvolvimento
 
 ### 1. Setup Inicial
 
 **DevContainer (Recomendado):**
-
-```bash
-# 1. Abra no VS Code
-# 2. "Reopen in Container"
-# 3. Execute tasks: Laravel: Serve + Vite: Dev Server
-```
+1. Abra no VS Code
+2. "Reopen in Container"
+3. Execute tasks: `Laravel: Serve` + `Vite: Dev Server`
 
 **Local:**
-
 ```bash
 ./scripts/setup-after-rebuild.sh
 ```
@@ -50,10 +38,10 @@ Guia completo para desenvolvimento no projeto Laravel + Inertia.js.
 
 Use as **tasks do VS Code** (`Ctrl+Shift+P` → "Tasks: Run Task"):
 
--   **Laravel: Serve** - Servidor backend
--   **Vite: Dev Server** - Desenvolvimento frontend
--   **Laravel: Fresh Migrate** - Reset database
--   **Run Tests** - Testes automatizados
+- **Laravel: Serve** - Servidor backend
+- **Vite: Dev Server** - Desenvolvimento frontend
+- **Laravel: Fresh Migrate** - Reset database
+- **Run Tests** - Testes automatizados
 
 ### 3. Qualidade de Código
 
@@ -64,10 +52,9 @@ Use as **tasks do VS Code** (`Ctrl+Shift+P` → "Tasks: Run Task"):
 # Inclui: Pint, PHPStan, ESLint, testes, build
 ```
 
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ### Backend (src/app/)
-
 ```
 ├── Console/Commands/       # Comandos Artisan
 ├── Http/Controllers/       # Controllers
@@ -76,7 +63,6 @@ Use as **tasks do VS Code** (`Ctrl+Shift+P` → "Tasks: Run Task"):
 ```
 
 ### Frontend (src/resources/)
-
 ```
 ├── js/
 │   ├── Components/        # Componentes Vue
@@ -85,36 +71,105 @@ Use as **tasks do VS Code** (`Ctrl+Shift+P` → "Tasks: Run Task"):
 └── css/app.css           # Estilos Tailwind
 ```
 
-## Debugging e Troubleshooting
+## ⚡ Comandos Essenciais
 
-### Xdebug (DevContainer)
-
--   Breakpoints no VS Code
--   Debug com F5
--   Logs: `tail -f src/storage/logs/laravel.log`
-
-### Scripts Úteis
-
+### Desenvolvimento
 ```bash
-# Verificar PostgreSQL (com validações de segurança)
-php scripts/test-postgres-connection.php
-
-# Reset ambiente
-./scripts/setup-after-rebuild.sh
-
-# Limpar caches
-php artisan optimize:clear
+php artisan serve --host=0.0.0.0    # Servidor Laravel
+npm run dev                          # Vite dev server
 ```
 
-> 🔒 **Nota de Segurança:** O script `test-postgres-connection.php` foi atualizado com:
->
-> -   Uso de variáveis de ambiente para credenciais
-> -   Prepared statements para prevenir SQL injection
-> -   Sanitização de output para prevenir XSS
-> -   Error logging sem exposição de dados sensíveis
+### Qualidade de Código
+```bash
+php artisan test                     # Executar testes
+npm run lint                         # Linting e formatação
+./scripts/quick-check-local.sh       # Verificações completas
+```
 
-## Próximos Passos
+### Banco de Dados
+```bash
+php artisan migrate                  # Executar migrações
+php artisan migrate:fresh --seed     # Reset completo com seeds
+php artisan db:seed                  # Apenas seeds
+```
 
--   **[UML Diagrams](./UML_DIAGRAMS.md)** - Documentação visual
--   **[Deployment](../deployment/README.md)** - Deploy para produção
--   **[Scripts](../../scripts/README.md)** - Utilitários de desenvolvimento
+### UML e Documentação
+```bash
+php artisan generate:uml             # Gerar diagramas UML
+npm run docs:uml                     # Gerar PNG + visualizar
+```
+
+## 🔧 Debugging e Troubleshooting
+
+### Logs
+```bash
+# Logs da aplicação
+tail -f storage/logs/laravel.log
+
+# Logs do servidor
+php artisan serve --verbose
+```
+
+### Debug com Xdebug (DevContainer)
+1. Configure breakpoints no VS Code
+2. Inicie debug com F5
+3. Acesse a aplicação no navegador
+
+### Problemas Comuns
+
+1. **Erro 500**: Verificar logs em `storage/logs/laravel.log`
+2. **Assets não carregam**: Verificar se `npm run dev` está rodando
+3. **Banco não conecta**: Verificar configuração no `.env`
+
+## 🧪 Testes
+
+### Executar Testes
+```bash
+# Todos os testes
+php artisan test
+
+# Testes específicos
+php artisan test --filter=UserTest
+
+# Com cobertura
+php artisan test --coverage
+```
+
+### Estrutura de Testes
+- **Unit Tests**: Testes unitários em `tests/Unit/`
+- **Feature Tests**: Testes de integração em `tests/Feature/`
+- **Total**: 55 testes com 190 assertions
+
+## 📊 Qualidade de Código
+
+### Análise Estática
+```bash
+# PHPStan
+./vendor/bin/phpstan analyse
+
+# Psalm
+./vendor/bin/psalm
+
+# ESLint
+npm run lint
+```
+
+### Formatação
+```bash
+# PHP (Pint)
+./vendor/bin/pint
+
+# JavaScript/TypeScript
+npm run format
+```
+
+## 🔗 Links Úteis
+
+- **[DevContainer Guide](./DEVCONTAINER.md)** - Ambiente containerizado
+- **[UML Diagrams](./UML_DIAGRAMS.md)** - Documentação visual
+- **[Testing Guide](../testing/README.md)** - Estratégia de testes
+- **[Deployment](../deployment/README.md)** - Deploy para produção
+
+---
+
+**🎯 Foco na produtividade com ferramentas modernas!**

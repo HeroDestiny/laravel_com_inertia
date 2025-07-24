@@ -29,6 +29,20 @@ Scripts utilitários para gerenciamento do ambiente de desenvolvimento.
 
 **Uso:** `./scripts/quick-check-local.sh`
 
+-   **Versão otimizada** para desenvolvimento local
+-   ✅ **Verifica dependências** antes de reinstalar (economiza tempo)
+-   ✅ Pint, PHPStan, ESLint, testes, build
+-   **Quando usar:** Antes de commits ou periodicamente
+
+#### `quick-check-fast.sh` ⚡
+
+**Uso:** `./scripts/quick-check-fast.sh`
+
+-   **Versão ultra-rápida** para desenvolvimento ativo
+-   ✅ Apenas: Pint + PHPStan + Testes unitários
+-   ⏱️ **~3 segundos** vs ~30 segundos da versão completa
+-   **Quando usar:** Durante desenvolvimento ativo, várias vezes por dia
+
 -   Executa todos os checks de qualidade
 -   Simula workflow do GitHub Actions
 -   **Quando usar:** Antes de commits ou push

@@ -38,12 +38,12 @@ export default defineConfig({
         },
         cors: {
             origin: [
-                'http://localhost:8001',
-                'http://127.0.0.1:8001',
-                'http://0.0.0.0:8001',
-                'http://localhost:8000',
-                'http://127.0.0.1:8000',
-                'http://0.0.0.0:8000',
+                'https://localhost:8001',
+                'https://127.0.0.1:8001',
+                'https://0.0.0.0:8001',
+                'https://localhost:8000',
+                'https://127.0.0.1:8000',
+                'https://0.0.0.0:8000',
             ],
             credentials: true,
         },
