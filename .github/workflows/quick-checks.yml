@@ -3,9 +3,9 @@ name: Quick Checks
 
 on:
   push:
-    branches: [develop, feature/*]
+    branches: [main, develop]
   pull_request:
-    branches: [develop]
+    branches: [main, develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
