@@ -30,6 +30,7 @@ Documentação técnica completa do projeto Laravel + Inertia.js + Vue.js.
 -   **[Development Guide](./development/README.md)** - Visão geral do desenvolvimento
 -   **[DevContainer Guide](./development/DEVCONTAINER.md)** - Ambiente containerizado
 -   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticos
+-   **[SonarQube Integration](./development/SONARQUBE_INTEGRATION.md)** - Análise de qualidade
 
 ### 🧪 Testes
 
