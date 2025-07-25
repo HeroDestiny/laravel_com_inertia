@@ -1,25 +1,23 @@
-# 📚 Documen### Para Depl### 💻 Desenvolvimento
-
--   **[## 🛠️ Stack Tecnológicoevelopment Guide](./development/README.md)** - Visão geral do desenvolvimento
--   **[DevContainer Guide](./development/DEVCONTAINER.md)** - Ambiente containerizado
--   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticos **[🚢 Deployment Guide](./deployment/README.md)** - Guia completo de deploy
-
-2. **[🐋 Docker Production](./deployment/DOCKER.md)** - Deploy com containerso - Laravel com Inertia.js
+# 📚 Documentação Técnica
 
 Documentação técnica completa do projeto Laravel + Inertia.js + Vue.js.
 
+## 💻 Desenvolvimento
+
+-   **[Development Guide](./development/README.md)** - Visão geral do desenvolvimento
+-   **[DevContainer Guide](./development/DEVCONTAINER.md)** - Ambiente containerizado
+-   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticos
+
+## 🚢 Deploy
+
+-   **[Deployment Guide](./deployment/README.md)** - Guia completo de deploy
+-   **[Docker Production](./deployment/DOCKER.md)** - Deploy com containers
+
 ## 🚀 Início Rápido
 
-### Para Desenvolvedores
+## ⚙️ Setup Inicial
 
-1. **[⚙️ Setup Inicial](./setup/README.md)** - Configure seu ambiente
-2. **[🐳 DevContainer](./development/DEVCONTAINER.md)** - Ambiente recomendado
-3. **[💻 Development Guide](./development/README.md)** - Fluxo de desenvolvimento
-
-### Para Deploy
-
-1. **[� Deployment Guide](./deployment/README.md)** - Guia completo de deploy
-2. **[� Docker Production](./deployment/DOCKER.md)** - Deploy com containers
+-   **[Setup Guide](./setup/README.md)** - Configuração inicial completa
 
 ## 📂 Estrutura da Documentação
 
@@ -27,7 +25,7 @@ Documentação técnica completa do projeto Laravel + Inertia.js + Vue.js.
 
 -   **[Setup Guide](./setup/README.md)** - Configuração inicial completa
 
-### � Desenvolvimento
+## 🧑‍💻 Desenvolvimento
 
 -   **[Development Guide](./development/README.md)** - Visão geral do desenvolvimento
 -   **[DevContainer Guide](./development/DEVCONTAINER.md)** - Ambiente containerizado
@@ -53,7 +51,7 @@ Documentação técnica completa do projeto Laravel + Inertia.js + Vue.js.
 
 -   **[Security Analysis](./SECURITY_ANALYSIS.md)** - Análise OWASP Top 10
 
-## �️ Stack Tecnológico
+## 🛠️ Stack Tecnológico
 
 ### Backend
 

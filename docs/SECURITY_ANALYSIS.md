@@ -54,7 +54,7 @@ Este documento contém uma análise detalhada de segurança baseada no OWASP Top
 ### 2. A01:2021 – Quebra de Controle de Acesso
 
 -   **Justificativa:**
-    1.  **Ambiguidade da Funcionalidade de Cadastro:** A rota `/cadastrar` (`routes/web.php`) está protegida pelos middlewares `auth` e `verified`, significando que apenas utilizadores autenticados e verificados podem acedê-la. No entanto, a página correspondente `resources/js/pages/Cadastrar.vue` tem o título "Criar Conta" e a descrição "Preencha seus dados abaixo para se registrar", o que sugere um formulário para registo de _novos utilizadores_. Esta discrepância pode levar a um controle de acesso inadequado dependendo da intenção real.
+    1.  **Ambiguidade da Funcionalidade de Cadastro:** A rota `/cadastrar` (`routes/web.php`) está protegida pelos middlewares `auth` e `verified`, significando que apenas usuários autenticados e verificados podem acessá-la. No entanto, a página correspondente `resources/js/pages/Cadastrar.vue` tem o título "Criar Conta" e a descrição "Preencha seus dados abaixo para se registrar", o que sugere um formulário para registro de _novos usuários_. Esta discrepância pode levar a um controle de acesso inadequado dependendo da intenção real.
     2.  **Validação de Dados Sensíveis (Potencial):** O formulário em Cadastrar.vue coleta dados pessoais (Nome, Sobrenome, Data de Nascimento, CPF, Cargo, Escolaridade, Nome da Mãe, Email). Atualmente, a função `onSubmit` não envia dados para o backend. Se/quando esta funcionalidade for implementada, é crucial que o backend realize validação completa e rigorosa de todos os campos (e.g., formato do CPF, unicidade, etc.) e aplique as regras de negócio corretas. Apenas a validação `required` no frontend é insuficiente.
 -   **Evidência:**
 
@@ -79,7 +79,7 @@ Este documento contém uma análise detalhada de segurança baseada no OWASP Top
         // ...existing code...
         ```
 
-    -   Interface do utilizador em Cadastrar.vue sugerindo registo de novo utilizador:
+    -   Interface do usuário em Cadastrar.vue sugerindo registro de novo usuário:
         ```vue
         // filepath: ..\laravel_com_inertia\src\resources\js\pages\Cadastrar.vue // ...existing code...
         <CardHeader>
@@ -116,10 +116,10 @@ Este documento contém uma análise detalhada de segurança baseada no OWASP Top
 -   **Solução:**
 
     1.  **Clarificar Propósito da Rota `/cadastrar`:**
-        -   **Se for para registo de novos utilizadores:** A rota `/cadastrar` deve ser movida para fora do grupo de middleware `auth`. Um novo controller, similar ao `app/Http/Controllers/Auth/RegisteredUserController.php`, deve ser criado para lidar com a criação de novos utilizadores.
-        -   **Se for para utilizadores autenticados adicionarem/editarem informações:** Renomear a rota e a página para refletir a sua verdadeira função (ex: "Detalhes Adicionais", "Completar Perfil"). O controller backend deve garantir que o utilizador autenticado só possa modificar os seus próprios dados ou dados para os quais tenha permissão.
+        -   **Se for para registro de novos usuários:** A rota `/cadastrar` deve ser movida para fora do grupo de middleware `auth`. Um novo controller, similar ao `app/Http/Controllers/Auth/RegisteredUserController.php`, deve ser criado para lidar com a criação de novos usuários.
+        -   **Se for para usuários autenticados adicionarem/editarem informações:** Renomear a rota e a página para refletir a sua verdadeira função (ex: "Detalhes Adicionais", "Completar Perfil"). O controller backend deve garantir que o usuário autenticado só possa modificar os seus próprios dados ou dados para os quais tenha permissão.
     2.  **Implementar Validação Backend Robusta:** Quando a submissão do formulário Cadastrar.vue for implementada, criar um `FormRequest` ou usar o método `validate` no controller para validar todos os campos no servidor. Incluir regras específicas como validação de formato de CPF, datas, e-mails, etc.
-        **Exemplo (se for para utilizador logado adicionar detalhes):**
+        **Exemplo (se for para usuário logado adicionar detalhes):**
 
         -   Atualizar Cadastrar.vue para usar `useForm` do Inertia e submeter para uma rota POST.
         -   Criar uma rota POST e um controller:
@@ -162,14 +162,14 @@ Este documento contém uma análise detalhada de segurança baseada no OWASP Top
                         'role' => ['required', 'string', 'max:255'],
                         'education' => ['required', 'string', 'max:255'],
                         'motherName' => ['required', 'string', 'max:255'],
-                        'email' => ['required', 'string', 'email', 'max:255'], // Validar se este email deve ser único ou se é o do utilizador
+                        'email' => ['required', 'string', 'email', 'max:255'], // Validar se este email deve ser único ou se é o do usuário
                     ]);
 
-                    // Lógica para salvar os dados associados ao utilizador autenticado
+                    // Lógica para salvar os dados associados ao usuário autenticado
                     // Ex: Auth::user()->details()->create($validatedData);
                     // ou Auth::user()->update($validatedData);
 
-                    // Exemplo de atualização no próprio utilizador (se os campos existirem no modelo User)
+                    // Exemplo de atualização no próprio usuário (se os campos existirem no modelo User)
                     // Auth::user()->update([
                     //     'user_name' => $validatedData['name'], // Ajustar nomes dos campos conforme seu modelo
                     //     'surname' => $validatedData['surname'],
@@ -188,7 +188,7 @@ Este documento contém uma análise detalhada de segurança baseada no OWASP Top
 
 ### 3. A07:2021 – Falhas de Identificação e Autenticação
 
--   **Justificativa:** O uso de senhas fixas e fracas como `'password'` na factory de utilizadores (`database/factories/UserFactory.php`) e em diversos arquivos de teste (e.g., `tests/Feature/Auth/PasswordConfirmationTest.php`, `tests/Feature/Settings/PasswordUpdateTest.php`) é uma prática comum para facilitar o desenvolvimento e os testes. No entanto, existe o risco de que essas credenciais fracas sejam acidentalmente migradas ou usadas em ambientes de staging ou produção, ou que contas de teste com essas senhas sejam expostas. Embora o Laravel utilize hashing seguro para senhas, a senha original fraca ainda é um ponto de entrada se a conta for comprometida de outra forma ou se o banco de dados de desenvolvimento/teste vazar.
+-   **Justificativa:** O uso de senhas fixas e fracas como `'password'` na factory de usuários (`database/factories/UserFactory.php`) e em diversos arquivos de teste (e.g., `tests/Feature/Auth/PasswordConfirmationTest.php`, `tests/Feature/Settings/PasswordUpdateTest.php`) é uma prática comum para facilitar o desenvolvimento e os testes. No entanto, existe o risco de que essas credenciais fracas sejam acidentalmente migradas ou usadas em ambientes de staging ou produção, ou que contas de teste com essas senhas sejam expostas. Embora o Laravel utilize hashing seguro para senhas, a senha original fraca ainda é um ponto de entrada se a conta for comprometida de outra forma ou se o banco de dados de desenvolvimento/teste vazar.
 -   **Evidência:**
 
     -   Senha padrão na `UserFactory`:
