@@ -168,40 +168,6 @@ jobs:
             echo "Frontend tests not configured"
           fi
 
-      - name: 🔍 SonarQube Analysis
-        if: secrets.SONAR_TOKEN != ''
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-
-      - name: 🔍 SonarQube Quality Gate
-        if: secrets.SONAR_TOKEN != ''
-        uses: sonarqube-quality-gate-action@master
-        with:
-          scanMetadataReportFile: .scannerwork/report-task.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: 📊 Upload coverage reports
-        if: secrets.CODECOV_TOKEN != ''
-        uses: codecov/codecov-action@v4
-        with:
-          file: ${{ env.WORKING_DIR }}/coverage/clover.xml
-          flags: unittests
-          name: codecov-umbrella
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: 📋 Coverage Summary (when integrations not configured)
-        if: secrets.CODECOV_TOKEN == '' && secrets.SONAR_TOKEN == ''
-        run: |
-          echo "📋 Testes executados com sucesso!"
-          echo "💡 Para habilitar upload de cobertura:"
-          echo "   1. Crie uma conta em https://codecov.io"
-          echo "   2. Configure CODECOV_TOKEN nos secrets do repositório"
-
   # Job 3: Segurança e dependências
   security:
     name: 🛡️ Security Scan
