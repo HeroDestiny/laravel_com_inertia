@@ -206,7 +206,7 @@ jobs:
         run: npm audit --audit-level=moderate
 
       - name: 🔍 Snyk Security Scan
-        if: github.actor != 'dependabot[bot]' && secrets.SNYK_TOKEN != ''
+        if: github.actor != 'dependabot[bot]'
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -214,15 +214,6 @@ jobs:
           command: test
           args: --all-projects --severity-threshold=medium
           project: ${{ env.WORKING_DIR }}
-
-      - name: ⚠️ Snyk Not Configured
-        if: secrets.SNYK_TOKEN == ''
-        run: |
-          echo "⚠️ Snyk Security Scan não está configurado"
-          echo "💡 Para habilitar scan de segurança Snyk:"
-          echo "   1. Crie uma conta em https://snyk.io"
-          echo "   2. Obtenha seu token de API"
-          echo "   3. Configure SNYK_TOKEN nos secrets do repositório"
 
   # Job 4: Documentação (apenas em mudanças relevantes)
   documentation:
