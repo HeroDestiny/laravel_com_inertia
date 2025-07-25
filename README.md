@@ -1,15 +1,6 @@
 # Laravel com Inertia.js
 
-Uma aplicação moderna dese## 📚 Documentação
-
-### 📖 Guias Principais
-
--   **[📚 Documentação Completa](./docs/)** - Toda a documentação
--   **[⚙️ Setup](./docs/setup/)** - Configuração inicial
--   **[💻 Desenvolvimento](./docs/development/)** - Guias para desenvolvedores
--   **[🚢 Deploy](./docs/deployment/)** - Configurações de produção
--   **[🧪 Testes](./docs/testing/)** - Estratégia de testes
--   **[🔒 Segurança](./docs/SECURITY_ANALYSIS.md)** - Análise OWASP Top 10om Laravel 11, Inertia.js, Vue.js 3, TypeScript e Tailwind CSS.
+Uma aplicação moderna desenvolvida com Laravel 11, Inertia.js, Vue.js 3, TypeScript e Tailwind CSS.
 
 ## ✨ Recursos Principais
 
@@ -61,11 +52,11 @@ npm run dev
 
 **Acesso**: http://localhost:8000
 
-## � Documentação
+## 📚 Documentação
 
-### � Guias Principais
+### 📖 Guias Principais
 
--   **[� Documentação Completa](./docs/)** - Toda a documentação
+-   **[📚 Documentação Completa](./docs/)** - Toda a documentação
 -   **[⚙️ Setup](./docs/setup/)** - Configuração inicial
 -   **[💻 Desenvolvimento](./docs/development/)** - Guias para desenvolvedores
 -   **[🚢 Deploy](./docs/deployment/)** - Configurações de produção

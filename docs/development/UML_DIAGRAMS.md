@@ -13,21 +13,36 @@ php artisan generate:uml
 # Via npm (gera .puml + .png)
 npm run docs:uml
 
-# Via composer
-composer docs:uml
+# Formatos específicos
+npm run docs:uml:png         # Apenas PNG
+npm run docs:uml:svg         # Apenas SVG
+npm run docs:uml:pdf         # Apenas PDF
+npm run docs:uml:all         # Todos os formatos
 ```
 
 ### Visualizar Online
 
 ```bash
-# Abrir no PlantUML Online
-npm run docs:uml:online
+# Lista formatos disponíveis
+npm run docs:uml:formats
+
+# Diagnóstico do ambiente
+npm run docs:uml:check
 ```
 
 ## 📁 Arquivos Gerados
 
 - `storage/uml/domain-models.puml` - Código fonte PlantUML
-- `storage/uml/domain-models.png` - Imagem do diagrama
+- `storage/uml/domain-models.png` - Imagem PNG
+- `storage/uml/domain-models.svg` - Imagem SVG (vetorial)
+- `storage/uml/domain-models.pdf` - Documento PDF
+- `storage/uml/domain-models.eps` - Imagem EPS (vetorial)
+- `storage/uml/domain-models.txt` - ASCII art
+
+## 📖 Documentação Técnica
+
+Para informações detalhadas sobre implementação, scripts e personalização, consulte:
+**[UML Scripts - Documentação Técnica](./UML_SCRIPTS.md)**
 
 ## ⚙️ Sistema de Encoding
 
@@ -106,7 +121,7 @@ O GitHub Actions gera diagramas automaticamente:
 
 ### Problemas Comuns
 
-1. **Diagramas não são gerados**
+1. **Diagramas não estão sendo gerados**
    ```bash
    # Verificar se os models existem
    ls src/app/Models/
@@ -115,7 +130,7 @@ O GitHub Actions gera diagramas automaticamente:
    chmod +x scripts/generate-uml.sh
    ```
 
-2. **Encoding não funciona**
+2. **Problemas com encoding**
    ```bash
    # Testar Python
    python3 -c "import zlib, base64; print('OK')"
@@ -124,7 +139,7 @@ O GitHub Actions gera diagramas automaticamente:
    python3 scripts/check_uml_system.py
    ```
 
-3. **PlantUML Online não abre**
+3. **Problemas ao abrir PlantUML Online**
    - Verificar conectividade com internet
    - URL pode estar muito longa (usar encoding alternativo)
 
@@ -132,7 +147,7 @@ O GitHub Actions gera diagramas automaticamente:
 
 O sistema monitora:
 - ✅ Geração bem-sucedida de arquivos
-- ✅ Validação de encoding
+- ✅ Validação do encoding
 - ✅ Conectividade com PlantUML Online
 - ✅ Tamanho dos diagramas gerados
 
@@ -141,7 +156,7 @@ O sistema monitora:
 - [ ] Suporte a relacionamentos entre models
 - [ ] Geração de diagramas de sequência
 - [ ] Integração com documentação automática
-- [ ] Cache de diagramas para performance
+- [ ] Cache de diagramas para desempenho
 
 ---
 
