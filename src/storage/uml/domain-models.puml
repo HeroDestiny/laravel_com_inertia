@@ -1,0 +1,52 @@
+@startuml Domain Models
+!theme cerulean-outline
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam backgroundColor #FEFEFE
+skinparam class {
+  BackgroundColor #E8F4FD
+  BorderColor #1E88E5
+  HeaderBackgroundColor #1E88E5
+  HeaderFontColor #FFFFFF
+}
+
+class Paciente {
+  + name: string
+  + surname: string
+  + birthdate: string
+  + cpf: string
+  + role: string
+  + education: string
+  + mother_name: string
+  + email: string
+  + id: int
+  + created_at: timestamp
+  + updated_at: timestamp
+  --
+  + rules()
+  + getFullNameAttribute()
+  + factory()
+}
+
+class User {
+  + name: string
+  + email: string
+  + password: string
+  + id: int
+  + created_at: timestamp
+  + updated_at: timestamp
+  --
+  + factory()
+  + notifications()
+  + readNotifications()
+  + unreadNotifications()
+  + notify()
+  + notifyNow()
+  + routeNotificationFor()
+}
+
+
+' Relationships
+User ||--o{ Paciente : manages
+
+@enduml

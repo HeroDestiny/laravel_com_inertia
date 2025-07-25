@@ -1,8 +1,10 @@
-# 📖 Índice da Docu### 🛠️ Desenvolvimento
+# 📖 Índice da Documentação
 
 -   **[Development Guide](./development/README.md)** - Fluxo completo
 -   **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente containerizado
--   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticosção
+-   **[UML Diagrams](./development/UML_DIAGRAMS.md)** - Diagramas automáticos
+-   **[UML Scripts](./development/UML_SCRIPTS.md)** - Scripts detalhados de geração UML
+-   **[NPM Commands](./development/NPM_COMMANDS.md)** - Todos os comandos NPM disponíveis
 
 Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 
@@ -19,9 +21,9 @@ Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 1. **[🚢 Deployment](./deployment/README.md)** - Guia de deploy
 2. **[🐋 Docker](./deployment/DOCKER.md)** - Deploy com containers
 
-## 📚 Documentação Completa
+## 📚 Documentação completa
 
-### �️ Desenvolvimento
+### 🛠️ Desenvolvimento
 
 -   **[Development Guide](./development/README.md)** - Fluxo completo
 -   **[DevContainer](./development/DEVCONTAINER.md)** - Ambiente containerizado
@@ -29,7 +31,7 @@ Navegação rápida por toda a documentação do projeto Laravel + Inertia.js.
 
 ### 🧪 Testes
 
--   **[Testing Guide](./testing/README.md)** - 55 testes, 190 assertions
+-   **[Testing Guide](./testing/README.md)** - 55 testes, 190 asserções
 -   **[Best Practices](./testing/BEST_PRACTICES.md)** - Padrões de teste
 -   **[Troubleshooting](./testing/TROUBLESHOOTING.md)** - Solução de problemas
 
@@ -96,8 +98,8 @@ Execute via `Ctrl+Shift+P` → "Tasks: Run Task":
 ### 🐳 DevContainer
 
 -   PostgreSQL integrado
--   Setup automático pós-rebuild
--   Zero configuração
+-   Configuração automática pós-rebuild
+-   Zero configuração necessária
 
 ## ⚡ Comandos Rápidos
 
