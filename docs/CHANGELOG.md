@@ -5,6 +5,22 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.1] - 2025-07-25
+
+### � Corrigido - CI/CD Pipeline
+
+-   Corrigido erro de cache Docker no GitHub Actions
+-   Corrigido erro de secrets não configurados (Slack, Snyk, Codecov)
+-   Pipeline agora funciona sem configuração externa obrigatória
+-   Adicionado fallbacks e mensagens informativas
+
+### ✨ Adicionado - SonarQube Integration
+
+-   Configuração completa para análise de qualidade com SonarQube
+-   Suporte a cobertura de testes PHP (PHPUnit) e JavaScript (Vitest)
+-   Quality Gates automatizados no pipeline CI/CD
+-   Documentação detalhada de configuração e uso
+
 ## [3.0.0] - 2025-07-22
 
 ### 🔒 Adicionado - Segurança

@@ -151,18 +151,22 @@ jobs:
 
       - name: 🧪 Run tests
         working-directory: ${{ env.WORKING_DIR }}
-        run: php artisan test --coverage --min=70
+        run: |
+          mkdir -p coverage
+          php artisan test --coverage --min=70
 
-      - name: � Build assets
+      - name: 🏗️ Build assets
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
 
-      - name: �📊 Upload coverage reports
-        uses: codecov/codecov-action@v4
-        with:
-          file: ${{ env.WORKING_DIR }}/coverage.xml
-          flags: unittests
-          name: codecov-umbrella
+      - name: 📊 Generate Frontend Coverage
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          if [ -f "vitest.config.ts" ]; then
+            npm run test:js:coverage
+          else
+            echo "Frontend tests not configured"
+          fi
 
   # Job 3: Segurança e dependências
   security:
@@ -297,7 +301,21 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
 
-      - name: 🐳 Build Docker Image
+      - name: 🐳 Set up Docker Buildx
+        id: buildx-setup
+        continue-on-error: true
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+          buildkitd-flags: |
+            --allow-insecure-entitlement security.insecure
+            --allow-insecure-entitlement network.host
+
+      - name: 🐳 Build Docker Image (with Buildx and cache)
+        id: docker-build-cache
+        if: steps.buildx-setup.outcome == 'success'
+        continue-on-error: true
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -308,6 +326,32 @@ jobs:
             laravel-inertia:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          outputs: type=docker
+
+      - name: 🐳 Build Docker Image (with Buildx, no cache)
+        id: docker-build-no-cache
+        if: steps.buildx-setup.outcome == 'success' && steps.docker-build-cache.outcome == 'failure'
+        continue-on-error: true
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          push: false
+          tags: |
+            laravel-inertia:latest
+            laravel-inertia:${{ github.sha }}
+          platforms: linux/amd64
+          outputs: type=docker
+
+      - name: 🐳 Build Docker Image (fallback with regular Docker)
+        if: steps.buildx-setup.outcome == 'failure' || (steps.docker-build-cache.outcome == 'failure' && steps.docker-build-no-cache.outcome == 'failure')
+        run: |
+          docker build \
+            --file docker/production/Dockerfile \
+            --tag laravel-inertia:latest \
+            --tag laravel-inertia:${{ github.sha }} \
+            .
 
       # Descomente para deploy real
       # - name: 🚀 Deploy to Production
@@ -331,7 +375,7 @@ jobs:
 
     steps:
       - name: 📢 Success Notification
-        if: needs.deploy.result == 'success'
+        if: needs.deploy.result == 'success' && secrets.SLACK_WEBHOOK_URL != ''
         uses: 8398a7/action-slack@v3
         with:
           status: success
@@ -340,10 +384,22 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: 📢 Failure Notification
-        if: contains(needs.*.result, 'failure')
+        if: contains(needs.*.result, 'failure') && secrets.SLACK_WEBHOOK_URL != ''
         uses: 8398a7/action-slack@v3
         with:
           status: failure
           text: '❌ Pipeline falhou! Verifique os logs.'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: 📋 Pipeline Summary (when Slack not configured)
+        if: secrets.SLACK_WEBHOOK_URL == ''
+        run: |
+          echo "📋 Pipeline Summary:"
+          echo "- Lint: ${{ needs.lint.result }}"
+          echo "- Test: ${{ needs.test.result }}" 
+          echo "- Security: ${{ needs.security.result }}"
+          echo "- Deploy: ${{ needs.deploy.result }}"
+          echo ""
+          echo "💡 Para habilitar notificações Slack:"
+          echo "   Configure SLACK_WEBHOOK_URL nos secrets do repositório"
