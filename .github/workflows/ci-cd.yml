@@ -253,14 +253,10 @@ jobs:
       - name: 🔍 Verify Coverage Files
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          if [ ! -d "coverage" ]; then
-            mkdir -p coverage
-            echo '<?xml version="1.0" encoding="UTF-8"?><coverage><project><metrics elements="0" coveredelements="0"/></project></coverage>' > coverage/clover.xml
-            echo '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite tests="0" failures="0" errors="0" time="0"/></testsuites>' > coverage/junit.xml
-            echo "# LCOV coverage report placeholder" > coverage/lcov.info
-          fi
+          # Create coverage directory if it doesn't exist
+          mkdir -p coverage
           
-          # Ensure required files exist
+          # Ensure required files exist with minimal placeholders
           [ ! -f "coverage/clover.xml" ] && echo '<?xml version="1.0" encoding="UTF-8"?><coverage><project><metrics elements="0" coveredelements="0"/></project></coverage>' > coverage/clover.xml
           [ ! -f "coverage/junit.xml" ] && echo '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite tests="0" failures="0" errors="0" time="0"/></testsuites>' > coverage/junit.xml
           [ ! -f "coverage/lcov.info" ] && echo "# LCOV coverage report placeholder" > coverage/lcov.info
@@ -299,13 +295,9 @@ jobs:
 
       - name: 🔍 Verify Coverage Files
         run: |
-          if [ -d "${{ env.WORKING_DIR }}/coverage" ]; then
-            echo "✅ Coverage directory found"
-          else
-            echo "⚠️ Creating minimal coverage structure"
-            mkdir -p ${{ env.WORKING_DIR }}/coverage
-            echo '<?xml version="1.0" encoding="UTF-8"?><coverage><project><metrics elements="0" coveredelements="0"/></project></coverage>' > ${{ env.WORKING_DIR }}/coverage/clover.xml
-          fi
+          # Ensure coverage directory and minimal files exist for SonarQube
+          mkdir -p ${{ env.WORKING_DIR }}/coverage
+          [ ! -f "${{ env.WORKING_DIR }}/coverage/clover.xml" ] && echo '<?xml version="1.0" encoding="UTF-8"?><coverage><project><metrics elements="0" coveredelements="0"/></project></coverage>' > ${{ env.WORKING_DIR }}/coverage/clover.xml
 
       - name: ☁️ SonarCloud Scan
         if: ${{ env.SONAR_TOKEN != '' }}
