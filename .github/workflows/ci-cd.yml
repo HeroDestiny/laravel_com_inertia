@@ -244,7 +244,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f "vitest.config.ts" ]; then
-            npm run test:js:coverage || echo "⚠️ Frontend tests failed"
+            npx vitest run --coverage || echo "⚠️ Frontend tests failed"
           else
             mkdir -p coverage
             echo "# Frontend coverage placeholder" > coverage/lcov.info
