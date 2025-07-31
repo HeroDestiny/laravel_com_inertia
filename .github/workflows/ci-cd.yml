@@ -222,18 +222,14 @@ jobs:
             echo "❌ .env.testing file not found"
             exit 1
           fi
-          
           cp .env.testing .env
           php artisan key:generate
-          mkdir -p coverage
 
       - name: 🧪 Run tests
         working-directory: ${{ env.WORKING_DIR }}
         env:
           XDEBUG_MODE: coverage
-        run: |
-          mkdir -p coverage
-          vendor/bin/phpunit --coverage-text
+        run: vendor/bin/phpunit --coverage-text
 
       - name: 🏗️ Build assets
         working-directory: ${{ env.WORKING_DIR }}
@@ -244,22 +240,8 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage || echo "⚠️ Frontend tests failed"
-          else
-            mkdir -p coverage
-            echo "# Frontend coverage placeholder" > coverage/lcov.info
+            npx vitest run --coverage
           fi
-
-      - name: 🔍 Verify Coverage Files
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          # Create coverage directory if it doesn't exist
-          mkdir -p coverage
-          
-          # Ensure required files exist with minimal placeholders
-          [ ! -f "coverage/clover.xml" ] && echo '<?xml version="1.0" encoding="UTF-8"?><coverage><project><metrics elements="0" coveredelements="0"/></project></coverage>' > coverage/clover.xml
-          [ ! -f "coverage/junit.xml" ] && echo '<?xml version="1.0" encoding="UTF-8"?><testsuites><testsuite tests="0" failures="0" errors="0" time="0"/></testsuites>' > coverage/junit.xml
-          [ ! -f "coverage/lcov.info" ] && echo "# LCOV coverage report placeholder" > coverage/lcov.info
 
       - name: 📤 Upload Coverage Reports
         uses: actions/upload-artifact@v4
@@ -294,10 +276,7 @@ jobs:
           path: ${{ env.WORKING_DIR }}/coverage
 
       - name: 🔍 Verify Coverage Files
-        run: |
-          # Ensure coverage directory and minimal files exist for SonarQube
-          mkdir -p ${{ env.WORKING_DIR }}/coverage
-          [ ! -f "${{ env.WORKING_DIR }}/coverage/clover.xml" ] && echo '<?xml version="1.0" encoding="UTF-8"?><coverage><project><metrics elements="0" coveredelements="0"/></project></coverage>' > ${{ env.WORKING_DIR }}/coverage/clover.xml
+        run: mkdir -p ${{ env.WORKING_DIR }}/coverage
 
       - name: ☁️ SonarCloud Scan
         if: ${{ env.SONAR_TOKEN != '' }}
@@ -307,8 +286,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: ${{ env.WORKING_DIR }}
-          args: >
-            -Dsonar.verbose=true
 
       - name: 🔍 SonarCloud Quality Gate
         if: ${{ env.SONAR_TOKEN != '' }}
@@ -351,24 +328,23 @@ jobs:
       - name: 🛡️ Security Audit (Composer)
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: composer audit || echo "⚠️ Composer audit found issues"
+        run: composer audit
 
       - name: 🛡️ Security Audit (NPM)
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: npm audit --audit-level=moderate || echo "⚠️ NPM audit found issues"
+        run: npm audit --audit-level=moderate
 
       - name: 🔍 Snyk Security Scan
         if: github.actor != 'dependabot[bot]' && env.SNYK_TOKEN != ''
-        run: |
-          cd ${{ env.WORKING_DIR }}
-          npx snyk test --severity-threshold=medium || echo "⚠️ Snyk found security issues"
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npx snyk test --severity-threshold=medium
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: ⚠️ Snyk Skipped
         if: env.SNYK_TOKEN == ''
-        run: echo "⚠️ Snyk security scan skipped - configure SNYK_TOKEN to enable"
+        run: echo "⚠️ Snyk security scan skipped"
 
   # Job 5: Documentação (apenas em mudanças relevantes)
   documentation:
@@ -411,7 +387,6 @@ jobs:
         run: |
           mkdir -p storage/uml
           php artisan generate:uml
-          
           if [ -f "scripts/check_uml_system.py" ]; then
             python3 scripts/check_uml_system.py
           fi
@@ -507,11 +482,6 @@ jobs:
       - name: 🐳 Build Docker Image (fallback with regular Docker)
         if: steps.buildx-setup.outcome == 'failure' || (steps.docker-build-cache.outcome == 'failure' && steps.docker-build-no-cache.outcome == 'failure')
         run: |
-          if [ ! -f "docker/production/Dockerfile" ]; then
-            echo "❌ Dockerfile not found"
-            exit 1
-          fi
-          
           docker build \
             --file docker/production/Dockerfile \
             --tag laravel-inertia:latest \
@@ -565,6 +535,6 @@ jobs:
         run: |
           echo "📋 Pipeline Summary:"
           echo "- Lint: ${{ needs.lint.result }}"
-          echo "- Test: ${{ needs.test.result }}" 
+          echo "- Test: ${{ needs.test.result }}"
           echo "- Security: ${{ needs.security.result }}"
           echo "- Deploy: ${{ needs.deploy.result }}"
