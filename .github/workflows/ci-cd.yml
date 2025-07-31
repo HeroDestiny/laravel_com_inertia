@@ -235,12 +235,6 @@ jobs:
       - name: 🧪 Run tests
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          # Verificar recursos disponíveis
-          echo "💾 Available disk space:"
-          df -h
-          echo "🧠 Available memory:"
-          free -h
-          
           mkdir -p coverage
           vendor/bin/phpunit \
             --coverage-clover=coverage/clover.xml \
