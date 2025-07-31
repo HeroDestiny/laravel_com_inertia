@@ -87,7 +87,7 @@ php scripts/test-postgres-connection.php
 php artisan migrate --force
 ```
 
-> ⚠️ **Ambiente de Produção:** O script de teste usa variáveis de ambiente e não expõe credenciais no código
+> **Ambiente de Produção:** O script de teste usa variáveis de ambiente e não expõe credenciais no código
 
 ## Backup e Restore
 

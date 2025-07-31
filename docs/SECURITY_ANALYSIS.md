@@ -385,10 +385,10 @@ $pdo = new PDO($dsn, $username, $password, [
 
 #### Impacto das Correções:
 
--   🔒 **Confidencialidade:** Credenciais não mais expostas no código
--   🛡️ **Integridade:** Prepared statements previnem SQL injection
--   🚫 **Disponibilidade:** Timeouts previnem ataques de DoS
--   📊 **Auditoria:** Logs seguros mantêm rastreabilidade sem expor dados sensíveis
+-   **Confidencialidade:** Credenciais não mais expostas no código
+-   **Integridade:** Prepared statements previnem SQL injection
+-   **Disponibilidade:** Timeouts previnem ataques de DoS
+-   **Auditoria:** Logs seguros mantêm rastreabilidade sem expor dados sensíveis
 
 #### Recomendações de Uso:
 
