@@ -208,7 +208,11 @@ jobs:
       - name: 📦 Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader --${{ matrix.dependency-version }}
+          if [ "${{ matrix.dependency-version }}" = "prefer-lowest" ]; then
+            composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-lowest --prefer-stable
+          else
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+          fi
           npm ci
 
       - name: ⚙️ Setup Laravel
