@@ -430,7 +430,18 @@ jobs:
           echo "📋 SonarQube configuration verification:"
           if [ -f "${{ env.WORKING_DIR }}/sonar-project.properties" ]; then
             echo "✅ sonar-project.properties found"
-            grep -E "sonar.projectKey|sonar.sources" "${{ env.WORKING_DIR }}/sonar-project.properties"
+            echo "📋 Essential properties:"
+            grep -E "sonar.projectKey|sonar.organization|sonar.sources" "${{ env.WORKING_DIR }}/sonar-project.properties" || echo "⚠️ Some essential properties may be missing"
+            
+            # Check for required properties
+            if ! grep -q "sonar.organization" "${{ env.WORKING_DIR }}/sonar-project.properties"; then
+              echo "❌ sonar.organization is missing - this is required for SonarCloud"
+              echo "💡 Add 'sonar.organization=your-org-key' to sonar-project.properties"
+            fi
+            
+            if ! grep -q "sonar.projectKey" "${{ env.WORKING_DIR }}/sonar-project.properties"; then
+              echo "❌ sonar.projectKey is missing - this is required for SonarCloud"
+            fi
           else
             echo "❌ sonar-project.properties missing"
           fi
@@ -443,14 +454,24 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: ${{ env.WORKING_DIR }}
+          args: >
+            -Dsonar.verbose=true
+
+      - name: 🔍 SonarCloud Quality Gate
+        if: ${{ env.SONAR_TOKEN != '' }}
+        run: |
+          echo "📊 SonarCloud scan completed"
+          echo "💡 Check the results at: https://sonarcloud.io/project/overview?id=laravel-inertia-project"
 
       - name: ⚠️ SonarQube Skipped
         if: ${{ env.SONAR_TOKEN == '' }}
         run: |
           echo "⚠️ SonarQube analysis skipped"
-          echo "💡 To enable SonarQube:"
+          echo "💡 To enable SonarCloud:"
           echo "   1. Configure SONAR_TOKEN in repository secrets"
-          echo "   2. Set up SonarCloud project"
+          echo "   2. Set up SonarCloud project with organization: herodestiny"
+          echo "   3. Create project with key: laravel-inertia-project"
+          echo "   4. Get token from: https://sonarcloud.io/account/security/"
 
   # Job 4: Segurança e dependências
   security:
