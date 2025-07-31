@@ -240,8 +240,7 @@ jobs:
             --coverage-clover=coverage/clover.xml \
             --log-junit=coverage/junit.xml \
             --coverage-html=coverage/html \
-            --coverage-text \
-            --coverage-text-summary
+            --coverage-text
 
       - name: 🏗️ Build assets
         working-directory: ${{ env.WORKING_DIR }}
