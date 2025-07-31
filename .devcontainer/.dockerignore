@@ -1,0 +1,24 @@
+# Ignorar arquivos desnecessários no contexto Docker
+
+node_modules/
+vendor/
+storage/logs/_
+storage/framework/cache/_
+storage/framework/sessions/_
+storage/framework/views/_
+storage/app/public/_
+.git/
+.env_
+!.env.example
+_.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+_.tmp
+_.temp
+coverage/
+docs/
+tests/
+_.md
+!README.md
