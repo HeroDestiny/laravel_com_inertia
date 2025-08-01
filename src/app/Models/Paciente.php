@@ -67,11 +67,9 @@ final class Paciente extends Model
 
     /**
      * Get the patient's full name.
-     *
-     * @return string
      */
     public function getFullNameAttribute(): string
     {
-        return $this->name . ' ' . $this->surname;
+        return $this->name.' '.$this->surname;
     }
 }
