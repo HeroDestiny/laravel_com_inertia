@@ -31,7 +31,7 @@ final class GenerateUmlDiagram extends Command
         $this->info('Generating UML class diagram...');
 
         $outputPath = $this->option('output');
-        if (!is_string($outputPath)) {
+        if (! is_string($outputPath)) {
             $outputPath = 'storage/uml';
         }
         $fullOutputPath = base_path($outputPath);
@@ -54,7 +54,7 @@ final class GenerateUmlDiagram extends Command
         $umlContent = $this->generatePlantUmlContent($models);
 
         // Save PlantUML file
-        $pumlFile = $fullOutputPath . 'domain-models.puml';
+        $pumlFile = $fullOutputPath.'domain-models.puml';
         File::put($pumlFile, $umlContent);
 
         $this->info('UML diagram generated successfully!');
@@ -65,10 +65,10 @@ final class GenerateUmlDiagram extends Command
         $this->info('  • Online PlantUML: https://www.plantuml.com/plantuml/uml/');
         $this->info('  • VS Code PlantUML extension: Ctrl+Alt+P');
         $this->info('  • Copy content and paste in online editor');
-        $this->info('  • Edit source: ' . $pumlFile);
+        $this->info('  • Edit source: '.$pumlFile);
 
         $this->line('');
-        $this->info('🎯 Found ' . count($models) . ' model(s): ' . implode(', ', array_map(function ($class) {
+        $this->info('🎯 Found '.count($models).' model(s): '.implode(', ', array_map(function ($class) {
             return (new ReflectionClass($class))->getShortName();
         }, $models)));
 
@@ -92,7 +92,7 @@ final class GenerateUmlDiagram extends Command
         $files = File::files($modelPath);
 
         foreach ($files as $file) {
-            $className = 'App\\Models\\' . $file->getFilenameWithoutExtension();
+            $className = 'App\\Models\\'.$file->getFilenameWithoutExtension();
 
             if (class_exists($className)) {
                 $models[] = $className;
@@ -138,7 +138,7 @@ final class GenerateUmlDiagram extends Command
      */
     private function generateClassUml(string $className): string
     {
-        if (!class_exists($className)) {
+        if (! class_exists($className)) {
             return '';
         }
 
