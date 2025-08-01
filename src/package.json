@@ -24,6 +24,8 @@
         "analyse": "npm run lint:check && npm run type-check",
         "analyse:security": "npm audit && npm run lint:security",
         "type-check": "vue-tsc --noEmit",
+        "analyse:phpstan": "composer phpstan",
+        "analyse:full": "npm run analyse && npm run analyse:phpstan",
         "test": "php artisan test",
         "test:unit": "php artisan test --testsuite=Unit",
         "test:feature": "php artisan test --testsuite=Feature",

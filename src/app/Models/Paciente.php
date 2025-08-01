@@ -49,7 +49,7 @@ final class Paciente extends Model
     /**
      * Get the validation rules for the model.
      *
-     * @return array<string, string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public static function rules(): array
     {
@@ -67,9 +67,11 @@ final class Paciente extends Model
 
     /**
      * Get the patient's full name.
+     *
+     * @return string
      */
     public function getFullNameAttribute(): string
     {
-        return $this->name.' '.$this->surname;
+        return $this->name . ' ' . $this->surname;
     }
 }
