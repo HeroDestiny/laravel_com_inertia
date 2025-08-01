@@ -30,7 +30,7 @@ class PacienteControllerTest extends TestCase
         $response->assertStatus(200);
         // Just check that we get an Inertia response with the correct data
         $response->assertInertia(
-            fn($page) => $page->has('pacientes', 3)
+            fn ($page) => $page->has('pacientes', 3)
         );
     }
 
@@ -76,7 +76,7 @@ class PacienteControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn($page) => $page->has('paciente')
+            fn ($page) => $page->has('paciente')
                 ->where('paciente.id', $paciente->id)
         );
     }
@@ -89,7 +89,7 @@ class PacienteControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn($page) => $page->has('paciente')
+            fn ($page) => $page->has('paciente')
                 ->where('paciente.id', $paciente->id)
         );
     }
