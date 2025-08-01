@@ -15,6 +15,12 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $education
  * @property string $mother_name
  * @property string $email
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \App\Models\Paciente create(array<string, mixed> $attributes = [])
+ * @method static \App\Models\Paciente findOrFail(mixed $id, array<string> $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder<\App\Models\Paciente> latest(string|null $column = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<\App\Models\Paciente> take(int $value)
  */
 final class Paciente extends Model
 {
@@ -67,9 +73,11 @@ final class Paciente extends Model
 
     /**
      * Get the patient's full name.
+     *
+     * @return string
      */
     public function getFullNameAttribute(): string
     {
-        return $this->name.' '.$this->surname;
+        return $this->name . ' ' . $this->surname;
     }
 }

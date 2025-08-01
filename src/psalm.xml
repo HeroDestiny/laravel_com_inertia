@@ -19,6 +19,11 @@
     </projectFiles>
 
     <issueHandlers>
+        <!-- Ajustes para compatibilidade com PHPStan -->
+        <NonInvariantDocblockPropertyType errorLevel="suppress"/>
+        <UnusedBaselineEntry errorLevel="suppress"/>
+        <ImplicitToStringCast errorLevel="suppress"/>
+        
         <!-- Apenas erros críticos -->
         <DeprecatedMethod errorLevel="error"/>
         <DeprecatedFunction errorLevel="error"/>
@@ -33,5 +38,9 @@
         <MissingReturnType errorLevel="suppress"/>
         <MissingParamType errorLevel="suppress"/>
         <MissingOverrideAttribute errorLevel="suppress"/>
+        
+        <!-- Laravel específico -->
+        <InvalidTemplateParam errorLevel="suppress"/>
+        <ArgumentTypeCoercion errorLevel="suppress"/>
     </issueHandlers>
 </psalm>

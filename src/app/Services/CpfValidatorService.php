@@ -29,7 +29,8 @@ class CpfValidatorService
      */
     private function sanitize(string $cpf): string
     {
-        return preg_replace('/[^0-9]/', '', $cpf);
+        $result = preg_replace('/[^0-9]/', '', $cpf);
+        return $result ?? '';
     }
 
     /**
@@ -71,9 +72,9 @@ class CpfValidatorService
             return $cpf;
         }
 
-        return substr($cpf, 0, 3).'.'.
-            substr($cpf, 3, 3).'.'.
-            substr($cpf, 6, 3).'-'.
+        return substr($cpf, 0, 3) . '.' .
+            substr($cpf, 3, 3) . '.' .
+            substr($cpf, 6, 3) . '-' .
             substr($cpf, 9, 2);
     }
 }
