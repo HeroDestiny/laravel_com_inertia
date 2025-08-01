@@ -460,7 +460,7 @@ jobs:
         id: docker-build-cache
         if: steps.buildx-setup.outcome == 'success'
         continue-on-error: true
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/production/Dockerfile
@@ -477,7 +477,7 @@ jobs:
         id: docker-build-no-cache
         if: steps.buildx-setup.outcome == 'success' && steps.docker-build-cache.outcome == 'failure'
         continue-on-error: true
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/production/Dockerfile
