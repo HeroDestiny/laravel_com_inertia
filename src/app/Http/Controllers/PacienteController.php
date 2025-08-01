@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreatePacienteRequest;
+use App\Http\Requests\UpdatePacienteRequest;
 use App\Models\Paciente;
 use App\Services\PacienteService;
 use Inertia\Inertia;
@@ -45,10 +46,7 @@ final class PacienteController extends Controller
     public function store(CreatePacienteRequest $request): \Illuminate\Http\RedirectResponse
     {
         try {
-            // Ajustar o nome do campo para corresponder à migration
             $data = $request->validated();
-            $data['mother_name'] = $data['motherName'];
-            unset($data['motherName']);
 
             $this->pacienteService->create($data);
 
@@ -86,13 +84,10 @@ final class PacienteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(CreatePacienteRequest $request, Paciente $paciente): \Illuminate\Http\RedirectResponse
+    public function update(UpdatePacienteRequest $request, Paciente $paciente): \Illuminate\Http\RedirectResponse
     {
         try {
-            // Ajustar o nome do campo para corresponder à migration
             $data = $request->validated();
-            $data['mother_name'] = $data['motherName'];
-            unset($data['motherName']);
 
             $this->pacienteService->update($paciente->id, $data);
 

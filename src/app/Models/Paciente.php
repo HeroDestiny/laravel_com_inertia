@@ -45,4 +45,33 @@ final class Paciente extends Model
     protected $casts = [
         'birthdate' => 'date',
     ];
+
+    /**
+     * Get the validation rules for the model.
+     *
+     * @return array<string, string>
+     */
+    public static function rules(): array
+    {
+        return [
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'birthdate' => 'required|date',
+            'cpf' => 'required|string|max:11|unique:pacientes,cpf',
+            'role' => 'nullable|string|max:255',
+            'education' => 'nullable|string|max:255',
+            'mother_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:pacientes,email',
+        ];
+    }
+
+    /**
+     * Get the patient's full name.
+     *
+     * @return string
+     */
+    public function getFullNameAttribute(): string
+    {
+        return $this->name . ' ' . $this->surname;
+    }
 }

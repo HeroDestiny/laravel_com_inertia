@@ -30,7 +30,7 @@ class PacienteControllerTest extends TestCase
         $response->assertStatus(200);
         // Just check that we get an Inertia response with the correct data
         $response->assertInertia(
-            fn ($page) => $page->has('pacientes', 3)
+            fn($page) => $page->has('pacientes', 3)
         );
     }
 
@@ -51,7 +51,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => '11144477735', // CPF válido
             'role' => 'Patient',
             'education' => 'Superior',
-            'motherName' => 'Maria Silva',
+            'mother_name' => 'Maria Silva',
             'email' => 'joao@example.com',
         ];
 
@@ -76,7 +76,7 @@ class PacienteControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn ($page) => $page->has('paciente')
+            fn($page) => $page->has('paciente')
                 ->where('paciente.id', $paciente->id)
         );
     }
@@ -89,7 +89,7 @@ class PacienteControllerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertInertia(
-            fn ($page) => $page->has('paciente')
+            fn($page) => $page->has('paciente')
                 ->where('paciente.id', $paciente->id)
         );
     }
@@ -105,7 +105,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => $paciente->cpf, // Keep same CPF
             'role' => 'Updated Role',
             'education' => 'Updated Education',
-            'motherName' => 'Updated Mother',
+            'mother_name' => 'Updated Mother',
             'email' => $paciente->email, // Keep same email
         ];
 
@@ -143,7 +143,7 @@ class PacienteControllerTest extends TestCase
             'surname',
             'birthdate',
             'cpf',
-            'motherName',
+            'mother_name',
             'email',
         ]);
     }
@@ -159,7 +159,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => $existingPaciente->cpf, // Use existing CPF
             'role' => 'Patient',
             'education' => 'Superior',
-            'motherName' => 'Maria Silva',
+            'mother_name' => 'Maria Silva',
             'email' => 'joao@example.com',
         ];
 
@@ -179,7 +179,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => '12345678901',
             'role' => 'Patient',
             'education' => 'Superior',
-            'motherName' => 'Maria Silva',
+            'mother_name' => 'Maria Silva',
             'email' => $existingPaciente->email, // Use existing email
         ];
 
