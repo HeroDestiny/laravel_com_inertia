@@ -19,6 +19,7 @@ export default defineConfig({
             reportsDirectory: './coverage',
             exclude: [
                 'node_modules/',
+                'vendor/',
                 'tests/',
                 'coverage/',
                 '**/*.d.ts',
@@ -28,6 +29,7 @@ export default defineConfig({
                 'postcss.config.js',
                 'eslint.config.js',
             ],
+            include: ['resources/js/**/*.{js,ts,vue}', 'app/**/*.php'],
         },
     },
 });

@@ -2,7 +2,7 @@
 
 Este documento estabelece as diretrizes e padrões para criação e manutenção de testes no projeto.
 
-## 🎯 Princípios Fundamentais
+## Princípios Fundamentais
 
 ### 1. **AAA Pattern** - Arrange, Act, Assert
 
@@ -36,7 +36,7 @@ public function test_can_create_paciente()
 -   **Self-Validating** - Clear pass/fail sem verificação manual
 -   **Timely** - Escritos junto com o código de produção
 
-## 📁 Organização e Nomenclatura
+## Organização e Nomenclatura
 
 ### Estrutura de Diretórios
 
@@ -81,7 +81,7 @@ class PacienteControllerTest extends TestCase
 class UserServiceTest extends TestCase
 ```
 
-## 🏗️ Padrões de Implementação
+## Padrões de Implementação
 
 ### Setup e Teardown
 
@@ -152,7 +152,7 @@ $response->assertRedirect('/pacientes');
 $response->assertSessionHasErrors(['name', 'email']);
 ```
 
-## 🔧 Testes por Tipo de Componente
+## Testes por Tipo de Componente
 
 ### Models (Unit Tests)
 
@@ -293,7 +293,7 @@ public function test_external_api_integration()
 }
 ```
 
-## 📊 Performance e Otimização
+## Performance e Otimização
 
 ### Otimizações de Banco
 
@@ -353,7 +353,7 @@ public function test_throws_exception_for_duplicate_cpf()
 }
 ```
 
-## 🔍 Data Providers
+## Data Providers
 
 ### Testes Parametrizados
 
@@ -382,7 +382,7 @@ public static function invalidCpfProvider(): array
 }
 ```
 
-## 🏷️ Tags e Grupos
+## Tags e Grupos
 
 ### Organização com @group
 
@@ -483,7 +483,7 @@ test:
           run: vendor/bin/phpunit --coverage-clover coverage.xml
 ```
 
-## 📝 Documentação de Testes
+## Documentação de Testes
 
 ### Comentários Descritivos
 
@@ -522,7 +522,7 @@ vendor/bin/phpunit tests/Feature/Auth/
 ```
 ````
 
-## ⚡ Comandos Úteis
+## Comandos Úteis
 
 ### Execução e Debug
 
@@ -555,7 +555,7 @@ php artisan make:test PacienteTest --unit --methods=test_validation,test_creatio
 
 ---
 
-## 🎯 Checklist de Qualidade
+## Checklist de Qualidade
 
 Antes de fazer commit, verifique:
 

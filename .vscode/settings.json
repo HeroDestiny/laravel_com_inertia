@@ -1,0 +1,8 @@
+{
+  "dev.containers.copyGitConfig": true,
+  "dev.containers.gitCredentialHelper": "manager",
+  "dev.containers.defaultExtensions": [
+    "ms-vscode.vscode-json"
+  ],
+  "remote.containers.logLevel": "info"
+}

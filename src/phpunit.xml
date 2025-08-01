@@ -20,8 +20,6 @@
     <coverage>
         <report>
             <clover outputFile="coverage/clover.xml"/>
-            <html outputDirectory="coverage/html"/>
-            <xml outputDirectory="coverage/xml"/>
         </report>
     </coverage>
     <logging>

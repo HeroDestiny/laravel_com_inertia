@@ -1,8 +1,8 @@
-# 📊 Diagramas UML - Sistema Automático
+# Diagramas UML - Sistema Automático
 
 Este projeto inclui geração automática de diagramas UML a partir dos models Laravel.
 
-## 🚀 Como Usar
+## Como Usar
 
 ### Gerar Diagramas
 
@@ -30,7 +30,7 @@ npm run docs:uml:formats
 npm run docs:uml:check
 ```
 
-## 📁 Arquivos Gerados
+## Arquivos Gerados
 
 - `storage/uml/domain-models.puml` - Código fonte PlantUML
 - `storage/uml/domain-models.png` - Imagem PNG
@@ -39,12 +39,12 @@ npm run docs:uml:check
 - `storage/uml/domain-models.eps` - Imagem EPS (vetorial)
 - `storage/uml/domain-models.txt` - ASCII art
 
-## 📖 Documentação Técnica
+## Documentação Técnica
 
 Para informações detalhadas sobre implementação, scripts e personalização, consulte:
 **[UML Scripts - Documentação Técnica](./UML_SCRIPTS.md)**
 
-## ⚙️ Sistema de Encoding
+## Sistema de Encoding
 
 O sistema usa múltiplos métodos de encoding com fallback automático:
 
@@ -54,7 +54,7 @@ O sistema usa múltiplos métodos de encoding com fallback automático:
 
 Isso garante máxima compatibilidade com o PlantUML Online.
 
-## 🔧 Personalização
+## Personalização
 
 ### Models Suportados
 
@@ -111,13 +111,13 @@ O GitHub Actions gera diagramas automaticamente:
     path: src/storage/uml/
 ```
 
-## 🛠️ Dependências
+## Dependências
 
 - **PHP**: Laravel Artisan para comando básico
 - **Python**: Script avançado com validação (opcional)
 - **Node.js**: Integração com npm scripts
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
@@ -151,7 +151,7 @@ O sistema monitora:
 - ✅ Conectividade com PlantUML Online
 - ✅ Tamanho dos diagramas gerados
 
-## 🎯 Próximos Passos
+## Próximos Passos
 
 - [ ] Suporte a relacionamentos entre models
 - [ ] Geração de diagramas de sequência
@@ -160,4 +160,4 @@ O sistema monitora:
 
 ---
 
-**📊 Sistema robusto com múltiplos encoders e fallback automático**
+**Sistema robusto com múltiplos encoders e fallback automático**

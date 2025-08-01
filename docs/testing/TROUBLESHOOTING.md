@@ -54,7 +54,7 @@ APP_KEY=base64:GENERATED_KEY_HERE
 php artisan key:generate --env=testing
 ```
 
-## 🔧 Problemas de Execução
+## Problemas de Execução
 
 ### 1. **Testes Lentos (>30 segundos)**
 
@@ -211,7 +211,7 @@ $response = $this->post('/route', $data, [
 ]);
 ```
 
-## 📊 Problemas com Factories
+## Problemas com Factories
 
 ### 1. **Factory não encontrada**
 
@@ -270,7 +270,7 @@ public function adult()
 }
 ```
 
-## 🎯 Problemas com Inertia
+## Problemas com Inertia
 
 ### 1. **Assertions Inertia falhando**
 
@@ -313,7 +313,7 @@ $response = $this->get('/route', [
 $this->assertTrue($response->headers->has('X-Inertia'));
 ```
 
-## 🗄️ Problemas de Banco de Dados
+## Problemas de Banco de Dados
 
 ### 1. **RefreshDatabase não limpa dados**
 
@@ -357,7 +357,7 @@ public function definition()
 }
 ```
 
-## ⚡ Problemas de Performance
+## Problemas de Performance
 
 ### 1. **Testes muito lentos**
 
@@ -385,7 +385,7 @@ use DatabaseTransactions; // Mais rápido que RefreshDatabase
 User::factory()->count(100)->create(); // Mais rápido que loop
 ```
 
-## 🔍 Debug e Diagnóstico
+## Debug e Diagnóstico
 
 ### 1. **Como debugar teste que falha esporadicamente**
 
@@ -438,7 +438,7 @@ public function test_with_ray()
 }
 ```
 
-## 🛠️ Ferramentas de Diagnóstico
+## Ferramentas de Diagnóstico
 
 ### 1. **PHPUnit Verbose Output**
 
@@ -523,7 +523,7 @@ vendor/bin/phpunit tests/Unit/ExampleTest.php --debug --verbose --stop-on-failur
 
 ---
 
-## 🎯 Dicas Preventivas
+## Dicas Preventivas
 
 1. **Execute testes frequentemente** - não deixe acumular problemas
 2. **Use .env.testing** - nunca teste contra banco de produção
