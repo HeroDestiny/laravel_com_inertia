@@ -224,6 +224,7 @@ jobs:
           fi
           cp .env.testing .env
           php artisan key:generate
+          php artisan ziggy:generate
 
       - name: 🧪 Run tests
         working-directory: ${{ env.WORKING_DIR }}
@@ -381,6 +382,7 @@ jobs:
         run: |
           cp .env.example .env
           php artisan key:generate
+          php artisan ziggy:generate
 
       - name: 📊 Generate UML Diagrams
         working-directory: ${{ env.WORKING_DIR }}
@@ -431,6 +433,13 @@ jobs:
         run: |
           composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
           npm ci
+
+      - name: ⚙️ Generate Ziggy Routes
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan ziggy:generate
 
       - name: 🔨 Build production assets
         working-directory: ${{ env.WORKING_DIR }}
