@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreatePacienteRequest;
 use App\Models\Paciente;
+use App\Services\PacienteService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 final class PacienteController extends Controller
 {
+    public function __construct(
+        private PacienteService $pacienteService
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -16,8 +22,13 @@ final class PacienteController extends Controller
     {
         $pacientes = Paciente::latest()->get();
 
+        // Formata os dados usando o service
+        $formattedPacientes = $pacientes->map(function (Paciente $paciente) {
+            return $this->pacienteService->formatForResponse($paciente);
+        });
+
         return Inertia::render('Pacientes', [
-            'pacientes' => $pacientes,
+            'pacientes' => $formattedPacientes,
         ]);
     }
 
@@ -32,26 +43,23 @@ final class PacienteController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(CreatePacienteRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'cpf' => 'required|string|size:11|unique:pacientes,cpf', // CPF deve ter exatamente 11 dígitos
-            'role' => 'nullable|string|max:255',
-            'education' => 'nullable|string|max:255',
-            'motherName' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:pacientes,email',
-        ]);
+        try {
+            // Ajustar o nome do campo para corresponder à migration
+            $data = $request->validated();
+            $data['mother_name'] = $data['motherName'];
+            unset($data['motherName']);
 
-        // Ajustar o nome do campo para corresponder à migration
-        $validated['mother_name'] = $validated['motherName'];
-        unset($validated['motherName']);
+            $this->pacienteService->create($data);
 
-        Paciente::create($validated);
-
-        return to_route('pacientes.index');
+            return to_route('pacientes.index')
+                ->with('success', 'Paciente criado com sucesso!');
+        } catch (\InvalidArgumentException $e) {
+            return back()
+                ->withErrors(['cpf' => $e->getMessage()])
+                ->withInput();
+        }
     }
 
     /**
@@ -59,8 +67,10 @@ final class PacienteController extends Controller
      */
     public function show(Paciente $paciente): Response
     {
+        $formattedPaciente = $this->pacienteService->formatForResponse($paciente);
+
         return Inertia::render('Pacientes/Show', [
-            'paciente' => $paciente,
+            'paciente' => $formattedPaciente,
         ]);
     }
 
@@ -77,26 +87,23 @@ final class PacienteController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Paciente $paciente): \Illuminate\Http\RedirectResponse
+    public function update(CreatePacienteRequest $request, Paciente $paciente): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'birthdate' => 'required|date',
-            'cpf' => 'required|string|size:11|unique:pacientes,cpf,'.$paciente->id,
-            'role' => 'nullable|string|max:255',
-            'education' => 'nullable|string|max:255',
-            'motherName' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:pacientes,email,'.$paciente->id,
-        ]);
+        try {
+            // Ajustar o nome do campo para corresponder à migration
+            $data = $request->validated();
+            $data['mother_name'] = $data['motherName'];
+            unset($data['motherName']);
 
-        // Ajustar o nome do campo para corresponder à migration
-        $validated['mother_name'] = $validated['motherName'];
-        unset($validated['motherName']);
+            $this->pacienteService->update($paciente->id, $data);
 
-        $paciente->update($validated);
-
-        return to_route('pacientes.index');
+            return to_route('pacientes.index')
+                ->with('success', 'Paciente atualizado com sucesso!');
+        } catch (\InvalidArgumentException $e) {
+            return back()
+                ->withErrors(['cpf' => $e->getMessage()])
+                ->withInput();
+        }
     }
 
     /**

@@ -25,13 +25,15 @@ class CreatePacienteRequest extends FormRequest
    */
   public function rules(): array
   {
+    $pacienteId = $this->route('paciente')?->id;
+
     return [
       'name' => ['required', 'string', 'max:255'],
       'surname' => ['required', 'string', 'max:255'],
-      'email' => ['required', 'email', 'max:255'],
-      'cpf' => ['required', 'string', 'size:11'],
+      'email' => ['required', 'email', 'max:255', 'unique:pacientes,email' . ($pacienteId ? ',' . $pacienteId : '')],
+      'cpf' => ['required', 'string', 'size:11', 'unique:pacientes,cpf' . ($pacienteId ? ',' . $pacienteId : '')],
       'birthdate' => ['required', 'date'],
-      'mother_name' => ['required', 'string', 'max:255'],
+      'motherName' => ['required', 'string', 'max:255'],
       'role' => ['nullable', 'string', 'max:100'],
       'education' => ['nullable', 'string', 'max:100'],
     ];
@@ -46,10 +48,16 @@ class CreatePacienteRequest extends FormRequest
   {
     return [
       'name.required' => 'Nome é obrigatório',
+      'surname.required' => 'Sobrenome é obrigatório',
       'email.required' => 'Email é obrigatório',
       'email.email' => 'Email deve ter formato válido',
+      'email.unique' => 'Este email já está em uso',
       'cpf.required' => 'CPF é obrigatório',
-      'cpf.size' => 'CPF deve ter 11 dígitos',
+      'cpf.size' => 'CPF deve ter exatamente 11 dígitos',
+      'cpf.unique' => 'Este CPF já está cadastrado',
+      'birthdate.required' => 'Data de nascimento é obrigatória',
+      'birthdate.date' => 'Data de nascimento deve ser uma data válida',
+      'motherName.required' => 'Nome da mãe é obrigatório',
     ];
   }
 }

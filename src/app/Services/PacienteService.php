@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Paciente;
 use App\Services\CpfValidatorService;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -23,13 +24,15 @@ class PacienteService
    */
   public function create(array $data): Paciente
   {
-    $this->validateCpf($data['cpf']);
+    return DB::transaction(function () use ($data) {
+      $this->validateCpf($data['cpf']);
 
-    $paciente = Paciente::create($data);
+      $paciente = Paciente::create($data);
 
-    $this->logPacienteCreated($paciente);
+      $this->logPacienteCreated($paciente);
 
-    return $paciente;
+      return $paciente;
+    });
   }
 
   /**
@@ -39,14 +42,16 @@ class PacienteService
    */
   public function update(int $id, array $data): Paciente
   {
-    if (isset($data['cpf'])) {
-      $this->validateCpf($data['cpf']);
-    }
+    return DB::transaction(function () use ($id, $data) {
+      if (isset($data['cpf'])) {
+        $this->validateCpf($data['cpf']);
+      }
 
-    $paciente = Paciente::findOrFail($id);
-    $paciente->update($data);
+      $paciente = Paciente::findOrFail($id);
+      $paciente->update($data);
 
-    return $paciente;
+      return $paciente;
+    });
   }
 
   /**
