@@ -19,7 +19,7 @@ final class GenerateUmlDiagram extends Command
     /**
      * The console command description.
      *
-     * @var string
+     * @var string|null
      */
     protected $description = 'Generate UML class diagram for domain models';
 
@@ -31,6 +31,9 @@ final class GenerateUmlDiagram extends Command
         $this->info('Generating UML class diagram...');
 
         $outputPath = $this->option('output');
+        if (! is_string($outputPath)) {
+            $outputPath = 'storage/uml';
+        }
         $fullOutputPath = base_path($outputPath);
 
         // Ensure output directory exists
@@ -74,6 +77,8 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Get all model classes from the app/Models directory
+     *
+     * @return array<class-string>
      */
     private function getModelClasses(): array
     {
@@ -99,6 +104,8 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Generate PlantUML content for the given models
+     *
+     * @param  array<class-string>  $models
      */
     private function generatePlantUmlContent(array $models): string
     {
@@ -131,6 +138,10 @@ final class GenerateUmlDiagram extends Command
      */
     private function generateClassUml(string $className): string
     {
+        if (! class_exists($className)) {
+            return '';
+        }
+
         $reflection = new ReflectionClass($className);
         $shortName = $reflection->getShortName();
 
@@ -159,6 +170,9 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Get class properties for UML
+     *
+     * @param  ReflectionClass<object>  $reflection
+     * @return array<string>
      */
     private function getClassProperties(ReflectionClass $reflection): array
     {
@@ -189,6 +203,9 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Get class methods for UML
+     *
+     * @param  ReflectionClass<object>  $reflection
+     * @return array<string>
      */
     private function getClassMethods(ReflectionClass $reflection): array
     {
@@ -214,6 +231,8 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Generate relationships between models
+     *
+     * @param  array<class-string>  $models
      */
     private function generateRelationships(array $models): string
     {

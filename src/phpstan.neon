@@ -7,8 +7,14 @@ parameters:
     paths:
         - app/
 
-    # Level 10 is the highest level
-    level: 5
+    # Level 6 para detectar mais problemas
+    level: 6
+
+    # Detectar propriedades não inicializadas
+    checkUninitializedProperties: true
+    
+    # Verificar tipos de retorno mais específicos
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
 
 #    ignoreErrors:
 #        - '#PHPDoc tag @var#'

@@ -230,7 +230,9 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         env:
           XDEBUG_MODE: coverage
-        run: vendor/bin/phpunit --coverage-text
+        run: |
+          vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml
+          ls -la coverage/ || echo "Coverage directory not found"
 
       - name: 🏗️ Build assets
         working-directory: ${{ env.WORKING_DIR }}
@@ -277,7 +279,16 @@ jobs:
           path: ${{ env.WORKING_DIR }}/coverage
 
       - name: 🔍 Verify Coverage Files
-        run: mkdir -p ${{ env.WORKING_DIR }}/coverage
+        run: |
+          mkdir -p ${{ env.WORKING_DIR }}/coverage
+          echo "📁 Coverage directory contents:"
+          ls -la ${{ env.WORKING_DIR }}/coverage/ || echo "No coverage files found"
+          if [ -f "${{ env.WORKING_DIR }}/coverage/clover.xml" ]; then
+            echo "✅ clover.xml found"
+            echo "📊 File size: $(du -h ${{ env.WORKING_DIR }}/coverage/clover.xml)"
+          else
+            echo "❌ clover.xml not found"
+          fi
 
       - name: ☁️ SonarCloud Scan
         if: ${{ env.SONAR_TOKEN != '' }}

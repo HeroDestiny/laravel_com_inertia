@@ -48,10 +48,10 @@ class PacienteControllerTest extends TestCase
             'name' => 'João',
             'surname' => 'Silva',
             'birthdate' => '1990-01-01',
-            'cpf' => '12345678901',
+            'cpf' => '11144477735', // CPF válido
             'role' => 'Patient',
             'education' => 'Superior',
-            'motherName' => 'Maria Silva',
+            'mother_name' => 'Maria Silva',
             'email' => 'joao@example.com',
         ];
 
@@ -62,7 +62,7 @@ class PacienteControllerTest extends TestCase
         $this->assertDatabaseHas('pacientes', [
             'name' => 'João',
             'surname' => 'Silva',
-            'cpf' => '12345678901',
+            'cpf' => '11144477735',
             'mother_name' => 'Maria Silva',
             'email' => 'joao@example.com',
         ]);
@@ -105,7 +105,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => $paciente->cpf, // Keep same CPF
             'role' => 'Updated Role',
             'education' => 'Updated Education',
-            'motherName' => 'Updated Mother',
+            'mother_name' => 'Updated Mother',
             'email' => $paciente->email, // Keep same email
         ];
 
@@ -143,7 +143,7 @@ class PacienteControllerTest extends TestCase
             'surname',
             'birthdate',
             'cpf',
-            'motherName',
+            'mother_name',
             'email',
         ]);
     }
@@ -159,7 +159,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => $existingPaciente->cpf, // Use existing CPF
             'role' => 'Patient',
             'education' => 'Superior',
-            'motherName' => 'Maria Silva',
+            'mother_name' => 'Maria Silva',
             'email' => 'joao@example.com',
         ];
 
@@ -179,7 +179,7 @@ class PacienteControllerTest extends TestCase
             'cpf' => '12345678901',
             'role' => 'Patient',
             'education' => 'Superior',
-            'motherName' => 'Maria Silva',
+            'mother_name' => 'Maria Silva',
             'email' => $existingPaciente->email, // Use existing email
         ];
 

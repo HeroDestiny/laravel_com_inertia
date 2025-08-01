@@ -21,7 +21,6 @@ class UserFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    #[\Override]
     public function definition(): array
     {
         return [
@@ -38,7 +37,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

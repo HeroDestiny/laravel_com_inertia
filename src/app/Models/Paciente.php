@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
+ * @property int $id
  * @property string $name
  * @property string $surname
  * @property string $birthdate
@@ -14,9 +15,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $education
  * @property string $mother_name
  * @property string $email
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ *
+ * @method static \App\Models\Paciente create(array<string, mixed> $attributes = [])
+ * @method static \App\Models\Paciente findOrFail(mixed $id, array<string> $columns = ['*'])
+ * @method static \Illuminate\Database\Eloquent\Builder<\App\Models\Paciente> latest(string|null $column = null)
+ * @method static \Illuminate\Database\Eloquent\Builder<\App\Models\Paciente> take(int $value)
  */
 final class Paciente extends Model
 {
+    /** @use HasFactory<\Database\Factories\PacienteFactory> */
     use HasFactory;
 
     /**
@@ -45,9 +54,9 @@ final class Paciente extends Model
     ];
 
     /**
-     * Validation rules for the model.
+     * Get the validation rules for the model.
      *
-     * @return array<string, string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public static function rules(): array
     {
@@ -55,21 +64,19 @@ final class Paciente extends Model
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
             'birthdate' => 'required|date',
-            'cpf' => 'required|string|unique:users|max:14',
+            'cpf' => 'required|string|max:11|unique:pacientes,cpf',
             'role' => 'nullable|string|max:255',
             'education' => 'nullable|string|max:255',
             'mother_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|email|unique:pacientes,email',
         ];
     }
 
     /**
-     * Get the user's full name.
-     *
-     * @return string
+     * Get the patient's full name.
      */
-    public function getFullNameAttribute()
+    public function getFullNameAttribute(): string
     {
-        return "{$this->name} {$this->surname}";
+        return $this->name.' '.$this->surname;
     }
 }
