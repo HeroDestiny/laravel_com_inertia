@@ -8,6 +8,11 @@
   "dockerComposeFile": "./docker-compose.postgres.yml",
   "service": "laravel-app",
   "workspaceFolder": "/workspaces/laravel_com_inertia",
+  
+  // Configurações para evitar recriação de containers
+  "shutdownAction": "stopCompose",
+  "overrideCommand": false,
+  "updateRemoteUserUID": true,
 
   "features": {
     // Node LTS, ideal para projetos Vue + Vite  
@@ -140,16 +145,16 @@
 
   // Mounts otimizados para evitar conflitos de permissão
   "mounts": [
-    "source=laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
-    "source=laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume",
-    "source=laravel-storage-cache,target=${containerWorkspaceFolder}/src/storage/framework/cache,type=volume"
+    "source=devcontainer_laravel-node-modules,target=${containerWorkspaceFolder}/src/node_modules,type=volume",
+    "source=devcontainer_laravel-vendor,target=${containerWorkspaceFolder}/src/vendor,type=volume",
+    "source=devcontainer_laravel-storage-cache,target=${containerWorkspaceFolder}/src/storage/framework/cache,type=volume"
   ],
 
-  // Script de inicialização para resolver permissões
-  "onCreateCommand": "sudo chown -R vscode:vscode /workspaces/laravel_com_inertia",
+  // Script de inicialização para resolver permissões e limpeza
+  "onCreateCommand": "bash -c '.devcontainer/cleanup.sh 2>/dev/null || true && sudo chown -R vscode:vscode /workspaces/laravel_com_inertia'",
 
   // Comando de pós-instalação otimizado para PostgreSQL
-  "postCreateCommand": "cd src && composer clear-cache && composer install --no-dev --optimize-autoloader && npm ci && cp .env.example .env && php artisan key:generate && php artisan storage:link && python3 -m pip install plantuml && echo '✅ DevContainer com PostgreSQL configurado!'",
+  "postCreateCommand": "bash -c 'cd src && if [ ! -d vendor ]; then composer install --no-dev --optimize-autoloader; fi && if [ ! -f .env ]; then cp .env.example .env && php artisan key:generate; fi && if [ ! -d node_modules ]; then npm ci; fi && php artisan storage:link && python3 -m pip install plantuml && echo \"✅ DevContainer com PostgreSQL configurado!\"'",
 
   // Comando executado após o container inicializar
   "postStartCommand": "chmod +x .devcontainer/setup.sh && .devcontainer/setup.sh",

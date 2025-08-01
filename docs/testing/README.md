@@ -2,15 +2,15 @@
 
 Este documento descreve a estratégia de testes, cobertura e como executar os testes do projeto.
 
-## 📊 Visão Geral
+## Visão Geral
 
 -   **Total de Testes**: 55 testes com 190 assertions
--   **Status**: ✅ 100% passando
+-   **Status**: 100% passando
 -   **Tempo de Execução**: ~7 segundos
 -   **Estrutura**: Testes unitários + Feature tests
 -   **Framework**: PHPUnit 11.5.23
 
-## 🏗️ Estrutura dos Testes
+## Estrutura dos Testes
 
 ```
 tests/
@@ -36,93 +36,93 @@ tests/
         └── GenerateUmlDiagramTest.php    # Geração UML (6 testes)
 ```
 
-## 🎯 Cobertura por Área
+## Cobertura por Área
 
-### 🔐 Autenticação (20 testes)
+### Autenticação (20 testes)
 
 Sistema completo de autenticação Laravel Breeze + Inertia:
 
 -   **Login/Logout** (4 testes)
 
-    -   ✅ Renderização da tela de login
-    -   ✅ Autenticação com credenciais válidas
-    -   ✅ Falha com senha incorreta
-    -   ✅ Logout funcional
+    -   Renderização da tela de login
+    -   Autenticação com credenciais válidas
+    -   Falha com senha incorreta
+    -   Logout funcional
 
 -   **Registro** (2 testes)
 
-    -   ✅ Renderização da tela de registro
-    -   ✅ Criação de novos usuários
+    -   Renderização da tela de registro
+    -   Criação de novos usuários
 
 -   **Reset de Senha** (4 testes)
 
-    -   ✅ Solicitação de reset
-    -   ✅ Validação de token
-    -   ✅ Atualização da senha
+    -   Solicitação de reset
+    -   Validação de token
+    -   Atualização da senha
 
 -   **Verificação de Email** (6 testes)
 
-    -   ✅ Processo de verificação
-    -   ✅ Notificações com throttle
-    -   ✅ Validação de hash
+    -   Processo de verificação
+    -   Notificações com throttle
+    -   Validação de hash
 
 -   **Configurações** (7 testes)
-    -   ✅ Atualização de perfil
-    -   ✅ Alteração de senha
-    -   ✅ Exclusão de conta
+    -   Atualização de perfil
+    -   Alteração de senha
+    -   Exclusão de conta
 
-### 👨‍⚕️ Pacientes - CRUD Completo (19 testes)
+### Pacientes - CRUD Completo (19 testes)
 
 **Testes Unitários** (`Unit/PacienteTest.php` - 9 testes):
 
 ```php
-✅ test_paciente_has_fillable_attributes()      // Atributos fillable
-✅ test_paciente_casts_birthdate_to_date()      // Cast de data
-✅ test_validation_rules_are_correct()          // Regras de validação
-✅ test_get_full_name_attribute()               // Accessor nome completo
-✅ test_can_create_paciente_with_factory()      // Factory functioning
-✅ test_can_create_paciente_with_specific_data() // Criação com dados
-✅ test_birthdate_is_cast_to_carbon_date()      // Carbon casting
-✅ test_can_update_paciente()                   // Atualização
-✅ test_can_delete_paciente()                   // Exclusão
+test_paciente_has_fillable_attributes()      // Atributos fillable
+test_paciente_casts_birthdate_to_date()      // Cast de data
+test_validation_rules_are_correct()          // Regras de validação
+test_get_full_name_attribute()               // Accessor nome completo
+test_can_create_paciente_with_factory()      // Factory functioning
+test_can_create_paciente_with_specific_data() // Criação com dados
+test_birthdate_is_cast_to_carbon_date()      // Carbon casting
+test_can_update_paciente()                   // Atualização
+test_can_delete_paciente()                   // Exclusão
 ```
 
 **Testes de Feature** (`Feature/PacienteControllerTest.php` - 10 testes):
 
 ```php
-✅ test_can_view_pacientes_index()              // Listagem
-✅ test_can_view_create_paciente_form()         // Formulário criação
-✅ test_can_store_new_paciente()                // Criação via POST
-✅ test_can_show_paciente()                     // Visualização individual
-✅ test_can_view_edit_paciente_form()           // Formulário edição
-✅ test_can_update_paciente()                   // Atualização via PUT
-✅ test_can_delete_paciente()                   // Exclusão via DELETE
-✅ test_store_validates_required_fields()       // Validação campos obrigatórios
-✅ test_store_validates_unique_cpf()            // Validação CPF único
-✅ test_store_validates_unique_email()          // Validação email único
+test_can_view_pacientes_index()              // Listagem
+test_can_view_create_paciente_form()         // Formulário criação
+test_can_store_new_paciente()                // Criação via POST
+test_can_show_paciente()                     // Visualização individual
+test_can_view_edit_paciente_form()           // Formulário edição
+test_can_update_paciente()                   // Atualização via PUT
+test_can_delete_paciente()                   // Exclusão via DELETE
+test_store_validates_required_fields()       // Validação campos obrigatórios
+test_store_validates_unique_cpf()            // Validação CPF único
+test_store_validates_unique_email()          // Validação email único
 ```
 
-### 📊 Comando UML (6 testes)
+### Comando UML (6 testes)
 
 **Funcionalidade Customizada** (`Console/GenerateUmlDiagramTest.php`):
 
 ```php
-✅ test_can_generate_uml_diagram()              // Geração básica
-✅ test_can_generate_uml_diagram_with_custom_output_path() // Caminho customizado
-✅ test_uml_diagram_contains_model_properties() // Propriedades nos diagramas
-✅ test_uml_diagram_contains_model_methods()    // Métodos nos diagramas
-✅ test_creates_output_directory_if_not_exists() // Criação de diretórios
-✅ test_handles_no_models_gracefully()          // Tratamento sem models
+test_can_generate_uml_diagram()              // Geração básica
+test_can_generate_uml_diagram_with_custom_output_path() // Caminho customizado
+test_uml_diagram_contains_model_properties() // Propriedades nos diagramas
+test_uml_diagram_contains_model_methods()    // Métodos nos diagramas
+test_creates_output_directory_if_not_exists() // Criação de diretórios
+test_handles_no_models_gracefully()          // Tratamento sem models
 ```
 
-### 🏠 Dashboard & Navegação (2 testes)
+### Dashboard & Navegação (2 testes)
 
 ```php
-✅ test_guests_are_redirected_to_the_login_page()    // Middleware auth
-✅ test_authenticated_users_can_visit_the_dashboard() // Acesso autenticado
+test_guests_are_redirected_to_the_login_page()    // Middleware auth
+test_authenticated_users_can_visit_the_dashboard() // Acesso autenticado
 ```
 
-## 🚀 Como Executar os Testes
+## Como Executar os Testes
 
 ### Execução Completa
 
@@ -164,7 +164,7 @@ vendor/bin/phpunit --coverage-text
 vendor/bin/phpunit --coverage-html coverage/
 ```
 
-## ⚙️ Configuração dos Testes
+## Configuração dos Testes
 
 ### Arquivo de Configuração (`phpunit.xml`)
 
@@ -192,15 +192,15 @@ QUEUE_CONNECTION=sync    # Filas síncronas
 BCRYPT_ROUNDS=4          # Hash mais rápido
 ```
 
-## 🛠️ Ferramentas e Patterns Utilizados
+## Ferramentas e Patterns Utilizados
 
 ### Laravel Testing Features
 
--   ✅ **RefreshDatabase** - Banco limpo a cada teste
--   ✅ **Factories** - Criação de dados de teste
--   ✅ **Assertions Inertia** - Testes específicos para Inertia.js
--   ✅ **HTTP Testing** - Simulação de requests
--   ✅ **Authentication** - actingAs() para testes autenticados
+-   **RefreshDatabase** - Banco limpo a cada teste
+-   **Factories** - Criação de dados de teste
+-   **Assertions Inertia** - Testes específicos para Inertia.js
+-   **HTTP Testing** - Simulação de requests
+-   **Authentication** - actingAs() para testes autenticados
 
 ### Patterns de Teste
 
@@ -225,9 +225,9 @@ $response = $this->post('/pacientes', []);
 $response->assertSessionHasErrors(['name', 'cpf', 'email']);
 ```
 
-## 📈 Qualidade dos Testes
+## Qualidade dos Testes
 
-### ✅ Pontos Fortes
+### Pontos Fortes
 
 1. **Cobertura Completa** - CRUD, autenticação, comandos
 2. **Separação Clara** - Unit vs Feature bem definidos
@@ -236,14 +236,14 @@ $response->assertSessionHasErrors(['name', 'cpf', 'email']);
 5. **Testes de Edge Cases** - Cenários de erro tratados
 6. **Performance** - Execução rápida (~7s para 55 testes)
 
-### 📊 Métricas
+### Métricas
 
 -   **Testes por Funcionalidade**: Média de 8-10 testes por feature
 -   **Assertions por Teste**: Média de 3.4 assertions/teste
 -   **Tempo por Teste**: ~120ms por teste
 -   **Taxa de Sucesso**: 100%
 
-## 🔄 Integração com CI/CD
+## Integração com CI/CD
 
 Os testes são executados automaticamente nos workflows:
 
@@ -251,7 +251,7 @@ Os testes são executados automaticamente nos workflows:
 
 ```yaml
 # .github/workflows/ci-cd.yml
-- name: 🧪 Execute Tests
+- name: Execute Tests
   run: vendor/bin/phpunit --testdox
 ```
 
@@ -265,7 +265,7 @@ Os testes são executados automaticamente nos workflows:
 ./scripts/quick-check-local.sh
 ```
 
-## 📝 Criando Novos Testes
+## Criando Novos Testes
 
 ### Estrutura Recomendada
 
@@ -317,7 +317,7 @@ class ControllerNameTest extends TestCase
 }
 ```
 
-## 🎯 Próximos Passos
+## Próximos Passos
 
 ### Possíveis Melhorias
 
