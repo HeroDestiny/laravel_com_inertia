@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Paciente;
-use App\Services\CpfValidatorService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -13,119 +12,120 @@ use Illuminate\Support\Facades\Log;
  */
 class PacienteService
 {
-  public function __construct(
-    private CpfValidatorService $cpfValidator
-  ) {}
+    // Constantes para resolver números mágicos
+    private const SENIOR_AGE_THRESHOLD = 65;
 
-  /**
-   * Cria um novo paciente
-   * 
-   * @param array<string, mixed> $data
-   */
-  public function create(array $data): Paciente
-  {
-    return DB::transaction(function () use ($data) {
-      $this->validateCpf($data['cpf']);
+    private const MINOR_AGE_THRESHOLD = 18;
 
-      $paciente = Paciente::create($data);
+    public function __construct(
+        private readonly CpfValidatorService $cpfValidator
+    ) {}
 
-      $this->logPacienteCreated($paciente);
+    /**
+     * Cria um novo paciente
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function create(array $data): Paciente
+    {
+        return DB::transaction(function () use ($data) {
+            $this->validateCpf($data['cpf']);
 
-      return $paciente;
-    });
-  }
+            $paciente = Paciente::create($data);
 
-  /**
-   * Atualiza dados de um paciente
-   * 
-   * @param array<string, mixed> $data
-   */
-  public function update(int $id, array $data): Paciente
-  {
-    return DB::transaction(function () use ($id, $data) {
-      if (isset($data['cpf'])) {
-        $this->validateCpf($data['cpf']);
-      }
+            $this->logPacienteCreated($paciente);
 
-      $paciente = Paciente::findOrFail($id);
-      $paciente->update($data);
-
-      return $paciente;
-    });
-  }
-
-  /**
-   * Valida CPF
-   */
-  private function validateCpf(string $cpf): void
-  {
-    if (!$this->cpfValidator->isValid($cpf)) {
-      throw new \InvalidArgumentException('CPF inválido');
+            return $paciente;
+        });
     }
-  }
 
-  /**
-   * Registra log da criação do paciente
-   */
-  private function logPacienteCreated(Paciente $paciente): void
-  {
-    Log::info('Paciente criado', [
-      'id' => $paciente->id,
-      'name' => $paciente->name,
-      'created_at' => $paciente->created_at
-    ]);
-  }
+    /**
+     * Atualiza dados de um paciente
+     *
+     * @param  array<string, mixed>  $data
+     */
+    public function update(int $id, array $data): Paciente
+    {
+        return DB::transaction(function () use ($id, $data) {
+            if (isset($data['cpf'])) {
+                $this->validateCpf($data['cpf']);
+            }
 
-  /**
-   * Formata dados do paciente para resposta
-   * 
-   * @return array<string, mixed>
-   */
-  public function formatForResponse(Paciente $paciente): array
-  {
-    return [
-      'id' => $paciente->id,
-      'name' => $paciente->name,
-      'display_name' => $this->getDisplayName($paciente),
-      'email' => $paciente->email,
-      'formatted_cpf' => $this->cpfValidator->format($paciente->cpf),
-      'age' => $this->calculateAge($paciente->birthdate),
-      'category' => $this->getAgeCategory($paciente->birthdate)
-    ];
-  }
+            $paciente = Paciente::findOrFail($id);
+            $paciente->update($data);
 
-  /**
-   * Gera nome de exibição
-   */
-  private function getDisplayName(Paciente $paciente): string
-  {
-    return trim($paciente->name . ' ' . $paciente->surname);
-  }
+            return $paciente;
+        });
+    }
 
-  /**
-   * Calcula idade baseada na data de nascimento
-   */
-  private function calculateAge(string $birthdate): int
-  {
-    return (int) now()->diffInYears($birthdate);
-  }
+    /**
+     * Valida CPF
+     */
+    private function validateCpf(string $cpf): void
+    {
+        if (! $this->cpfValidator->isValid($cpf)) {
+            throw new \InvalidArgumentException('CPF inválido');
+        }
+    }
 
-  /**
-   * Determina categoria baseada na idade
-   * Resolve CODE SMELL de números mágicos
-   */
-  private function getAgeCategory(string $birthdate): string
-  {
-    $age = $this->calculateAge($birthdate);
+    /**
+     * Registra log da criação do paciente
+     */
+    private function logPacienteCreated(Paciente $paciente): void
+    {
+        Log::info('Paciente criado', [
+            'id' => $paciente->id,
+            'name' => $paciente->name,
+            'created_at' => $paciente->created_at,
+        ]);
+    }
 
-    return match (true) {
-      $age >= self::SENIOR_AGE_THRESHOLD => 'senior',
-      $age < self::MINOR_AGE_THRESHOLD => 'minor',
-      default => 'adult'
-    };
-  }
+    /**
+     * Formata dados do paciente para resposta
+     *
+     * @return array<string, mixed>
+     */
+    public function formatForResponse(Paciente $paciente): array
+    {
+        return [
+            'id' => $paciente->id,
+            'name' => $paciente->name,
+            'display_name' => $this->getDisplayName($paciente),
+            'email' => $paciente->email,
+            'formatted_cpf' => $this->cpfValidator->format($paciente->cpf),
+            'age' => $this->calculateAge($paciente->birthdate),
+            'category' => $this->getAgeCategory($paciente->birthdate),
+        ];
+    }
 
-  // Constantes para resolver números mágicos
-  private const SENIOR_AGE_THRESHOLD = 65;
-  private const MINOR_AGE_THRESHOLD = 18;
+    /**
+     * Gera nome de exibição
+     */
+    private function getDisplayName(Paciente $paciente): string
+    {
+        return trim($paciente->name.' '.$paciente->surname);
+    }
+
+    /**
+     * Calcula idade baseada na data de nascimento
+     */
+    private function calculateAge(string $birthdate): int
+    {
+        return (int) now()->diffInYears($birthdate);
+    }
+
+    /**
+     * Determina categoria baseada na idade
+     * Resolve CODE SMELL de números mágicos
+     */
+    private function getAgeCategory(string $birthdate): string
+    {
+        $age = $this->calculateAge($birthdate);
+
+        return match (true) {
+            $age >= self::SENIOR_AGE_THRESHOLD => 'senior',
+            $age < self::MINOR_AGE_THRESHOLD => 'minor',
+            default => 'adult'
+        };
+    }
 }

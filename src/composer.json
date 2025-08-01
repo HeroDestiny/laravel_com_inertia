@@ -92,8 +92,10 @@
             "vendor/bin/psalm"
         ],
         "fix": [
-            "vendor/bin/pint",
-            "vendor/bin/psalm --alter --issues=ClassMustBeFinal,PossiblyUnusedMethod"
+            "vendor/bin/pint"
+        ],
+        "fix:full": [
+            "vendor/bin/pint"
         ]
     },
     "extra": {

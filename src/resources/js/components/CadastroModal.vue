@@ -59,10 +59,10 @@ watch(isOpen, (newValue) => {
 const formatCPF = (value: string) => {
     // Remove tudo que não é dígito
     const cleaned = value.replace(/\D/g, '');
-    
+
     // Limita a 11 dígitos
     const limitedCleaned = cleaned.substring(0, 11);
-    
+
     // Aplica a máscara progressivamente
     if (limitedCleaned.length <= 3) {
         return limitedCleaned;
@@ -81,17 +81,17 @@ const handleCPFInput = (event: Event) => {
     const cursorPosition = target.selectionStart || 0;
     const oldValue = target.value;
     const formatted = formatCPF(target.value);
-    
+
     // Atualiza o valor do formulário
     form.cpf = formatted;
-    
+
     // Calcula a nova posição do cursor
     let newCursorPosition = cursorPosition;
     if (formatted.length > oldValue.length) {
         // Se um caractere foi adicionado (ponto ou hífen), move o cursor para frente
         newCursorPosition = cursorPosition + (formatted.length - oldValue.length);
     }
-    
+
     // Atualiza o valor do input e reposiciona o cursor
     setTimeout(() => {
         target.value = formatted;
@@ -217,7 +217,7 @@ const closeModal = () => {
                             v-model="form.education"
                             required
                             :class="[
-                                'border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+                                'border-input placeholder:text-muted-foreground focus-visible:ring-ring flex h-9 w-full rounded-md border bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50',
                                 { 'border-red-500': form.errors.education },
                             ]"
                         >

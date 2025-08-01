@@ -16,6 +16,8 @@
         "dev": "vite",
         "format": "prettier --write resources/",
         "format:check": "prettier --check resources/",
+        "format:php": "vendor/bin/pint",
+        "format:all": "npm run format && npm run format:php",
         "lint": "eslint . --fix",
         "lint:check": "eslint .",
         "lint:security": "eslint . --rule 'no-eval: error' --rule 'no-implied-eval: error'",

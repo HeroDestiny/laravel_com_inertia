@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreatePacienteRequest;
 use App\Models\Paciente;
 use App\Services\PacienteService;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 

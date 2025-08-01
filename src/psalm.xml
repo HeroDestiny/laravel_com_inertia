@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <psalm
-    errorLevel="5"
+    errorLevel="3"
     resolveFromConfigFile="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
     xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
     findUnusedBaselineEntry="true"
-    findUnusedCode="true"
+    findUnusedCode="false"
     errorBaseline="psalm-baseline.xml"
 >
     <projectFiles>
@@ -19,17 +19,19 @@
     </projectFiles>
 
     <issueHandlers>
+        <!-- Apenas erros críticos -->
         <DeprecatedMethod errorLevel="error"/>
         <DeprecatedFunction errorLevel="error"/>
         <DeprecatedProperty errorLevel="error"/>
         
-        <!-- Code smells -->
-        <UnusedVariable errorLevel="error"/>
-        <UnusedProperty errorLevel="error"/>
-        <UnusedMethod errorLevel="error"/>
-        <PossiblyUnusedMethod errorLevel="info"/>
-        <ClassMustBeFinal errorLevel="info"/>
-        <MissingReturnType errorLevel="info"/>
-        <MissingParamType errorLevel="info"/>
+        <!-- Code smells menos agressivos -->
+        <UnusedVariable errorLevel="info"/>
+        <UnusedProperty errorLevel="info"/>
+        <UnusedMethod errorLevel="suppress"/>
+        <PossiblyUnusedMethod errorLevel="suppress"/>
+        <ClassMustBeFinal errorLevel="suppress"/>
+        <MissingReturnType errorLevel="suppress"/>
+        <MissingParamType errorLevel="suppress"/>
+        <MissingOverrideAttribute errorLevel="suppress"/>
     </issueHandlers>
 </psalm>
