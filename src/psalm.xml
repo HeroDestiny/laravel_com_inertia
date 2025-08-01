@@ -22,5 +22,14 @@
         <DeprecatedMethod errorLevel="error"/>
         <DeprecatedFunction errorLevel="error"/>
         <DeprecatedProperty errorLevel="error"/>
+        
+        <!-- Code smells -->
+        <UnusedVariable errorLevel="error"/>
+        <UnusedProperty errorLevel="error"/>
+        <UnusedMethod errorLevel="error"/>
+        <PossiblyUnusedMethod errorLevel="info"/>
+        <ClassMustBeFinal errorLevel="info"/>
+        <MissingReturnType errorLevel="info"/>
+        <MissingParamType errorLevel="info"/>
     </issueHandlers>
 </psalm>

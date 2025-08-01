@@ -51,7 +51,7 @@ final class GenerateUmlDiagram extends Command
         $umlContent = $this->generatePlantUmlContent($models);
 
         // Save PlantUML file
-        $pumlFile = $fullOutputPath.'domain-models.puml';
+        $pumlFile = $fullOutputPath . 'domain-models.puml';
         File::put($pumlFile, $umlContent);
 
         $this->info('UML diagram generated successfully!');
@@ -62,10 +62,10 @@ final class GenerateUmlDiagram extends Command
         $this->info('  • Online PlantUML: https://www.plantuml.com/plantuml/uml/');
         $this->info('  • VS Code PlantUML extension: Ctrl+Alt+P');
         $this->info('  • Copy content and paste in online editor');
-        $this->info('  • Edit source: '.$pumlFile);
+        $this->info('  • Edit source: ' . $pumlFile);
 
         $this->line('');
-        $this->info('🎯 Found '.count($models).' model(s): '.implode(', ', array_map(function ($class) {
+        $this->info('🎯 Found ' . count($models) . ' model(s): ' . implode(', ', array_map(function ($class) {
             return (new ReflectionClass($class))->getShortName();
         }, $models)));
 
@@ -74,6 +74,8 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Get all model classes from the app/Models directory
+     * 
+     * @return array<class-string>
      */
     private function getModelClasses(): array
     {
@@ -87,7 +89,7 @@ final class GenerateUmlDiagram extends Command
         $files = File::files($modelPath);
 
         foreach ($files as $file) {
-            $className = 'App\\Models\\'.$file->getFilenameWithoutExtension();
+            $className = 'App\\Models\\' . $file->getFilenameWithoutExtension();
 
             if (class_exists($className)) {
                 $models[] = $className;
@@ -99,6 +101,8 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Generate PlantUML content for the given models
+     * 
+     * @param array<class-string> $models
      */
     private function generatePlantUmlContent(array $models): string
     {
@@ -159,6 +163,9 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Get class properties for UML
+     * 
+     * @param ReflectionClass<object> $reflection
+     * @return array<string>
      */
     private function getClassProperties(ReflectionClass $reflection): array
     {
@@ -189,6 +196,9 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Get class methods for UML
+     * 
+     * @param ReflectionClass<object> $reflection
+     * @return array<string>
      */
     private function getClassMethods(ReflectionClass $reflection): array
     {
@@ -214,6 +224,8 @@ final class GenerateUmlDiagram extends Command
 
     /**
      * Generate relationships between models
+     * 
+     * @param array<class-string> $models
      */
     private function generateRelationships(array $models): string
     {
