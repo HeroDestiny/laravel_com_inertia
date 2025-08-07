@@ -200,7 +200,7 @@ jobs:
           fi
 
       - name: 📊 SonarQube Scan
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+        if: ${{ secrets.SONAR_TOKEN }}
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -209,7 +209,7 @@ jobs:
           projectBaseDir: ${{ env.WORKING_DIR }}
 
       - name: ⚠️ SonarQube Skipped
-        if: ${{ secrets.SONAR_TOKEN == '' }}
+        if: ${{ !secrets.SONAR_TOKEN }}
         run: |
           echo "⚠️ SonarQube analysis skipped (SONAR_TOKEN not configured)"
           echo "💡 To enable SonarQube scanning:"
