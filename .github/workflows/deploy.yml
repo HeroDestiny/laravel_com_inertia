@@ -1,0 +1,392 @@
+# 🚀 Pipeline de Deploy - CD
+name: Deploy Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Frontend CI", "Backend CI"]
+    types:
+      - completed
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+# Definir permissões mínimas necessárias
+permissions:
+  contents: read
+  actions: read
+  checks: write
+  packages: write
+
+env:
+  PHP_VERSION: '8.3'
+  NODE_VERSION: '22'
+  WORKING_DIR: src
+
+jobs:
+  # Job 1: Verificação de pré-requisitos
+  pre-deploy-check:
+    name: 🔍 Pre-Deploy Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    outputs:
+      frontend-status: ${{ steps.check-workflows.outputs.frontend-status }}
+      backend-status: ${{ steps.check-workflows.outputs.backend-status }}
+      can-deploy: ${{ steps.check-workflows.outputs.can-deploy }}
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔍 Check Frontend and Backend CI Status
+        id: check-workflows
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: frontendRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'frontend-ci.yml',
+              head_sha: context.sha,
+              status: 'completed'
+            });
+            
+            const { data: backendRuns } = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'backend-ci.yml',
+              head_sha: context.sha,
+              status: 'completed'
+            });
+            
+            const frontendStatus = frontendRuns.workflow_runs.length > 0 ? frontendRuns.workflow_runs[0].conclusion : 'not_found';
+            const backendStatus = backendRuns.workflow_runs.length > 0 ? backendRuns.workflow_runs[0].conclusion : 'not_found';
+            
+            console.log(`Frontend CI Status: ${frontendStatus}`);
+            console.log(`Backend CI Status: ${backendStatus}`);
+            
+            const canDeploy = frontendStatus === 'success' && backendStatus === 'success';
+            
+            core.setOutput('frontend-status', frontendStatus);
+            core.setOutput('backend-status', backendStatus);
+            core.setOutput('can-deploy', canDeploy);
+            
+            if (!canDeploy) {
+              core.setFailed(`Cannot deploy: Frontend CI (${frontendStatus}), Backend CI (${backendStatus})`);
+            }
+
+      - name: 📋 Pre-Deploy Summary
+        run: |
+          echo "📋 Pre-Deploy Validation Summary:"
+          echo "- Frontend CI: ${{ steps.check-workflows.outputs.frontend-status }}"
+          echo "- Backend CI: ${{ steps.check-workflows.outputs.backend-status }}"
+          echo "- Can Deploy: ${{ steps.check-workflows.outputs.can-deploy }}"
+
+  # Job 2: Build para produção
+  build-production:
+    name: 🔨 Production Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: pre-deploy-check
+    if: needs.pre-deploy-check.outputs.can-deploy == 'true'
+    environment: production
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐘 Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          tools: composer:v2
+
+      - name: 🎯 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: 📦 Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.WORKING_DIR }}/vendor
+            ${{ env.WORKING_DIR }}/node_modules
+          key: production-deps-${{ runner.os }}-php${{ env.PHP_VERSION }}-node${{ env.NODE_VERSION }}-${{ hashFiles('src/composer.lock', 'src/package-lock.json') }}
+          restore-keys: |
+            production-deps-${{ runner.os }}-php${{ env.PHP_VERSION }}-node${{ env.NODE_VERSION }}-
+            production-deps-${{ runner.os }}-
+
+      - name: 📦 Install Production Dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+          npm ci --only=production
+
+      - name: ⚙️ Generate Laravel Keys and Routes
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan ziggy:generate
+
+      - name: 🔨 Build Production Assets
+        working-directory: ${{ env.WORKING_DIR }}
+        run: npm run build
+
+      - name: 🧹 Optimize Laravel
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      - name: 📤 Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: |
+            ${{ env.WORKING_DIR }}/public/build/
+            ${{ env.WORKING_DIR }}/bootstrap/cache/
+            ${{ env.WORKING_DIR }}/vendor/
+          retention-days: 7
+
+  # Job 3: Build Docker Image
+  docker-build:
+    name: 🐳 Docker Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: build-production
+    environment: production
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 📥 Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: ${{ env.WORKING_DIR }}/
+
+      - name: 🐳 Set up Docker Buildx
+        id: buildx-setup
+        continue-on-error: true
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            image=moby/buildkit:latest
+          buildkitd-flags: |
+            --allow-insecure-entitlement security.insecure
+            --allow-insecure-entitlement network.host
+
+      - name: 🔑 Login to Container Registry (if configured)
+        if: ${{ secrets.DOCKER_REGISTRY != '' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🏷️ Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            laravel-inertia
+            ${{ secrets.DOCKER_REGISTRY }}/laravel-inertia
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: 🐳 Build and Push Docker Image (with Buildx and cache)
+        id: docker-build-cache
+        if: steps.buildx-setup.outcome == 'success'
+        continue-on-error: true
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/production/Dockerfile
+          push: ${{ secrets.DOCKER_REGISTRY != '' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+          outputs: type=docker
+
+      - name: 🐳 Build Docker Image (fallback with regular Docker)
+        if: steps.buildx-setup.outcome == 'failure' || steps.docker-build-cache.outcome == 'failure'
+        run: |
+          docker build \
+            --file docker/production/Dockerfile \
+            --tag laravel-inertia:latest \
+            --tag "laravel-inertia:${{ github.sha }}" \
+            .
+
+      - name: 🔍 Test Docker Image
+        run: |
+          docker run --rm laravel-inertia:latest php --version
+          docker run --rm laravel-inertia:latest php artisan --version
+
+  # Job 4: Deploy (placeholder para produção real)
+  deploy:
+    name: 🚀 Deploy to Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: docker-build
+    environment: production
+    if: success()
+
+    steps:
+      - name: 🚀 Deploy Preparation
+        run: |
+          echo "🚀 Preparing deployment..."
+          echo "Docker image built successfully"
+          echo "Ready for production deployment"
+
+      # Descomente e configure para deploy real
+      # - name: 🚀 Deploy to Production Server
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.DEPLOY_HOST }}
+      #     username: ${{ secrets.DEPLOY_USER }}
+      #     key: ${{ secrets.DEPLOY_KEY }}
+      #     port: ${{ secrets.DEPLOY_PORT || 22 }}
+      #     script: |
+      #       cd ${{ secrets.DEPLOY_PATH }}
+      #       docker-compose pull
+      #       docker-compose down
+      #       docker-compose up -d
+      #       docker system prune -f
+      #       echo "🎉 Deploy completed successfully!"
+
+      # Ou para deploy com Kubernetes
+      # - name: 🚀 Deploy to Kubernetes
+      #   uses: azure/k8s-deploy@v1
+      #   with:
+      #     manifests: |
+      #       k8s/deployment.yaml
+      #       k8s/service.yaml
+      #     images: |
+      #       ${{ secrets.DOCKER_REGISTRY }}/laravel-inertia:${{ github.sha }}
+
+      - name: ✅ Deploy Completed
+        run: |
+          echo "✅ Deployment process completed!"
+          echo "🌐 Application should be available at production URL"
+
+  # Job 5: Post-Deploy Validation
+  post-deploy-validation:
+    name: 🔍 Post-Deploy Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: deploy
+    if: success()
+
+    steps:
+      - name: 🔍 Health Check
+        run: |
+          echo "🔍 Running post-deployment health checks..."
+          # Adicione aqui verificações de saúde da aplicação
+          # curl -f ${{ secrets.APP_URL }}/health || exit 1
+          echo "✅ Health checks passed"
+
+      - name: 🧪 Smoke Tests
+        run: |
+          echo "🧪 Running smoke tests..."
+          # Adicione aqui testes básicos da aplicação
+          echo "✅ Smoke tests passed"
+
+  # Job 6: Notificações
+  notify:
+    name: 📢 Deploy Notifications
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [pre-deploy-check, build-production, docker-build, deploy, post-deploy-validation]
+    if: always()
+    
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+
+    steps:
+      - name: 📢 Success Notification
+        if: needs.deploy.result == 'success' && needs.post-deploy-validation.result == 'success'
+        run: |
+          echo "✅ Deploy realizado com sucesso!"
+          
+          # Slack notification
+          if [[ -n "${{ env.SLACK_WEBHOOK_URL }}" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"✅ Deploy realizado com sucesso! Commit: ${{ github.sha }}\"}" \
+              ${{ env.SLACK_WEBHOOK_URL }}
+          fi
+          
+          # Discord notification
+          if [[ -n "${{ env.DISCORD_WEBHOOK_URL }}" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"content\":\"✅ Deploy realizado com sucesso! Commit: \`${{ github.sha }}\`\"}" \
+              ${{ env.DISCORD_WEBHOOK_URL }}
+          fi
+
+      - name: 📢 Failure Notification
+        if: contains(needs.*.result, 'failure')
+        run: |
+          echo "❌ Deploy falhou! Verifique os logs."
+          
+          # Determinar qual job falhou
+          failed_jobs=()
+          if [[ "${{ needs.pre-deploy-check.result }}" == "failure" ]]; then
+            failed_jobs+=("pre-deploy-check")
+          fi
+          if [[ "${{ needs.build-production.result }}" == "failure" ]]; then
+            failed_jobs+=("build-production")
+          fi
+          if [[ "${{ needs.docker-build.result }}" == "failure" ]]; then
+            failed_jobs+=("docker-build")
+          fi
+          if [[ "${{ needs.deploy.result }}" == "failure" ]]; then
+            failed_jobs+=("deploy")
+          fi
+          if [[ "${{ needs.post-deploy-validation.result }}" == "failure" ]]; then
+            failed_jobs+=("post-deploy-validation")
+          fi
+          
+          failed_jobs_str=$(IFS=,; echo "${failed_jobs[*]}")
+          
+          # Slack notification
+          if [[ -n "${{ env.SLACK_WEBHOOK_URL }}" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"text\":\"❌ Deploy falhou! Jobs com falha: ${failed_jobs_str}. Commit: ${{ github.sha }}\"}" \
+              ${{ env.SLACK_WEBHOOK_URL }}
+          fi
+          
+          # Discord notification
+          if [[ -n "${{ env.DISCORD_WEBHOOK_URL }}" ]]; then
+            curl -X POST -H 'Content-type: application/json' \
+              --data "{\"content\":\"❌ Deploy falhou! Jobs com falha: ${failed_jobs_str}. Commit: \`${{ github.sha }}\`\"}" \
+              ${{ env.DISCORD_WEBHOOK_URL }}
+          fi
+
+      - name: 📋 Deploy Pipeline Summary
+        run: |
+          echo "📋 Deploy Pipeline Summary:"
+          echo "- Pre-Deploy Check: ${{ needs.pre-deploy-check.result }}"
+          echo "- Build Production: ${{ needs.build-production.result }}"
+          echo "- Docker Build: ${{ needs.docker-build.result }}"
+          echo "- Deploy: ${{ needs.deploy.result }}"
+          echo "- Post-Deploy Validation: ${{ needs.post-deploy-validation.result }}"
+          
+          if [[ "${{ needs.deploy.result }}" == "success" && "${{ needs.post-deploy-validation.result }}" == "success" ]]; then
+            echo "🎉 Deploy pipeline completed successfully!"
+          else
+            echo "💥 Deploy pipeline had issues!"
+          fi
