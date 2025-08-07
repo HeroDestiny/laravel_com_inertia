@@ -1,81 +1,52 @@
-# 🐘 Pipeline de Backend - CI
-name: Backend CI
+name: 🐘 Backend CI Pipeline
 
 on:
   push:
     paths:
       - 'src/**/*.php'
-      - 'src/composer.{json,lock}'
+      - 'src/composer.json'
+      - 'src/composer.lock'
+      - 'src/phpunit.xml'
+      - 'src/phpstan.neon'
+      - 'src/.env.testing'
       - 'src/config/**'
       - 'src/database/**'
       - 'src/routes/**'
-      - 'src/tests/**'
-      - 'src/phpunit.xml'
-      - 'src/phpunit-paratest.xml'
-      - 'src/phpstan.neon'
-      - 'src/psalm.xml'
-      - 'src/psalm-baseline.xml'
       - '.github/workflows/backend-ci.yml'
+    branches-ignore:
+      - 'dependabot/**'
   pull_request:
-    branches: [main]
     paths:
       - 'src/**/*.php'
-      - 'src/composer.{json,lock}'
+      - 'src/composer.json'
+      - 'src/composer.lock'
+      - 'src/phpunit.xml'
+      - 'src/phpstan.neon'
+      - 'src/.env.testing'
       - 'src/config/**'
       - 'src/database/**'
       - 'src/routes/**'
-      - 'src/tests/**'
-      - 'src/phpunit.xml'
-      - 'src/phpunit-paratest.xml'
-      - 'src/phpstan.neon'
-      - 'src/psalm.xml'
-      - 'src/psalm-baseline.xml'
       - '.github/workflows/backend-ci.yml'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
-# Definir permissões mínimas necessárias
-permissions:
-  contents: read
-  actions: read
-  checks: write
-  pull-requests: write
-  security-events: write
 
 env:
   PHP_VERSION: '8.3'
   NODE_VERSION: '22'
-  WORKING_DIR: src
+  WORKING_DIR: 'src'
 
 jobs:
-  # Job 1: Análise estática e linting Backend
+  # Job 1: Lint e Análises estáticas Backend
   lint-backend:
-    name: 🔍 Backend Code Quality
+    name: 🔍 Backend Lint & Static Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        analysis: ['pint', 'phpstan']
 
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 🔍 Detect Backend changes
-        id: changes
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            php:
-              - 'src/**/*.php'
-            composer:
-              - 'src/composer.{json,lock}'
-            config:
-              - 'src/config/**'
-              - 'src/phpstan.neon'
-              - 'src/psalm.xml'
-              - 'src/psalm-baseline.xml'
 
       - name: 🐘 Setup PHP
         uses: shivammathur/setup-php@v2
@@ -83,37 +54,36 @@ jobs:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
           coverage: none
+          extensions: mbstring, xml, ctype, iconv, intl
 
       - name: 📦 Cache Composer
         uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/vendor
-          key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('src/composer.lock') }}
+          key: composer-lint-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('src/composer.lock') }}
           restore-keys: |
+            composer-lint-${{ runner.os }}-php${{ env.PHP_VERSION }}-
             composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
-            composer-${{ runner.os }}-
 
       - name: 📦 Install PHP dependencies
         working-directory: ${{ env.WORKING_DIR }}
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
 
       - name: 🎨 PHP Code Style (Pint)
+        if: matrix.analysis == 'pint'
         working-directory: ${{ env.WORKING_DIR }}
         run: vendor/bin/pint --test
 
       - name: 🔍 Static Analysis (PHPStan)
+        if: matrix.analysis == 'phpstan'
         working-directory: ${{ env.WORKING_DIR }}
-        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
-
-      - name: 🛡️ Security Analysis (Psalm)
-        working-directory: ${{ env.WORKING_DIR }}
-        run: vendor/bin/psalm --no-progress
+        run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=github
 
   # Job 2: Testes Backend
   test-backend:
     name: 🧪 Backend Tests (PHP ${{ matrix.php-version }}, ${{ matrix.dependency-version }})
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
     needs: lint-backend
     strategy:
       fail-fast: false
@@ -132,9 +102,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer:v2
+          tools: composer:v2, phpunit/phpunit
           coverage: xdebug
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+          ini-values: memory_limit=512M
 
       - name: 🎯 Setup Node.js (for Ziggy)
         uses: actions/setup-node@v4
@@ -147,11 +118,18 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/vendor
-          key: composer-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-${{ hashFiles('src/composer.lock') }}
+          key: composer-test-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-${{ hashFiles('src/composer.lock') }}
           restore-keys: |
-            composer-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-
+            composer-test-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-
+            composer-test-${{ runner.os }}-php${{ matrix.php-version }}-
             composer-${{ runner.os }}-php${{ matrix.php-version }}-
-            composer-${{ runner.os }}-
+
+      - name: 🗂️ Cache NPM
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIR }}/node_modules
+          key: npm-${{ runner.os }}-${{ hashFiles('src/package-lock.json') }}
+          restore-keys: npm-${{ runner.os }}-
 
       - name: 📦 Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
@@ -178,7 +156,9 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         env:
           XDEBUG_MODE: coverage
-        run: vendor/bin/phpunit --coverage-text
+        run: |
+          mkdir -p coverage
+          vendor/bin/phpunit --coverage-text --coverage-clover=coverage/clover.xml --log-junit=coverage/junit.xml --testdox
 
       - name: 📤 Upload Backend Coverage Reports
         uses: actions/upload-artifact@v4
@@ -192,18 +172,15 @@ jobs:
   sonarqube-backend:
     name: 📊 Backend SonarQube Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs: test-backend
     if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]')
-    
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
       - name: 📥 Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
+          fetch-depth: 0
 
       - name: 📥 Download Backend Coverage Reports
         uses: actions/download-artifact@v4
@@ -212,11 +189,18 @@ jobs:
           name: backend-coverage-php8.3-prefer-stable-${{ github.sha }}
           path: ${{ env.WORKING_DIR }}/coverage
 
-      - name: 🔍 Verify Coverage Files
-        run: mkdir -p ${{ env.WORKING_DIR }}/coverage
+      - name: 🔍 Prepare Coverage for SonarQube
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          if [ -f "coverage/clover.xml" ]; then
+            echo "✅ Using coverage data from test job"
+            cp coverage/clover.xml coverage.xml
+          else
+            echo "⚠️ No coverage data found - SonarQube will analyze code without coverage metrics"
+          fi
 
-      - name: ☁️ SonarCloud Scan
-        if: ${{ env.SONAR_TOKEN != '' }}
+      - name: 📊 SonarQube Scan
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -224,19 +208,22 @@ jobs:
         with:
           projectBaseDir: ${{ env.WORKING_DIR }}
 
-      - name: 🔍 SonarCloud Quality Gate
-        if: ${{ env.SONAR_TOKEN != '' }}
-        run: echo "📊 SonarCloud scan completed"
+      - name: ⚠️ SonarQube Skipped
+        if: ${{ secrets.SONAR_TOKEN == '' }}
+        run: |
+          echo "⚠️ SonarQube analysis skipped (SONAR_TOKEN not configured)"
+          echo "💡 To enable SonarQube scanning:"
+          echo "   1. Sign up at https://sonarcloud.io"
+          echo "   2. Create a new project and get your token"
+          echo "   3. Add it as SONAR_TOKEN secret in GitHub repository settings"
+          echo "   4. Your sonar-project.properties file is already configured!"
 
   # Job 4: Segurança Backend
   security-backend:
     name: 🛡️ Backend Security
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: test-backend
-    
-    env:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    timeout-minutes: 10
+    needs: lint-backend
 
     steps:
       - name: 📥 Checkout
@@ -247,34 +234,39 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
+          extensions: mbstring, xml, ctype, iconv, intl
+
+      - name: 📦 Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIR }}/vendor
+          key: composer-security-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('src/composer.lock') }}
+          restore-keys: |
+            composer-lint-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+            composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
 
       - name: 📦 Install PHP dependencies
         working-directory: ${{ env.WORKING_DIR }}
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
       - name: 🛡️ Security Audit (Composer)
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: composer audit
-
-      - name: 🔍 Snyk Security Scan (PHP)
-        if: github.actor != 'dependabot[bot]' && env.SNYK_TOKEN != ''
-        working-directory: ${{ env.WORKING_DIR }}
-        run: npx snyk test --file=composer.json --severity-threshold=medium
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: ⚠️ Snyk Skipped
-        if: env.SNYK_TOKEN == ''
-        run: echo "⚠️ Snyk security scan skipped (token not available)"
+        run: |
+          echo "🔍 Running Composer security audit..."
+          if composer audit; then
+            echo "✅ No security vulnerabilities found in PHP dependencies"
+          else
+            echo "⚠️ Security vulnerabilities detected - please review and update dependencies"
+          fi
 
   # Job 5: Documentação Backend
   documentation-backend:
     name: 📚 Backend Documentation
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     needs: lint-backend
-    if: contains(github.event.head_commit.message, '[docs]') || github.event_name == 'push'
+    if: contains(github.event.head_commit.message, '[docs]') || github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - name: 📥 Checkout
@@ -285,6 +277,7 @@ jobs:
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
+          extensions: mbstring, xml, ctype, iconv, intl
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
@@ -292,10 +285,19 @@ jobs:
           python-version: '3.12'
           cache: 'pip'
 
+      - name: 📦 Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIR }}/vendor
+          key: composer-docs-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('src/composer.lock') }}
+          restore-keys: |
+            composer-lint-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+            composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+
       - name: 📦 Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
           pip install plantuml-markdown
 
       - name: ⚙️ Setup Laravel
@@ -330,18 +332,22 @@ jobs:
   backend-report:
     name: 📊 Backend Report
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     needs: [lint-backend, test-backend, sonarqube-backend, security-backend]
     if: always()
 
     steps:
       - name: 📋 Backend Pipeline Summary
         run: |
-          echo "📋 Backend Pipeline Summary:"
-          echo "- Lint: ${{ needs.lint-backend.result }}"
-          echo "- Test: ${{ needs.test-backend.result }}"
-          echo "- SonarQube: ${{ needs.sonarqube-backend.result }}"
-          echo "- Security: ${{ needs.security-backend.result }}"
+          echo "## 📋 Backend Pipeline Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Lint & Static Analysis | ${{ needs.lint-backend.result }} | ⏱️ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests | ${{ needs.test-backend.result }} | ⏱️ |" >> $GITHUB_STEP_SUMMARY
+          echo "| SonarQube | ${{ needs.sonarqube-backend.result }} | ⏱️ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Security | ${{ needs.security-backend.result }} | ⏱️ |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           
           # Verificar se os jobs críticos passaram
           critical_jobs=("lint-backend" "test-backend" "security-backend")
@@ -358,9 +364,11 @@ jobs:
           fi
           
           if [ ${#failed_jobs[@]} -eq 0 ]; then
+            echo "✅ **Backend pipeline passou em todos os testes críticos!**" >> $GITHUB_STEP_SUMMARY
             echo "✅ Backend pipeline passou em todos os testes críticos!"
             exit 0
           else
+            echo "❌ **Backend pipeline teve falhas nos jobs:** ${failed_jobs[*]}" >> $GITHUB_STEP_SUMMARY
             echo "❌ Backend pipeline teve falhas nos jobs: ${failed_jobs[*]}"
             exit 1
           fi

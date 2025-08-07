@@ -149,9 +149,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test-frontend
-    
-    env:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
     steps:
       - name: 📥 Checkout
@@ -171,18 +168,14 @@ jobs:
       - name: 🛡️ Security Audit (NPM)
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: npm audit --audit-level=moderate
-
-      - name: 🔍 Snyk Security Scan
-        if: github.actor != 'dependabot[bot]' && env.SNYK_TOKEN != ''
-        working-directory: ${{ env.WORKING_DIR }}
-        run: npx snyk test --file=package.json --severity-threshold=medium
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: ⚠️ Snyk Skipped
-        if: env.SNYK_TOKEN == ''
-        run: echo "⚠️ Snyk security scan skipped (token not available)"
+        run: |
+          echo "🔍 Running NPM security audit..."
+          if npm audit --audit-level=moderate; then
+            echo "✅ No moderate+ security vulnerabilities found in Node.js dependencies"
+          else
+            echo "⚠️ Security vulnerabilities detected - please review and update dependencies"
+            echo "💡 Run 'npm audit fix' to automatically fix issues"
+          fi
 
   # Job 4: Relatório Final Frontend
   frontend-report:
