@@ -10,17 +10,8 @@ on:
       - completed
     branches: [main]
 
-concurrency      - name: 🐳 Build Docker Image (with Buildx cache)
-        id: docker-build-cache
-        if: steps.buildx-setup.outcome == 'success'
-        continue-on-error: true
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/production/Dockerfile
-          push: ${{ secrets.DOCKER_REGISTRY }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}deploy-${{ github.ref }}
+concurrency:
+  group: deploy-${{ github.ref }}
   cancel-in-progress: false
 
 # Definir permissões mínimas necessárias
