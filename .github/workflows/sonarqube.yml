@@ -67,11 +67,17 @@ jobs:
           XDEBUG_MODE: coverage
         run: |
           mkdir -p coverage
+          echo "🧪 Running PHPUnit with coverage..."
           vendor/bin/phpunit \
+            --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml \
             --coverage-xml=coverage/coverage-xml \
             --log-junit=coverage/junit.xml \
             --stop-on-failure
+          
+          echo "✅ Coverage generation completed"
+          echo "📁 Checking generated files:"
+          ls -la coverage/
 
       - name: Generate frontend coverage
         working-directory: ${{ env.WORKING_DIR }}
@@ -85,13 +91,33 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           echo "📁 Checking PHP files in app/:"
-          find app -name "*.php" -type f | head -10
+          find app -name "*.php" -type f | head -5
           echo ""
           echo "📁 Checking JS/Vue files:"
-          find resources/js -name "*.js" -o -name "*.vue" -o -name "*.ts" -type f | head -10
+          find resources/js -name "*.js" -o -name "*.vue" -o -name "*.ts" -type f | head -5
           echo ""
-          echo "📁 Checking coverage files:"
-          ls -la coverage/ || echo "No coverage directory found"
+          echo "📁 Coverage files status:"
+          if [ -d "coverage" ]; then
+            echo "✅ Coverage directory exists"
+            ls -la coverage/
+            echo ""
+            echo "📄 Clover XML content check:"
+            if [ -f "coverage/clover.xml" ]; then
+              echo "✅ clover.xml exists ($(wc -l < coverage/clover.xml) lines)"
+              head -3 coverage/clover.xml
+            else
+              echo "❌ clover.xml missing"
+            fi
+            echo ""
+            echo "📄 JUnit XML content check:"
+            if [ -f "coverage/junit.xml" ]; then
+              echo "✅ junit.xml exists ($(wc -l < coverage/junit.xml) lines)"
+            else
+              echo "❌ junit.xml missing"
+            fi
+          else
+            echo "❌ Coverage directory missing"
+          fi
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
