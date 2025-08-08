@@ -226,22 +226,51 @@ jobs:
           php artisan key:generate
           php artisan ziggy:generate
 
+      - name: 📁 Create Coverage Directory
+        working-directory: ${{ env.WORKING_DIR }}
+        run: mkdir -p coverage
+
+      - name: 🔍 Verify XDebug Setup
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          echo "🧪 Checking XDebug configuration..."
+          php -m | grep -i xdebug || echo "❌ XDebug not found in loaded modules"
+          php -i | grep -i "xdebug.mode" || echo "❌ XDebug mode not configured"
+          echo "📋 Current XDebug mode: $XDEBUG_MODE"
+        env:
+          XDEBUG_MODE: coverage
+
       - name: 🧪 Run tests
         working-directory: ${{ env.WORKING_DIR }}
         env:
           XDEBUG_MODE: coverage
-        run: vendor/bin/phpunit --coverage-text --coverage-clover=coverage/clover.xml
+        run: |
+          echo "🔍 Checking PHPUnit configuration..."
+          vendor/bin/phpunit --version
+          echo "📁 Coverage directory exists: $([ -d "coverage" ] && echo "✅ YES" || echo "❌ NO")"
+          echo "🧪 Running PHPUnit tests with coverage..."
+          # Executar sem o parâmetro clover adicional - usar apenas a config do phpunit.xml
+          vendor/bin/phpunit --coverage-text
+          echo "📊 Checking if clover.xml was created by phpunit.xml config..."
+          ls -la coverage/ || echo "Coverage directory not found after tests"
 
       - name: 🔍 Verify Coverage Files
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           echo "📊 Checking generated coverage files:"
-          ls -la coverage/
+          echo "Coverage directory contents:"
+          ls -la coverage/ || echo "❌ Coverage directory not found"
+          echo ""
+          echo "🔍 Looking for clover.xml specifically:"
           if [ -f "coverage/clover.xml" ]; then
-            echo "✅ clover.xml found"
+            echo "✅ clover.xml found!"
+            echo "📏 File size: $(wc -c < coverage/clover.xml) bytes"
+            echo "📄 First few lines:"
             head -5 coverage/clover.xml
           else
             echo "❌ clover.xml not found"
+            echo "🔍 Files that were created:"
+            find coverage/ -name "*.xml" -type f 2>/dev/null || echo "No XML files found"
           fi
 
       - name: 🏗️ Build assets
@@ -282,22 +311,42 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for better analysis
 
       - name: 📥 Download Coverage Reports
+        id: download-reports
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
           name: coverage-reports-php8.3-prefer-stable-${{ github.sha }}
           path: ${{ env.WORKING_DIR }}/coverage
 
+      - name: 📥 Download Coverage Reports (fallback prefer-lowest)
+        if: steps.download-reports.outcome == 'failure'
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: coverage-reports-php8.3-prefer-lowest-${{ github.sha }}
+          path: ${{ env.WORKING_DIR }}/coverage
+
       - name: 🔍 Verify Coverage Files
         run: |
           mkdir -p ${{ env.WORKING_DIR }}/coverage
           echo "📊 Checking downloaded coverage files:"
+          echo "📂 Coverage directory contents:"
           ls -la ${{ env.WORKING_DIR }}/coverage/ || echo "No coverage directory found"
+          echo ""
+          echo "🔍 Artifact download results:"
+          echo "- Primary download (prefer-stable): ${{ steps.download-reports.outcome }}"
+          echo ""
           if [ -f "${{ env.WORKING_DIR }}/coverage/clover.xml" ]; then
             echo "✅ clover.xml found for SonarQube"
-            echo "File size: $(wc -c < ${{ env.WORKING_DIR }}/coverage/clover.xml) bytes"
+            echo "📏 File size: $(wc -c < ${{ env.WORKING_DIR }}/coverage/clover.xml) bytes"
+            echo "📄 First few lines of clover.xml:"
+            head -3 ${{ env.WORKING_DIR }}/coverage/clover.xml
           else
             echo "❌ clover.xml not found - SonarQube will not have coverage data"
+            echo "🔍 Available XML files:"
+            find ${{ env.WORKING_DIR }}/coverage/ -name "*.xml" -type f 2>/dev/null || echo "No XML files found"
+            echo "🔍 All files in coverage directory:"
+            find ${{ env.WORKING_DIR }}/coverage/ -type f 2>/dev/null || echo "No files found"
           fi
 
       - name: ☁️ SonarCloud Scan
