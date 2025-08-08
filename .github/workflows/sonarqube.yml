@@ -71,17 +71,16 @@ jobs:
           # Ensure coverage directory exists and is clean for PHP files
           mkdir -p coverage
           
-          # Run PHPUnit with detailed output
+          # Run PHPUnit command (removed --verbose flag)
           echo "📋 PHPUnit command:"
-          echo "vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml --stop-on-failure"
+          echo "vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
           
           # Run the actual command and capture exit code
           if vendor/bin/phpunit \
             --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml \
             --coverage-xml=coverage/coverage-xml \
-            --log-junit=coverage/junit.xml \
-            --verbose; then
+            --log-junit=coverage/junit.xml; then
             echo "✅ PHPUnit completed successfully"
           else
             echo "❌ PHPUnit failed with exit code $?"
