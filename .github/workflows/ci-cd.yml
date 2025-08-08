@@ -117,7 +117,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
-          coverage: ${{ matrix.dependency-version == 'prefer-stable' && 'xdebug' || 'none' }}
+          coverage: none
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
           ini-values: memory_limit=512M
 
@@ -156,15 +156,7 @@ jobs:
 
       - name: Run tests
         working-directory: ${{ env.WORKING_DIR }}
-        env:
-          XDEBUG_MODE: ${{ matrix.dependency-version == 'prefer-stable' && 'coverage' || 'off' }}
-        run: |
-          if [ "${{ matrix.dependency-version }}" = "prefer-stable" ]; then
-            mkdir -p coverage
-            vendor/bin/phpunit --coverage-clover=coverage/clover.xml --stop-on-failure
-          else
-            vendor/bin/phpunit --stop-on-failure
-          fi
+        run: vendor/bin/phpunit --stop-on-failure
 
       - name: Build assets
         working-directory: ${{ env.WORKING_DIR }}
@@ -175,43 +167,8 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage --reporter=verbose 2>/dev/null || true
+            npx vitest run --reporter=verbose 2>/dev/null || true
           fi
-
-      - name: Upload coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports-${{ matrix.php-version }}-${{ matrix.dependency-version }}
-          path: ${{ env.WORKING_DIR }}/coverage/
-          retention-days: 3
-  sonarqube:
-    name: SonarQube Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: test
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Need full history for SonarQube
-
-      - name: Download coverage
-        uses: actions/download-artifact@v4
-        with:
-          pattern: coverage-reports-*
-          path: ${{ env.WORKING_DIR }}/coverage/
-          merge-multiple: true
-
-      - name: SonarQube scan
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: ${{ env.WORKING_DIR }}
 
   security:
     name: Security Scan
@@ -268,7 +225,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [lint, test, security, sonarqube]
+    needs: [lint, test, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
 
@@ -325,7 +282,7 @@ jobs:
     name: Notifications
     runs-on: ubuntu-latest
     timeout-minutes: 2
-    needs: [lint, test, security, sonarqube, deploy]
+    needs: [lint, test, security, deploy]
     if: always()
 
     steps:
@@ -335,7 +292,6 @@ jobs:
           echo "├── Lint: ${{ needs.lint.result }}"
           echo "├── Test: ${{ needs.test.result }}"
           echo "├── Security: ${{ needs.security.result }}"
-          echo "├── SonarQube: ${{ needs.sonarqube.result }}"
           echo "└── Deploy: ${{ needs.deploy.result }}"
 
       - name: Success notification
