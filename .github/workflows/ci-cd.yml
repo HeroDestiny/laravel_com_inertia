@@ -50,7 +50,6 @@ jobs:
               - 'src/package*.json'
 
       - name: Setup PHP
-        if: steps.changes.outputs.php == 'true' || github.ref == 'refs/heads/main'
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -58,7 +57,6 @@ jobs:
           coverage: none
 
       - name: Cache Composer
-        if: steps.changes.outputs.php == 'true' || github.ref == 'refs/heads/main'
         uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/vendor
@@ -67,7 +65,6 @@ jobs:
             composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
 
       - name: Setup Node.js
-        if: steps.changes.outputs.js == 'true' || github.ref == 'refs/heads/main'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -77,15 +74,10 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          if [ "${{ steps.changes.outputs.php }}" = "true" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
-          fi
-          if [ "${{ steps.changes.outputs.js }}" = "true" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            npm ci --prefer-offline --no-audit
-          fi
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
+          npm ci --prefer-offline --no-audit
 
       - name: PHP Quality Checks
-        if: steps.changes.outputs.php == 'true' || github.ref == 'refs/heads/main'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           vendor/bin/pint --test --preset=laravel
@@ -93,19 +85,17 @@ jobs:
           vendor/bin/psalm --no-progress --output-format=github
 
       - name: Frontend Quality Checks
-        if: steps.changes.outputs.js == 'true' || github.ref == 'refs/heads/main'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           npm run lint -- --max-warnings=0
           npm run type-check
+          npm run format:check
           npm run format:check
   test:
     name: Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: lint
-    # Always run on push to main, conditional on PHP changes for other branches
-    if: needs.lint.outputs.php-changes == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -177,12 +167,10 @@ jobs:
           fi
 
       - name: Build assets
-        if: matrix.dependency-version == 'prefer-stable'
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
 
       - name: Frontend tests
-        if: matrix.dependency-version == 'prefer-stable'
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
         run: |
@@ -191,10 +179,9 @@ jobs:
           fi
 
       - name: Upload coverage
-        if: matrix.dependency-version == 'prefer-stable'
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-reports-${{ matrix.php-version }}
+          name: coverage-reports-${{ matrix.php-version }}-${{ matrix.dependency-version }}
           path: ${{ env.WORKING_DIR }}/coverage/
           retention-days: 3
   sonarqube:
@@ -202,7 +189,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: test
-    if: github.event_name == 'push'
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -215,11 +201,11 @@ jobs:
       - name: Download coverage
         uses: actions/download-artifact@v4
         with:
-          name: coverage-reports-8.3
+          pattern: coverage-reports-*
           path: ${{ env.WORKING_DIR }}/coverage/
+          merge-multiple: true
 
       - name: SonarQube scan
-        if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -227,17 +213,11 @@ jobs:
         with:
           projectBaseDir: ${{ env.WORKING_DIR }}
 
-      - name: SonarQube skipped
-        if: env.SONAR_TOKEN == ''
-        run: echo "⚠️ SonarQube token not configured, skipping analysis"
-
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: lint
-    # Always run on push to main, conditional on PR
-    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
