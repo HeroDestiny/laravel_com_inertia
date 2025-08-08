@@ -66,17 +66,31 @@ jobs:
         env:
           XDEBUG_MODE: coverage
         run: |
-          mkdir -p coverage
           echo "🧪 Running PHPUnit with coverage..."
-          vendor/bin/phpunit \
+          
+          # Ensure coverage directory exists and is clean for PHP files
+          mkdir -p coverage
+          
+          # Run PHPUnit with detailed output
+          echo "📋 PHPUnit command:"
+          echo "vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml --stop-on-failure"
+          
+          # Run the actual command and capture exit code
+          if vendor/bin/phpunit \
             --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml \
             --coverage-xml=coverage/coverage-xml \
             --log-junit=coverage/junit.xml \
-            --stop-on-failure
+            --verbose; then
+            echo "✅ PHPUnit completed successfully"
+          else
+            echo "❌ PHPUnit failed with exit code $?"
+            echo "� Checking what files were created anyway:"
+            ls -la coverage/ || echo "No coverage directory"
+            exit 1
+          fi
           
-          echo "✅ Coverage generation completed"
-          echo "📁 Checking generated files:"
+          echo "📁 Files created by PHPUnit:"
           ls -la coverage/
 
       - name: Generate frontend coverage
