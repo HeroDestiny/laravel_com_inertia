@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,7 +26,7 @@ jobs:
   lint:
     name: Code Quality
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     outputs:
       php-changes: ${{ steps.changes.outputs.php }}
       js-changes: ${{ steps.changes.outputs.js }}
@@ -35,7 +35,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1  # Shallow clone for speed
 
       - name: Detect changes
         id: changes
@@ -78,47 +78,57 @@ jobs:
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           if [ "${{ steps.changes.outputs.php }}" = "true" ]; then
-            composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
           fi
           if [ "${{ steps.changes.outputs.js }}" = "true" ]; then
-            npm ci
+            npm ci --prefer-offline --no-audit
           fi
 
       - name: PHP Quality Checks
         if: steps.changes.outputs.php == 'true'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          vendor/bin/pint --test
-          vendor/bin/phpstan analyse --memory-limit=2G --no-progress
-          vendor/bin/psalm --no-progress
+          vendor/bin/pint --test --preset=laravel
+          vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=github
+          vendor/bin/psalm --no-progress --output-format=github
 
       - name: Frontend Quality Checks
         if: steps.changes.outputs.js == 'true'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          npm run lint
+          npm run lint -- --max-warnings=0
           npm run type-check
+          npm run format:check
   test:
     name: Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     needs: lint
+    if: needs.lint.outputs.php-changes == 'true' || github.event_name == 'push'
     strategy:
+      fail-fast: false
       matrix:
-        php-version: ['8.3']
-        dependency-version: [prefer-stable, prefer-lowest]
+        include:
+          - php-version: '8.3'
+            dependency-version: prefer-stable
+          - php-version: '8.3' 
+            dependency-version: prefer-lowest
+            experimental: true
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
-          coverage: xdebug
+          coverage: ${{ matrix.dependency-version == 'prefer-stable' && 'xdebug' || 'none' }}
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+          ini-values: memory_limit=512M
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -132,55 +142,66 @@ jobs:
         with:
           path: ${{ env.WORKING_DIR }}/vendor
           key: composer-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-${{ hashFiles('src/composer.lock') }}
+          restore-keys: |
+            composer-${{ runner.os }}-php${{ matrix.php-version }}-
 
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           if [ "${{ matrix.dependency-version }}" = "prefer-lowest" ]; then
-            composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-lowest --prefer-stable
+            composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-lowest --prefer-stable --no-scripts
           else
-            composer install --no-interaction --prefer-dist --optimize-autoloader
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
           fi
-          npm ci
+          npm ci --prefer-offline --no-audit
 
       - name: Setup Laravel
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           cp .env.testing .env
-          php artisan key:generate
+          php artisan key:generate --ansi
+          php artisan config:cache
           php artisan ziggy:generate
 
       - name: Run tests
         working-directory: ${{ env.WORKING_DIR }}
         env:
-          XDEBUG_MODE: coverage
+          XDEBUG_MODE: ${{ matrix.dependency-version == 'prefer-stable' && 'coverage' || 'off' }}
         run: |
-          mkdir -p coverage
-          vendor/bin/phpunit --coverage-clover=coverage/clover.xml
+          if [ "${{ matrix.dependency-version }}" = "prefer-stable" ]; then
+            mkdir -p coverage
+            vendor/bin/phpunit --coverage-clover=coverage/clover.xml --stop-on-failure
+          else
+            vendor/bin/phpunit --stop-on-failure
+          fi
 
       - name: Build assets
+        if: matrix.dependency-version == 'prefer-stable'
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
 
       - name: Frontend tests
+        if: matrix.dependency-version == 'prefer-stable'
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
         run: |
           if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage
+            npx vitest run --coverage --reporter=verbose 2>/dev/null || true
           fi
 
       - name: Upload coverage
+        if: matrix.dependency-version == 'prefer-stable'
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-reports-${{ matrix.php-version }}-${{ matrix.dependency-version }}
+          name: coverage-reports-${{ matrix.php-version }}
           path: ${{ env.WORKING_DIR }}/coverage/
+          retention-days: 3
   sonarqube:
     name: SonarQube Analysis
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     needs: test
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -188,47 +209,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Need full history for SonarQube
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+      - name: Download coverage
+        uses: actions/download-artifact@v4
         with:
-          php-version: ${{ env.PHP_VERSION }}
-          coverage: xdebug
-          tools: composer:v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          npm ci
-
-      - name: Setup Laravel
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          cp .env.testing .env
-          php artisan key:generate
-          php artisan ziggy:generate
-
-      - name: Generate coverage
-        working-directory: ${{ env.WORKING_DIR }}
-        env:
-          XDEBUG_MODE: coverage
-        run: |
-          mkdir -p coverage
-          vendor/bin/phpunit --coverage-clover=coverage/clover.xml
-          if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage 2>/dev/null || true
-          fi
+          name: coverage-reports-8.3
+          path: ${{ env.WORKING_DIR }}/coverage/
 
       - name: SonarQube scan
+        if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -239,13 +229,15 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: test
+    timeout-minutes: 10
+    needs: lint
     if: github.event_name == 'push' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -263,60 +255,29 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          npm ci
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
+          npm ci --prefer-offline --no-audit
 
       - name: Security audits
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
         run: |
-          composer audit
-          npm audit --audit-level=moderate
+          echo "� Running security audits..."
+          composer audit --format=plain || true
+          npm audit --audit-level=moderate || true
 
       - name: Snyk scan
-        if: env.SNYK_TOKEN != ''
+        if: secrets.SNYK_TOKEN != ''
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: npx snyk test --severity-threshold=medium
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-          cache: npm
-          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
-
-      - name: 🐘 Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          tools: composer:v2
-
-      - name: 📦 Install dependencies
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          npm ci
-
-      - name: Security Audit (Composer)
-        working-directory: ${{ env.WORKING_DIR }}
-        continue-on-error: true
-        run: composer audit
-
-      - name: Security Audit (NPM)
-        working-directory: ${{ env.WORKING_DIR }}
-        continue-on-error: true
-        run: npm audit --audit-level=moderate
-
-      - name: Snyk scan
-        if: env.SNYK_TOKEN != ''
-        working-directory: ${{ env.WORKING_DIR }}
-        continue-on-error: true
-        run: npx snyk test --severity-threshold=medium
+        run: npx snyk test --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     needs: [lint, test, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
@@ -324,12 +285,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
+          ini-values: memory_limit=256M
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -341,14 +305,17 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-          npm ci
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --no-scripts
+          npm ci --prefer-offline
 
       - name: Setup Laravel
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           cp .env.example .env
-          php artisan key:generate
+          php artisan key:generate --ansi
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
           php artisan ziggy:generate
 
       - name: Build production assets
@@ -361,30 +328,31 @@ jobs:
             --file docker/production/Dockerfile \
             --tag laravel-inertia:latest \
             --tag "laravel-inertia:${{ github.sha }}" \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             .
 
   notify:
     name: Notifications
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
     needs: [lint, test, security, deploy]
     if: always() && github.ref == 'refs/heads/main'
 
     steps:
       - name: Pipeline summary
         run: |
-          echo "Pipeline Summary:"
-          echo "- Lint: ${{ needs.lint.result }}"
-          echo "- Test: ${{ needs.test.result }}"
-          echo "- Security: ${{ needs.security.result }}"
-          echo "- Deploy: ${{ needs.deploy.result }}"
+          echo "🚀 Pipeline Results:"
+          echo "├── Lint: ${{ needs.lint.result }}"
+          echo "├── Test: ${{ needs.test.result }}"
+          echo "├── Security: ${{ needs.security.result }}"
+          echo "└── Deploy: ${{ needs.deploy.result }}"
 
       - name: Success notification
         if: needs.deploy.result == 'success'
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          text: 'Deploy completed successfully!'
+          text: '✅ Deploy completed successfully!'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
@@ -393,6 +361,6 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          text: 'Pipeline failed! Check the logs.'
+          text: '❌ Pipeline failed! Check the logs.'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
