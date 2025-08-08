@@ -66,32 +66,63 @@ jobs:
         env:
           XDEBUG_MODE: coverage
         run: |
+          echo "🧪 Running PHPUnit with coverage..."
+          
+          # Ensure coverage directory exists and is clean for PHP files
           mkdir -p coverage
-          vendor/bin/phpunit \
+          
+          # Run PHPUnit command (removed --verbose flag)
+          echo "📋 PHPUnit command:"
+          echo "vendor/bin/phpunit --configuration phpunit.xml --coverage-clover=coverage/clover.xml --coverage-xml=coverage/coverage-xml --log-junit=coverage/junit.xml"
+          
+          # Run the actual command and capture exit code
+          if vendor/bin/phpunit \
+            --configuration phpunit.xml \
             --coverage-clover=coverage/clover.xml \
             --coverage-xml=coverage/coverage-xml \
-            --log-junit=coverage/junit.xml \
-            --stop-on-failure
-
-      - name: Generate frontend coverage
-        working-directory: ${{ env.WORKING_DIR }}
-        continue-on-error: true
-        run: |
-          if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage --reporter=verbose || true
+            --log-junit=coverage/junit.xml; then
+            echo "✅ PHPUnit completed successfully"
+          else
+            echo "❌ PHPUnit failed with exit code $?"
+            echo "� Checking what files were created anyway:"
+            ls -la coverage/ || echo "No coverage directory"
+            exit 1
           fi
+          
+          echo "📁 Files created by PHPUnit:"
+          ls -la coverage/
 
       - name: Verify files for analysis
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           echo "📁 Checking PHP files in app/:"
-          find app -name "*.php" -type f | head -10
+          find app -name "*.php" -type f | head -5
           echo ""
           echo "📁 Checking JS/Vue files:"
-          find resources/js -name "*.js" -o -name "*.vue" -o -name "*.ts" -type f | head -10
+          find resources/js -name "*.js" -o -name "*.vue" -o -name "*.ts" -type f | head -5
           echo ""
-          echo "📁 Checking coverage files:"
-          ls -la coverage/ || echo "No coverage directory found"
+          echo "📁 Coverage files status:"
+          if [ -d "coverage" ]; then
+            echo "✅ Coverage directory exists"
+            ls -la coverage/
+            echo ""
+            echo "📄 Clover XML content check:"
+            if [ -f "coverage/clover.xml" ]; then
+              echo "✅ clover.xml exists ($(wc -l < coverage/clover.xml) lines)"
+              head -3 coverage/clover.xml
+            else
+              echo "❌ clover.xml missing"
+            fi
+            echo ""
+            echo "📄 JUnit XML content check:"
+            if [ -f "coverage/junit.xml" ]; then
+              echo "✅ junit.xml exists ($(wc -l < coverage/junit.xml) lines)"
+            else
+              echo "❌ junit.xml missing"
+            fi
+          else
+            echo "❌ Coverage directory missing"
+          fi
 
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
