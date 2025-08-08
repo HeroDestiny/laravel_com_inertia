@@ -156,7 +156,7 @@ jobs:
 
       - name: Run tests
         working-directory: ${{ env.WORKING_DIR }}
-        run: vendor/bin/phpunit --stop-on-failure
+        run: vendor/bin/phpunit --configuration phpunit-no-coverage.xml --stop-on-failure
 
       - name: Build assets
         working-directory: ${{ env.WORKING_DIR }}
