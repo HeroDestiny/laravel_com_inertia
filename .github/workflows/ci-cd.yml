@@ -180,7 +180,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: test
-    if: github.event_name == 'push' && env.SONAR_TOKEN != ''
+    if: github.event_name == 'push'
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
@@ -380,7 +380,7 @@ jobs:
           echo "- Deploy: ${{ needs.deploy.result }}"
 
       - name: Success notification
-        if: needs.deploy.result == 'success' && secrets.SLACK_WEBHOOK_URL != ''
+        if: needs.deploy.result == 'success'
         uses: 8398a7/action-slack@v3
         with:
           status: success
@@ -389,7 +389,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
       - name: Failure notification
-        if: contains(needs.*.result, 'failure') && secrets.SLACK_WEBHOOK_URL != ''
+        if: contains(needs.*.result, 'failure')
         uses: 8398a7/action-slack@v3
         with:
           status: failure
