@@ -84,7 +84,7 @@ jobs:
       - name: Verify files for analysis
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          echo "📁 Checking PHP files:"
+          echo "📁 Checking PHP files in app/:"
           find app -name "*.php" -type f | head -10
           echo ""
           echo "📁 Checking JS/Vue files:"
