@@ -81,13 +81,35 @@ jobs:
             npx vitest run --coverage --reporter=verbose || true
           fi
 
+      - name: Verify files for analysis
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          echo "📁 Checking PHP files:"
+          find app -name "*.php" -type f | head -10
+          echo ""
+          echo "📁 Checking JS/Vue files:"
+          find resources/js -name "*.js" -o -name "*.vue" -o -name "*.ts" -type f | head -10
+          echo ""
+          echo "📁 Checking coverage files:"
+          ls -la coverage/ || echo "No coverage directory found"
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_SCANNER_OPTS: "-Dsonar.verbose=true"
         with:
           projectBaseDir: ${{ env.WORKING_DIR }}
+          args: |
+            -Dsonar.projectKey=HeroDestiny_laravel_com_inertia
+            -Dsonar.organization=herodestiny
+            -Dsonar.php.coverage.reportPaths=coverage/clover.xml
+            -Dsonar.php.tests.reportPath=coverage/junit.xml
+            -Dsonar.sources=app,config,database/migrations,database/seeders,database/factories,routes,resources/js,resources/css
+            -Dsonar.tests=tests
+            -Dsonar.sourceEncoding=UTF-8
+            -Dsonar.exclusions=**/vendor/**,**/node_modules/**,**/storage/**,**/bootstrap/cache/**,**/*.blade.php,**/build/**,**/public/**
 
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarqube-quality-gate-action@v1
