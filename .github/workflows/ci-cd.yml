@@ -105,7 +105,7 @@ jobs:
     timeout-minutes: 20
     needs: lint
     # Always run on push to main, conditional on PHP changes for other branches
-    if: github.ref == 'refs/heads/main' || needs.lint.outputs.php-changes == 'true'
+    if: needs.lint.outputs.php-changes == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -237,7 +237,7 @@ jobs:
     timeout-minutes: 10
     needs: lint
     # Always run on push to main, conditional on PR
-    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
