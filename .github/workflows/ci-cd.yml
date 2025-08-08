@@ -50,7 +50,7 @@ jobs:
               - 'src/package*.json'
 
       - name: Setup PHP
-        if: steps.changes.outputs.php == 'true'
+        if: steps.changes.outputs.php == 'true' || github.ref == 'refs/heads/main'
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
@@ -58,7 +58,7 @@ jobs:
           coverage: none
 
       - name: Cache Composer
-        if: steps.changes.outputs.php == 'true'
+        if: steps.changes.outputs.php == 'true' || github.ref == 'refs/heads/main'
         uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/vendor
@@ -67,7 +67,7 @@ jobs:
             composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
 
       - name: Setup Node.js
-        if: steps.changes.outputs.js == 'true'
+        if: steps.changes.outputs.js == 'true' || github.ref == 'refs/heads/main'
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -77,15 +77,15 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          if [ "${{ steps.changes.outputs.php }}" = "true" ]; then
+          if [ "${{ steps.changes.outputs.php }}" = "true" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
           fi
-          if [ "${{ steps.changes.outputs.js }}" = "true" ]; then
+          if [ "${{ steps.changes.outputs.js }}" = "true" ] || [ "${{ github.ref }}" = "refs/heads/main" ]; then
             npm ci --prefer-offline --no-audit
           fi
 
       - name: PHP Quality Checks
-        if: steps.changes.outputs.php == 'true'
+        if: steps.changes.outputs.php == 'true' || github.ref == 'refs/heads/main'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           vendor/bin/pint --test --preset=laravel
@@ -93,7 +93,7 @@ jobs:
           vendor/bin/psalm --no-progress --output-format=github
 
       - name: Frontend Quality Checks
-        if: steps.changes.outputs.js == 'true'
+        if: steps.changes.outputs.js == 'true' || github.ref == 'refs/heads/main'
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           npm run lint -- --max-warnings=0
@@ -104,7 +104,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: lint
-    if: needs.lint.outputs.php-changes == 'true' || github.event_name == 'push'
+    # Always run on push to main, conditional on PHP changes for other branches
+    if: github.ref == 'refs/heads/main' || needs.lint.outputs.php-changes == 'true'
     strategy:
       fail-fast: false
       matrix:
@@ -226,12 +227,17 @@ jobs:
         with:
           projectBaseDir: ${{ env.WORKING_DIR }}
 
+      - name: SonarQube skipped
+        if: env.SONAR_TOKEN == ''
+        run: echo "⚠️ SonarQube token not configured, skipping analysis"
+
   security:
     name: Security Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: lint
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    # Always run on push to main, conditional on PR
+    if: github.ref == 'refs/heads/main' || github.event_name == 'pull_request'
 
     steps:
       - name: Checkout
@@ -282,7 +288,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    needs: [lint, test, security]
+    needs: [lint, test, security, sonarqube]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
 
@@ -339,7 +345,7 @@ jobs:
     name: Notifications
     runs-on: ubuntu-latest
     timeout-minutes: 2
-    needs: [lint, test, security, deploy]
+    needs: [lint, test, security, sonarqube, deploy]
     if: always() && github.ref == 'refs/heads/main'
 
     steps:
@@ -349,6 +355,7 @@ jobs:
           echo "├── Lint: ${{ needs.lint.result }}"
           echo "├── Test: ${{ needs.test.result }}"
           echo "├── Security: ${{ needs.security.result }}"
+          echo "├── SonarQube: ${{ needs.sonarqube.result }}"
           echo "└── Deploy: ${{ needs.deploy.result }}"
 
       - name: Success notification
