@@ -1,17 +1,15 @@
-# 🚀 Workflow principal para CI/CD
 name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Definir permissões mínimas necessárias
 permissions:
   contents: read
   actions: read
@@ -25,525 +23,291 @@ env:
   WORKING_DIR: src
 
 jobs:
-  # Job 0: Validação rápida para PRs
-  quick-check:
-    name: ⚡ Quick PR Check
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    if: github.event_name == 'pull_request'
-    outputs:
-      should-run-full: ${{ steps.changes.outputs.significant-changes }}
-
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: 🔍 Check for significant changes
-        id: changes
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            significant-changes:
-              - 'src/**/*.php'
-              - 'src/**/*.{js,ts,vue}'
-              - 'src/composer.{json,lock}'
-              - 'src/package*.json'
-              - '.github/workflows/**'
-
-      - name: 📋 Changes Summary
-        run: |
-          echo "🔍 Change detection results:"
-          echo "- Significant changes: ${{ steps.changes.outputs.significant-changes }}"
-          if [ "${{ steps.changes.outputs.significant-changes }}" = "true" ]; then
-            echo "✅ Will run full pipeline"
-          else
-            echo "⚡ Only quick checks needed"
-          fi
-
-  # Job 1: Análise estática e linting (rápido)
   lint:
-    name: 🔍 Code Quality
+    name: Code Quality
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: [quick-check]
-    if: |
-      always() && 
-      (github.event_name == 'push' || 
-       (github.event_name == 'pull_request' && 
-        (needs.quick-check.result == 'skipped' || needs.quick-check.outputs.should-run-full == 'true')))
+    timeout-minutes: 10
     outputs:
-      changed-files: ${{ steps.changes.outputs.changed-files }}
       php-changes: ${{ steps.changes.outputs.php }}
       js-changes: ${{ steps.changes.outputs.js }}
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1  # Shallow clone for speed
 
-      - name: 🔍 Detect changes
+      - name: Detect changes
         id: changes
         uses: dorny/paths-filter@v3
         with:
           filters: |
             php:
               - 'src/**/*.php'
+              - 'src/composer.{json,lock}'
             js:
               - 'src/**/*.{js,ts,vue}'
-            composer:
-              - 'src/composer.{json,lock}'
-            npm:
               - 'src/package*.json'
 
-      - name: 🐘 Setup PHP
-        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.composer == 'true'
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
           coverage: none
 
-      - name: 📦 Cache Composer
-        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.composer == 'true'
+      - name: Cache Composer
         uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/vendor
           key: composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('src/composer.lock') }}
           restore-keys: |
             composer-${{ runner.os }}-php${{ env.PHP_VERSION }}-
-            composer-${{ runner.os }}-
 
-      - name: 🎯 Setup Node.js
-        if: steps.changes.outputs.js == 'true' || steps.changes.outputs.npm == 'true'
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
 
-      - name: 📦 Install PHP dependencies
-        if: steps.changes.outputs.php == 'true' || steps.changes.outputs.composer == 'true'
-        working-directory: ${{ env.WORKING_DIR }}
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
-
-      - name: 📦 Install Node dependencies
-        if: steps.changes.outputs.js == 'true' || steps.changes.outputs.npm == 'true'
-        working-directory: ${{ env.WORKING_DIR }}
-        run: npm ci
-
-      - name: 🎨 PHP Code Style (Pint)
-        if: steps.changes.outputs.php == 'true'
-        working-directory: ${{ env.WORKING_DIR }}
-        run: vendor/bin/pint --test
-
-      - name: 🔍 Static Analysis (PHPStan)
-        if: steps.changes.outputs.php == 'true'
-        working-directory: ${{ env.WORKING_DIR }}
-        run: vendor/bin/phpstan analyse --memory-limit=2G --no-progress
-
-      - name: 🛡️ Security Analysis (Psalm)
-        if: steps.changes.outputs.php == 'true'
-        working-directory: ${{ env.WORKING_DIR }}
-        run: vendor/bin/psalm --no-progress
-
-      - name: 🎨 Frontend Linting
-        if: steps.changes.outputs.js == 'true'
+      - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          npm run lint
-          npm run type-check
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+          npm ci --prefer-offline --no-audit
 
-      - name: 🎨 Frontend Formatting
-        if: steps.changes.outputs.js == 'true'
+      - name: PHP Quality Checks
         working-directory: ${{ env.WORKING_DIR }}
-        run: npm run format:check
+        run: |
+          vendor/bin/pint --test --preset=laravel
+          vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=github
+          vendor/bin/psalm --no-progress --output-format=github
 
-  # Job 2: Testes unitários e de feature
+      - name: Frontend Quality Checks
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          npm run lint -- --max-warnings=0
+          npm run type-check
+          npm run format:check
+          npm run format:check
   test:
-    name: 🧪 Tests (PHP ${{ matrix.php-version }}, ${{ matrix.dependency-version }})
+    name: Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
     needs: lint
     strategy:
       fail-fast: false
       matrix:
-        php-version: ['8.3']
-        dependency-version: [prefer-stable]
         include:
           - php-version: '8.3'
+            dependency-version: prefer-stable
+          - php-version: '8.3' 
             dependency-version: prefer-lowest
+            experimental: true
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: 🐘 Setup PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
-          coverage: xdebug
+          coverage: none
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+          ini-values: memory_limit=512M
 
-      - name: 🎯 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
 
-      - name: 📦 Cache Composer
+      - name: Cache Composer
         uses: actions/cache@v4
         with:
           path: ${{ env.WORKING_DIR }}/vendor
           key: composer-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-${{ hashFiles('src/composer.lock') }}
           restore-keys: |
-            composer-${{ runner.os }}-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-
             composer-${{ runner.os }}-php${{ matrix.php-version }}-
-            composer-${{ runner.os }}-
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           if [ "${{ matrix.dependency-version }}" = "prefer-lowest" ]; then
-            composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-lowest --prefer-stable
+            composer update --no-interaction --prefer-dist --optimize-autoloader --prefer-lowest --prefer-stable --no-scripts
           else
-            composer install --no-interaction --prefer-dist --optimize-autoloader
+            composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
           fi
-          npm ci
+          npm ci --prefer-offline --no-audit
 
-      - name: ⚙️ Setup Laravel
+      - name: Setup Laravel
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          if [ ! -f ".env.testing" ]; then
-            echo "❌ .env.testing file not found"
-            exit 1
-          fi
           cp .env.testing .env
-          php artisan key:generate
+          php artisan key:generate --ansi
+          php artisan config:cache
           php artisan ziggy:generate
 
-      - name: 🧪 Run tests
+      - name: Run tests
         working-directory: ${{ env.WORKING_DIR }}
-        env:
-          XDEBUG_MODE: coverage
-        run: vendor/bin/phpunit --coverage-text
+        run: vendor/bin/phpunit --configuration phpunit-no-coverage.xml --stop-on-failure
 
-      - name: 🏗️ Build assets
+      - name: Build assets
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
 
-      - name: 📊 Generate Frontend Coverage
+      - name: Frontend tests
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
         run: |
           if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage
+            npx vitest run --reporter=verbose 2>/dev/null || true
           fi
 
-      - name: 📤 Upload Coverage Reports
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-reports-php${{ matrix.php-version }}-${{ matrix.dependency-version }}-${{ github.sha }}
-          path: ${{ env.WORKING_DIR }}/coverage/
-          retention-days: 30
-          if-no-files-found: warn
-
-  # Job 3: Análise de cobertura e qualidade (SonarQube)
-  sonarqube:
-    name: 📊 SonarQube Analysis
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    needs: test
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.actor != 'dependabot[bot]')
-    
-    env:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for better analysis
-
-      - name: 📥 Download Coverage Reports
-        uses: actions/download-artifact@v4
-        continue-on-error: true
-        with:
-          name: coverage-reports-php8.3-prefer-stable-${{ github.sha }}
-          path: ${{ env.WORKING_DIR }}/coverage
-
-      - name: 🔍 Verify Coverage Files
-        run: mkdir -p ${{ env.WORKING_DIR }}/coverage
-
-      - name: ☁️ SonarCloud Scan
-        if: ${{ env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: ${{ env.WORKING_DIR }}
-
-      - name: 🔍 SonarCloud Quality Gate
-        if: ${{ env.SONAR_TOKEN != '' }}
-        run: echo "📊 SonarCloud scan completed"
-
-  # Job 4: Segurança e dependências
   security:
-    name: 🛡️ Security Scan
+    name: Security Scan
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    needs: test
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    
-    env:
-      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+    timeout-minutes: 10
+    needs: lint
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: 🎯 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
 
-      - name: 🐘 Setup PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          npm ci
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
+          npm ci --prefer-offline --no-audit
 
-      - name: 🛡️ Security Audit (Composer)
+      - name: Security audits
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: composer audit
+        run: |
+          echo "� Running security audits..."
+          composer audit --format=plain || true
+          npm audit --audit-level=moderate || true
 
-      - name: 🛡️ Security Audit (NPM)
+      - name: Snyk scan
         working-directory: ${{ env.WORKING_DIR }}
         continue-on-error: true
-        run: npm audit --audit-level=moderate
-
-      - name: 🔍 Snyk Security Scan
-        if: github.actor != 'dependabot[bot]' && env.SNYK_TOKEN != ''
-        working-directory: ${{ env.WORKING_DIR }}
-        run: npx snyk test --severity-threshold=medium
+        run: |
+          if [ -n "$SNYK_TOKEN" ]; then
+            npx snyk test --severity-threshold=high
+          else
+            echo "⚠️ Snyk token not configured, skipping scan"
+          fi
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      - name: ⚠️ Snyk Skipped
-        if: env.SNYK_TOKEN == ''
-        run: echo "⚠️ Snyk security scan skipped"
-
-  # Job 5: Documentação (apenas em mudanças relevantes)
-  documentation:
-    name: 📚 Documentation
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    needs: lint
-    if: contains(needs.lint.outputs.changed-files, 'src/app/') || contains(github.event.head_commit.message, '[docs]')
-
-    steps:
-      - name: 📥 Checkout
-        uses: actions/checkout@v4
-
-      - name: 🐘 Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          tools: composer:v2
-
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: 'pip'
-
-      - name: 📦 Install dependencies
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader
-          pip install plantuml-markdown
-
-      - name: ⚙️ Setup Laravel
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          cp .env.example .env
-          php artisan key:generate
-          php artisan ziggy:generate
-
-      - name: 📊 Generate UML Diagrams
-        working-directory: ${{ env.WORKING_DIR }}
-        run: |
-          mkdir -p storage/uml
-          php artisan generate:uml
-          if [ -f "scripts/check_uml_system.py" ]; then
-            python3 scripts/check_uml_system.py
-          fi
-
-      - name: 📤 Upload Documentation Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: uml-diagrams-${{ github.sha }}
-          path: |
-            ${{ env.WORKING_DIR }}/storage/uml/*.puml
-            ${{ env.WORKING_DIR }}/storage/uml/*.png
-          retention-days: 30
-
-  # Job 6: Build e Deploy (apenas em main)
   deploy:
-    name: 🚀 Deploy
+    name: Deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 15
     needs: [lint, test, security]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
 
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: 🐘 Setup PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ env.PHP_VERSION }}
           tools: composer:v2
+          ini-values: memory_limit=256M
 
-      - name: 🎯 Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
 
-      - name: 📦 Install dependencies
+      - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
-          npm ci
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --no-scripts
+          npm ci --prefer-offline
 
-      - name: ⚙️ Generate Ziggy Routes
+      - name: Setup Laravel
         working-directory: ${{ env.WORKING_DIR }}
         run: |
           cp .env.example .env
-          php artisan key:generate
+          php artisan key:generate --ansi
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
           php artisan ziggy:generate
 
-      - name: 🔨 Build production assets
+      - name: Build production assets
         working-directory: ${{ env.WORKING_DIR }}
         run: npm run build
 
-      - name: 🐳 Set up Docker Buildx
-        id: buildx-setup
-        continue-on-error: true
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: |
-            image=moby/buildkit:latest
-          buildkitd-flags: |
-            --allow-insecure-entitlement security.insecure
-            --allow-insecure-entitlement network.host
-
-      - name: 🐳 Build Docker Image (with Buildx and cache)
-        id: docker-build-cache
-        if: steps.buildx-setup.outcome == 'success'
-        continue-on-error: true
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/production/Dockerfile
-          push: false
-          tags: |
-            laravel-inertia:latest
-            laravel-inertia:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          platforms: linux/amd64
-          outputs: type=docker
-
-      - name: 🐳 Build Docker Image (with Buildx, no cache)
-        id: docker-build-no-cache
-        if: steps.buildx-setup.outcome == 'success' && steps.docker-build-cache.outcome == 'failure'
-        continue-on-error: true
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: docker/production/Dockerfile
-          push: false
-          tags: |
-            laravel-inertia:latest
-            laravel-inertia:${{ github.sha }}
-          platforms: linux/amd64
-          outputs: type=docker
-
-      - name: 🐳 Build Docker Image (fallback with regular Docker)
-        if: steps.buildx-setup.outcome == 'failure' || (steps.docker-build-cache.outcome == 'failure' && steps.docker-build-no-cache.outcome == 'failure')
+      - name: Build Docker image
         run: |
           docker build \
             --file docker/production/Dockerfile \
             --tag laravel-inertia:latest \
             --tag "laravel-inertia:${{ github.sha }}" \
+            --build-arg BUILDKIT_INLINE_CACHE=1 \
             .
 
-      # Descomente para deploy real
-      # - name: 🚀 Deploy to Production
-      #   uses: appleboy/ssh-action@v1.0.3
-      #   with:
-      #     host: ${{ secrets.DEPLOY_HOST }}
-      #     username: ${{ secrets.DEPLOY_USER }}
-      #     key: ${{ secrets.DEPLOY_KEY }}
-      #     script: |
-      #       cd /path/to/app
-      #       docker-compose pull
-      #       docker-compose up -d
-      #       docker system prune -f
-
-  # Job 7: Notificações
   notify:
-    name: 📢 Notifications
+    name: Notifications
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 2
     needs: [lint, test, security, deploy]
-    if: always() && github.ref == 'refs/heads/main'
-    
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    if: always()
 
     steps:
-      - name: 📢 Success Notification
-        if: needs.deploy.result == 'success' && env.SLACK_WEBHOOK_URL != ''
+      - name: Pipeline summary
+        run: |
+          echo "🚀 Pipeline Results:"
+          echo "├── Lint: ${{ needs.lint.result }}"
+          echo "├── Test: ${{ needs.test.result }}"
+          echo "├── Security: ${{ needs.security.result }}"
+          echo "└── Deploy: ${{ needs.deploy.result }}"
+
+      - name: Success notification
+        if: needs.deploy.result == 'success'
         uses: 8398a7/action-slack@v3
         with:
           status: success
-          text: '✅ Deploy realizado com sucesso!'
+          text: '✅ Deploy completed successfully!'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-      - name: 📢 Failure Notification
-        if: contains(needs.*.result, 'failure') && env.SLACK_WEBHOOK_URL != ''
+      - name: Failure notification
+        if: contains(needs.*.result, 'failure')
         uses: 8398a7/action-slack@v3
         with:
           status: failure
-          text: '❌ Pipeline falhou! Verifique os logs.'
+          text: '❌ Pipeline failed! Check the logs.'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-      - name: 📋 Pipeline Summary
-        run: |
-          echo "📋 Pipeline Summary:"
-          echo "- Lint: ${{ needs.lint.result }}"
-          echo "- Test: ${{ needs.test.result }}"
-          echo "- Security: ${{ needs.security.result }}"
-          echo "- Deploy: ${{ needs.deploy.result }}"

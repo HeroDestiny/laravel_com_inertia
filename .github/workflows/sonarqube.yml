@@ -1,0 +1,97 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+    types: [ opened, synchronize, reopened ]
+
+env:
+  WORKING_DIR: ./src
+  PHP_VERSION: '8.3'
+  NODE_VERSION: '22'
+
+jobs:
+  sonarqube:
+    name: SonarQube Quality Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history needed for SonarQube
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          coverage: xdebug
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
+          ini-values: memory_limit=512M
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.WORKING_DIR }}/package-lock.json
+
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.WORKING_DIR }}/vendor
+          key: composer-sonar-${{ runner.os }}-php${{ env.PHP_VERSION }}-${{ hashFiles('src/composer.lock') }}
+          restore-keys: |
+            composer-sonar-${{ runner.os }}-php${{ env.PHP_VERSION }}-
+
+      - name: Install dependencies
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+          npm ci --prefer-offline --no-audit
+
+      - name: Setup Laravel
+        working-directory: ${{ env.WORKING_DIR }}
+        run: |
+          cp .env.testing .env
+          php artisan key:generate --ansi
+          php artisan config:cache
+          php artisan ziggy:generate
+
+      - name: Generate test coverage
+        working-directory: ${{ env.WORKING_DIR }}
+        env:
+          XDEBUG_MODE: coverage
+        run: |
+          mkdir -p coverage
+          vendor/bin/phpunit \
+            --coverage-clover=coverage/clover.xml \
+            --coverage-xml=coverage/coverage-xml \
+            --log-junit=coverage/junit.xml \
+            --stop-on-failure
+
+      - name: Generate frontend coverage
+        working-directory: ${{ env.WORKING_DIR }}
+        continue-on-error: true
+        run: |
+          if [ -f "vitest.config.ts" ]; then
+            npx vitest run --coverage --reporter=verbose || true
+          fi
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: ${{ env.WORKING_DIR }}
+
+      - name: SonarQube Quality Gate Check
+        uses: SonarSource/sonarqube-quality-gate-action@v1
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          scanMetadataReportFile: ${{ env.WORKING_DIR }}/.scannerwork/report-task.txt
