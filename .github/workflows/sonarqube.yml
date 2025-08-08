@@ -92,14 +92,6 @@ jobs:
           echo "📁 Files created by PHPUnit:"
           ls -la coverage/
 
-      - name: Generate frontend coverage
-        working-directory: ${{ env.WORKING_DIR }}
-        continue-on-error: true
-        run: |
-          if [ -f "vitest.config.ts" ]; then
-            npx vitest run --coverage --reporter=verbose || true
-          fi
-
       - name: Verify files for analysis
         working-directory: ${{ env.WORKING_DIR }}
         run: |
