@@ -74,7 +74,7 @@ jobs:
       - name: Install dependencies
         working-directory: ${{ env.WORKING_DIR }}
         run: |
-          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --no-dev
+          composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
           npm ci --prefer-offline --no-audit
 
       - name: PHP Quality Checks
